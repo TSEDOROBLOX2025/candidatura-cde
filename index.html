@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { --gab-green: #009E49; --gab-yellow: #FCD116; --gab-blue: #3A75C4; --bg: #010409; }
+        :root { --gab-green: #009E49; --gab-yellow: #FCD116; --gab-blue: #3A75C4; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at top right, #0a192f, #010409); color: #fff; min-height: 100vh; overflow-x: hidden; }
         
         .floating-flags { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
@@ -25,10 +25,10 @@
         .input-premium { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: white; outline: none; transition: 0.3s; width: 100%; }
         .input-premium:focus { border-color: var(--gab-yellow); background: rgba(0,0,0,0.6); }
 
-        .btn-main { background: linear-gradient(135deg, var(--gab-yellow), #b89600); color: #000; font-weight: 800; border-radius: 12px; transition: 0.3s; text-transform: uppercase; }
+        .btn-main { background: linear-gradient(135deg, var(--gab-yellow), #b89600); color: #000; font-weight: 800; border-radius: 12px; transition: 0.3s; text-transform: uppercase; cursor: pointer; }
         .btn-main:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(252, 209, 22, 0.3); }
 
-        .nav-link { padding: 12px 24px; font-weight: 800; font-size: 0.7rem; border-radius: 50px; opacity: 0.5; color: white; transition: 0.3s; }
+        .nav-link { padding: 12px 24px; font-weight: 800; font-size: 0.7rem; border-radius: 50px; opacity: 0.5; color: white; transition: 0.3s; cursor: pointer; }
         .nav-link.selected { opacity: 1; background: rgba(252, 209, 22, 0.1); border: 1px solid var(--gab-yellow); color: var(--gab-yellow); }
 
         .section { display: none; }
@@ -36,8 +36,6 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .stat-card { background: rgba(255,255,255,0.03); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .bar-container { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; display: flex; }
-        .bar-item { height: 100%; transition: width 1s ease-in-out; }
     </style>
 </head>
 <body>
@@ -73,26 +71,17 @@
                     <h3 class="text-5xl font-black text-yellow-400" id="stat-pendentes">0</h3>
                 </div>
             </div>
-
-            <div class="grid lg:grid-cols-2 gap-10">
-                <div class="glass p-8 rounded-[40px]">
-                    <h4 class="text-sm font-black uppercase mb-6 tracking-widest border-b border-white/10 pb-4">Espectro Político</h4>
-                    <div class="bar-container mb-4">
-                        <div id="bar-direita" class="bar-item bg-blue-500" style="width: 0%"></div>
-                        <div id="bar-centro" class="bar-item bg-gray-400" style="width: 0%"></div>
-                        <div id="bar-esquerda" class="bar-item bg-red-500" style="width: 0%"></div>
-                    </div>
-                    <div class="flex justify-between text-[10px] font-black">
-                        <span class="text-blue-500">DIREITA: <span id="txt-dir">0</span>%</span>
-                        <span class="text-gray-400">CENTRO: <span id="txt-cen">0</span>%</span>
-                        <span class="text-red-500">ESQUERDA: <span id="txt-esq">0</span>%</span>
-                    </div>
+            <div class="glass p-8 rounded-[40px] max-w-2xl mx-auto text-center">
+                <h4 class="text-xs font-black uppercase mb-4 opacity-50">Distribuição Ideológica (Homologados)</h4>
+                <div class="h-4 bg-white/5 rounded-full overflow-hidden flex mb-4">
+                    <div id="bar-direita" class="h-full bg-blue-500 transition-all duration-1000" style="width: 0%"></div>
+                    <div id="bar-centro" class="h-full bg-gray-400 transition-all duration-1000" style="width: 0%"></div>
+                    <div id="bar-esquerda" class="h-full bg-red-500 transition-all duration-1000" style="width: 0%"></div>
                 </div>
-
-                <div class="glass p-8 rounded-[40px]">
-                    <h4 class="text-sm font-black uppercase mb-6 tracking-widest border-b border-white/10 pb-4">Candidaturas por Cargo</h4>
-                    <div id="lista-cargos-stats" class="space-y-4">
-                        </div>
+                <div class="flex justify-between text-[10px] font-black">
+                    <span class="text-blue-500">DIREITA: <span id="txt-dir">0</span>%</span>
+                    <span class="text-gray-400">CENTRO: <span id="txt-cen">0</span>%</span>
+                    <span class="text-red-500">ESQUERDA: <span id="txt-esq">0</span>%</span>
                 </div>
             </div>
         </section>
@@ -102,10 +91,8 @@
                 <h2 class="text-2xl font-black uppercase mb-8 border-l-4 border-yellow-400 pl-4">Protocolo de Registro</h2>
                 <form onsubmit="registrar(event)" id="formReg" class="grid md:grid-cols-2 gap-6">
                     <input type="text" id="reg-nome" class="input-premium col-span-2" placeholder="Nome Completo RP" required>
-                    <div class="grid grid-cols-2 gap-4 col-span-2">
-                        <input type="text" id="reg-cpf" class="input-premium" placeholder="CPF RP" required>
-                        <input type="date" id="reg-nasc" class="input-premium" required>
-                    </div>
+                    <input type="text" id="reg-cpf" class="input-premium" placeholder="CPF RP" required>
+                    <input type="date" id="reg-nasc" class="input-premium" required>
                     <select id="reg-lado" onchange="carregarPartidos(this.value)" class="input-premium" required>
                         <option value="">Lado Político</option>
                         <option>Direita</option><option>Centro</option><option>Esquerda</option>
@@ -116,10 +103,8 @@
                     </select>
                     <select id="reg-cargo" onchange="atualizarNum()" class="input-premium" required></select>
                     <select id="reg-partido" onchange="atualizarNum()" class="input-premium" required><option value="">Selecione o Lado</option></select>
-                    <input type="text" id="reg-tiktok" class="input-premium col-span-2" placeholder="Link do TikTok / Redes Sociais" required>
-                    
+                    <input type="text" id="reg-tiktok" class="input-premium col-span-2" placeholder="TikTok @oficial" required>
                     <div class="col-span-2 p-6 bg-black/40 rounded-2xl border border-yellow-400/20 text-center">
-                        <span class="text-[10px] text-yellow-400 font-bold uppercase mb-2 block">Número de Urna Identificado</span>
                         <div class="flex justify-center items-center gap-2">
                             <input type="text" id="num-fixo" class="w-16 text-4xl font-black bg-transparent text-center" readonly>
                             <div id="div-extra" class="hidden flex items-center gap-2">
@@ -128,7 +113,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn-main col-span-2 py-4">Enviar para o TSE</button>
+                    <button type="submit" class="btn-main col-span-2 py-4">Enviar Candidatura</button>
                 </form>
             </div>
         </section>
@@ -139,30 +124,25 @@
         </section>
 
         <section id="aba-adm" class="section">
-            <div class="glass p-8 rounded-3xl mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                    <h3 class="text-xl font-black">ADMINISTRAÇÃO TSE</h3>
-                    <p id="adm-sub" class="text-yellow-400 text-[10px] font-bold uppercase">Aguardando Autenticação</p>
-                </div>
+            <div class="glass p-8 rounded-3xl mb-8 flex justify-between items-center">
+                <div id="adm-sub" class="text-yellow-400 font-bold uppercase text-xs">Aguardando Login...</div>
                 <div id="adm-mestre" class="hidden flex gap-2">
-                    <button onclick="definirEleicao('Federal')" class="bg-blue-600 px-4 py-2 rounded-lg text-[10px] font-bold">SET FEDERAL</button>
-                    <button onclick="definirEleicao('Municipal')" class="bg-green-600 px-4 py-2 rounded-lg text-[10px] font-bold">SET MUNICIPAL</button>
+                    <button onclick="definirEleicao('Federal')" class="bg-blue-600 px-4 py-2 rounded text-[10px] font-bold">SET FEDERAL</button>
+                    <button onclick="definirEleicao('Municipal')" class="bg-green-600 px-4 py-2 rounded text-[10px] font-bold">SET MUNICIPAL</button>
                 </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-8">
-                <div><h4 class="text-yellow-400 font-bold text-xs mb-4 uppercase">Processos Pendentes</h4><div id="lista-pendentes" class="space-y-4"></div></div>
-                <div><h4 class="text-blue-400 font-bold text-xs mb-4 uppercase">Candidaturas Homologadas</h4><div id="lista-aceitos" class="space-y-4"></div></div>
+                <div><h4 class="text-yellow-400 font-bold text-xs mb-4">PENDENTES</h4><div id="lista-pendentes" class="space-y-4"></div></div>
+                <div><h4 class="text-blue-400 font-bold text-xs mb-4">HOMOLOGADOS</h4><div id="lista-aceitos" class="space-y-4"></div></div>
             </div>
         </section>
     </div>
 
-    <div id="modal-login" class="fixed inset-0 bg-black/95 z-[999] hidden flex items-center justify-center p-6 backdrop-blur-md">
+    <div id="modal-login" class="fixed inset-0 bg-black/95 z-[999] hidden flex items-center justify-center p-6">
         <div class="glass p-10 w-full max-w-sm rounded-[40px] text-center border-yellow-400/20">
-            <h3 class="text-xl font-black text-yellow-400 mb-6 uppercase">Acesso Restrito</h3>
             <select id="log-est" class="input-premium mb-4"><option>Brookhaven</option><option>Novacore</option><option>Casteríber</option><option>Fortemega</option><option>Florêmix</option></select>
-            <input type="password" id="log-sen" class="input-premium mb-6 text-center" placeholder="Senha do Estado">
-            <button onclick="login()" class="btn-main w-full py-4 shadow-lg shadow-yellow-400/20">Entrar</button>
-            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="mt-4 text-[10px] opacity-30 font-bold uppercase">Cancelar</button>
+            <input type="password" id="log-sen" class="input-premium mb-6 text-center" placeholder="Senha">
+            <button onclick="login()" class="btn-main w-full py-4">Entrar</button>
         </div>
     </div>
 
@@ -173,9 +153,9 @@
 
         const senhasTSE = { "Brookhaven": "Brookasil1234", "Novacore": "williamNC", "Casteríber": "henriqueCB", "Fortemega": "lucasFM", "Florêmix": "charlesFX" };
         const partidosMap = {
-            Direita: ["PL (22) - Partido Liberal", "PP (11) - Progressistas", "Republicanos (10)", "PRTN (75)", "Patriota (51)", "PRTB (28)", "NOVO (30)", "PMB (35)", "DC (27)", "UDB (38)", "Agir (36)", "POL (81)", "ACN (84)", "PRONA (57)", "PDC (17)", "PESP (48)", "PMNL (86)"],
-            Centro: ["MDB (15) - Movimento Democrático Brasileiro", "UNIÃO (44) - União Brasil", "PSD (55)", "Podemos (20)", "PSDB (45)", "Cidadania (23)", "Solidariedade (77)", "Avante (70)", "PMN (33)", "PV (43)", "PUN (42)", "MPD (37)", "PDM (26)", "MTB (63)", "PTD (46)", "PDSD (88)", "MSS (14)"],
-            Esquerda: ["PT (13) - Partido dos Trabalhadores", "PSOL (50)", "PCdoB (65)", "Rede (18)", "PDT (12)", "UP (80)", "PCO (29)", "PCB (21)", "PSTU (16)", "PPL (54)", "PSB (40)", "PFS (60)", "PS (56)", "PSTN (31)"]
+            Direita: ["PL (22)", "PP (11)", "Republicanos (10)", "PRTN (75)", "NOVO (30)", "UDB (38)"],
+            Centro: ["MDB (15)", "UNIÃO (44)", "PSD (55)", "PSDB (45)", "Avante (70)"],
+            Esquerda: ["PT (13)", "PSOL (50)", "PCdoB (65)", "PDT (12)", "PSB (40)"]
         };
 
         let eleicaoTipo = "Federal";
@@ -189,125 +169,13 @@
             bg.appendChild(f);
         }
 
-        // --- SISTEMA DASHBOARD E SYNC ---
+        // --- FUNÇÕES CORE ---
         db.ref('config/tipoEleicao').on('value', (s) => {
             eleicaoTipo = s.val() || "Federal";
             atualizarCargosForm();
             carregarCandidatosPublicos();
             atualizarEstatisticas();
         });
-
-        function atualizarEstatisticas() {
-    db.ref('candidatos').on('value', (s) => {
-        // Reinicia os contadores para não somar com o valor anterior
-        let totalValidos = 0; 
-        let aceitos = 0; 
-        let pendentes = 0;
-        let lados = { Direita: 0, Centro: 0, Esquerda: 0 };
-        let cargosCount = {};
-
-        s.forEach(child => {
-            const c = child.val();
-            
-            // FILTRO CRÍTICO: Só conta se for da eleição ativa (Federal ou Municipal)
-            if(c.eleicao === eleicaoTipo) {
-                
-                if(c.status === 'aceito') {
-                    aceitos++;
-                    totalValidos++; // Soma ao total
-                    lados[c.lado]++;
-                    cargosCount[c.cargo] = (cargosCount[c.cargo] || 0) + 1;
-                } 
-                else if(c.status === 'pendente') {
-                    pendentes++;
-                    totalValidos++; // Soma ao total
-                }
-                // Candidatos 'recusados' são ignorados no cálculo
-            }
-        });
-
-        // Atualiza a tela com os valores exatos
-        document.getElementById('stat-total').innerText = totalValidos;
-        document.getElementById('stat-aceitos').innerText = aceitos;
-        document.getElementById('stat-pendentes').innerText = pendentes;
-
-        // Atualiza as barras de espectro político
-        if(aceitos > 0) {
-            const pDir = Math.round((lados.Direita / aceitos) * 100);
-            const pCen = Math.round((lados.Centro / aceitos) * 100);
-            const pEsq = Math.round((lados.Esquerda / aceitos) * 100);
-            
-            document.getElementById('bar-direita').style.width = pDir + "%";
-            document.getElementById('bar-centro').style.width = pCen + "%";
-            document.getElementById('bar-esquerda').style.width = pEsq + "%";
-            
-            document.getElementById('txt-dir').innerText = pDir;
-            document.getElementById('txt-cen').innerText = pCen;
-            document.getElementById('txt-esq').innerText = pEsq;
-        } else {
-            // Zera as barras se não houver ninguém aceito
-            document.querySelectorAll('.bar-item').forEach(b => b.style.width = "0%");
-            document.getElementById('txt-dir').innerText = "0";
-            document.getElementById('txt-cen').innerText = "0";
-            document.getElementById('txt-esq').innerText = "0";
-        }
-
-        // Atualiza a lista de cargos
-        const listaC = document.getElementById('lista-cargos-stats');
-        listaC.innerHTML = "";
-        Object.keys(cargosCount).forEach(cargo => {
-            const pCargo = aceitos > 0 ? Math.round((cargosCount[cargo] / aceitos) * 100) : 0;
-            listaC.innerHTML += `
-                <div class="text-[10px] mb-3">
-                    <div class="flex justify-between font-bold mb-1">
-                        <span>${cargo.toUpperCase()}</span>
-                        <span>${cargosCount[cargo]}</span>
-                    </div>
-                    <div class="h-1 bg-white/5 rounded-full">
-                        <div class="h-full bg-yellow-400 rounded-full transition-all duration-500" style="width:${pCargo}%"></div>
-                    </div>
-                </div>`;
-        });
-    });
-}
-
-
-                // Update Números
-                document.getElementById('stat-total').innerText = total;
-                document.getElementById('stat-aceitos').innerText = aceitos;
-                document.getElementById('stat-pendentes').innerText = pendentes;
-
-                // Update Barras Ideológicas
-                if(aceitos > 0) {
-                    const pDir = Math.round((lados.Direita / aceitos) * 100);
-                    const pCen = Math.round((lados.Centro / aceitos) * 100);
-                    const pEsq = Math.round((lados.Esquerda / aceitos) * 100);
-                    
-                    document.getElementById('bar-direita').style.width = pDir + "%";
-                    document.getElementById('bar-centro').style.width = pCen + "%";
-                    document.getElementById('bar-esquerda').style.width = pEsq + "%";
-                    
-                    document.getElementById('txt-dir').innerText = pDir;
-                    document.getElementById('txt-cen').innerText = pCen;
-                    document.getElementById('txt-esq').innerText = pEsq;
-                }
-
-                // Update Lista de Cargos
-                const listaC = document.getElementById('lista-cargos-stats');
-                listaC.innerHTML = "";
-                Object.keys(cargosCount).forEach(cargo => {
-                    const pCargo = Math.round((cargosCount[cargo] / aceitos) * 100);
-                    listaC.innerHTML += `
-                        <div class="text-[10px]">
-                            <div class="flex justify-between font-bold mb-1">
-                                <span>${cargo.toUpperCase()}</span>
-                                <span>${cargosCount[cargo]}</span>
-                            </div>
-                            <div class="h-1 bg-white/5 rounded-full"><div class="h-full bg-yellow-400 rounded-full" style="width:${pCargo}%"></div></div>
-                        </div>`;
-                });
-            });
-        }
 
         function mudarAba(id) {
             if(id === 'aba-adm' && !loginEst) { document.getElementById('modal-login').classList.remove('hidden'); return; }
@@ -317,7 +185,6 @@
             document.getElementById('nav-' + id).classList.add('selected');
             if(id === 'aba-candidatos') carregarCandidatosPublicos();
             if(id === 'aba-adm') carregarListasAdm();
-            if(id === 'aba-dashboard') atualizarEstatisticas();
         }
 
         function login() {
@@ -325,11 +192,70 @@
             const s = document.getElementById('log-sen').value;
             if(senhasTSE[e] === s) {
                 loginEst = e;
-                document.getElementById('adm-sub').innerText = "Estado Autenticado: " + e;
+                document.getElementById('adm-sub').innerText = "SESSÃO: " + e.toUpperCase();
                 if(e === "Brookhaven") document.getElementById('adm-mestre').classList.remove('hidden');
                 document.getElementById('modal-login').classList.add('hidden');
                 mudarAba('aba-adm');
-            } else { alert("Chave de acesso inválida!"); }
+            } else { alert("Senha incorreta!"); }
+        }
+
+        function registrar(e) {
+            e.preventDefault();
+            const num = document.getElementById('num-fixo').value + document.getElementById('num-extra').value;
+            const est = document.getElementById('reg-estado').value;
+
+            db.ref('candidatos').once('value', (snapshot) => {
+                let duplicado = false;
+                snapshot.forEach(child => {
+                    const c = child.val();
+                    if(c.numero === num && c.estado === est && c.eleicao === eleicaoTipo && (c.status === 'aceito' || c.status === 'pendente')) duplicado = true;
+                });
+
+                if(duplicado) {
+                    alert("ERRO: Este número já está registado ou em análise neste estado!");
+                } else {
+                    db.ref('candidatos').push({
+                        nome: document.getElementById('reg-nome').value,
+                        cpf: document.getElementById('reg-cpf').value,
+                        nascimento: document.getElementById('reg-nasc').value,
+                        lado: document.getElementById('reg-lado').value,
+                        estado: est,
+                        tiktok: document.getElementById('reg-tiktok').value,
+                        cargo: document.getElementById('reg-cargo').value,
+                        partido: document.getElementById('reg-partido').value,
+                        numero: num,
+                        eleicao: eleicaoTipo,
+                        status: 'pendente'
+                    });
+                    alert("Enviado com sucesso!");
+                    e.target.reset();
+                }
+            });
+        }
+
+        function atualizarEstatisticas() {
+            db.ref('candidatos').on('value', (s) => {
+                let total = 0, aceitos = 0, pendentes = 0;
+                let lados = { Direita: 0, Centro: 0, Esquerda: 0 };
+                s.forEach(child => {
+                    const c = child.val();
+                    if(c.eleicao === eleicaoTipo) {
+                        if(c.status === 'aceito') { aceitos++; total++; lados[c.lado]++; }
+                        else if(c.status === 'pendente') { pendentes++; total++; }
+                    }
+                });
+                document.getElementById('stat-total').innerText = total;
+                document.getElementById('stat-aceitos').innerText = aceitos;
+                document.getElementById('stat-pendentes').innerText = pendentes;
+                if(aceitos > 0) {
+                    document.getElementById('bar-direita').style.width = Math.round((lados.Direita/aceitos)*100) + "%";
+                    document.getElementById('bar-centro').style.width = Math.round((lados.Centro/aceitos)*100) + "%";
+                    document.getElementById('bar-esquerda').style.width = Math.round((lados.Esquerda/aceitos)*100) + "%";
+                    document.getElementById('txt-dir').innerText = Math.round((lados.Direita/aceitos)*100);
+                    document.getElementById('txt-cen').innerText = Math.round((lados.Centro/aceitos)*100);
+                    document.getElementById('txt-esq').innerText = Math.round((lados.Esquerda/aceitos)*100);
+                }
+            });
         }
 
         function carregarPartidos(lado) {
@@ -342,10 +268,10 @@
 
         function atualizarCargosForm() {
             const c = document.getElementById('reg-cargo');
-            const lista = eleicaoTipo === "Federal" ? ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 'Deputado Estadual'] : ['Prefeito', 'Vereador'];
+            const lista = eleicaoTipo === "Federal" ? ['Presidente', 'Governador', 'Senador', 'Deputado Federal'] : ['Prefeito', 'Vereador'];
             c.innerHTML = lista.map(cargo => `<option value="${cargo}">${cargo}</option>`).join('');
             const fArea = document.getElementById('filtros-area');
-            fArea.innerHTML = `<button onclick="carregarCandidatosPublicos('todos')" class="nav-link selected uppercase">TODOS</button>` +
+            fArea.innerHTML = `<button onclick="carregarCandidatosPublicos('todos')" class="nav-link selected uppercase">TODOS</button>` + 
                 lista.map(cargo => `<button onclick="carregarCandidatosPublicos('${cargo}')" class="nav-link uppercase">${cargo}</button>`).join('');
         }
 
@@ -358,59 +284,11 @@
                 const m = part.match(/\((\d+)\)/);
                 nf.value = m ? m[1] : "";
                 de.classList.remove('hidden');
-                const max = { "Senador": 1, "Deputado Federal": 2, "Deputado Estadual": 3, "Vereador": 3 };
+                const max = { "Senador": 1, "Deputado Federal": 2, "Vereador": 3 };
                 document.getElementById('num-extra').maxLength = max[cargo] || 0;
                 if(!max[cargo]) de.classList.add('hidden');
             }
         }
-
-        // Localize a função registrar(e) no seu código e substitua por esta versão:
-
-function registrar(e) {
-    e.preventDefault();
-    
-    const nome = document.getElementById('reg-nome').value;
-    const est = document.getElementById('reg-estado').value;
-    const num = document.getElementById('num-fixo').value + document.getElementById('num-extra').value;
-    const cargo = document.getElementById('reg-cargo').value;
-
-    // INÍCIO DA VALIDAÇÃO DE DUPLICIDADE
-    db.ref('candidatos').once('value', (snapshot) => {
-        let numeroDuplicado = false;
-
-        snapshot.forEach(child => {
-            const c = child.val();
-            // Verifica se o número já existe no mesmo estado, mesma eleição e se está aceito ou pendente
-            if (c.numero === num && c.estado === est && c.eleicao === eleicaoTipo && (c.status === 'aceito' || c.status === 'pendente')) {
-                numeroDuplicado = true;
-            }
-        });
-
-        if (numeroDuplicado) {
-            alert("❌ ERRO DE REGISTRO: O número " + num + " já está sendo utilizado ou aguarda análise neste estado (" + est + "). Escolha outro número ou verifique com o TSE.");
-            return; // Interrompe o envio
-        }
-
-        // Se passar pela validação, ele envia:
-        db.ref('candidatos').push({
-            nome: nome,
-            cpf: document.getElementById('reg-cpf').value,
-            nascimento: document.getElementById('reg-nasc').value,
-            lado: document.getElementById('reg-lado').value,
-            estado: est,
-            tiktok: document.getElementById('reg-tiktok').value,
-            cargo: cargo,
-            partido: document.getElementById('reg-partido').value,
-            numero: num,
-            eleicao: eleicaoTipo,
-            status: 'pendente'
-        });
-
-        alert("✅ Protocolo enviado com sucesso! Aguarde a homologação do TSE.");
-        e.target.reset();
-        carregarPartidos(""); // Limpa os partidos
-    });
-}
 
         function carregarCandidatosPublicos(filtro = 'todos') {
             db.ref('candidatos').on('value', (s) => {
@@ -419,16 +297,7 @@ function registrar(e) {
                 s.forEach(child => {
                     const c = child.val();
                     if(c.status === 'aceito' && c.eleicao === eleicaoTipo && (filtro === 'todos' || c.cargo === filtro)) {
-                        grid.innerHTML += `
-                            <div class="stat-card">
-                                <p class="text-[8px] font-black opacity-30 uppercase truncate">${c.partido}</p>
-                                <h4 class="text-lg font-black">${c.nome}</h4>
-                                <div class="text-3xl font-black text-yellow-400 mb-4 tracking-tighter">#${c.numero}</div>
-                                <div class="flex justify-between text-[8px] font-black">
-                                    <span class="bg-yellow-400 text-black px-2 py-1 rounded-full">${c.cargo}</span>
-                                    <span class="opacity-40 uppercase">${c.estado}</span>
-                                </div>
-                            </div>`;
+                        grid.innerHTML += `<div class="stat-card"><p class="text-[8px] opacity-40">${c.partido}</p><h4 class="font-black text-lg">${c.nome}</h4><div class="text-3xl font-black text-yellow-400">#${c.numero}</div><div class="flex justify-between text-[8px] font-bold mt-2"><span class="bg-yellow-400 text-black px-2 py-1 rounded">${c.cargo}</span><span>${c.estado}</span></div></div>`;
                     }
                 });
             });
@@ -442,20 +311,7 @@ function registrar(e) {
                 s.forEach(child => {
                     const c = child.val();
                     if(loginEst === "Brookhaven" || c.estado === loginEst) {
-                        const html = `
-                            <div class="glass p-5 rounded-2xl border-l-4 ${c.status === 'pendente' ? 'border-yellow-400' : 'border-blue-400'}">
-                                <div class="flex justify-between">
-                                    <p class="font-black text-sm uppercase">${c.nome} (#${c.numero})</p>
-                                    <span class="text-[9px] opacity-30">CPF: ${c.cpf}</span>
-                                </div>
-                                <p class="text-[9px] font-bold opacity-40 uppercase">${c.cargo} | ${c.estado}</p>
-                                <div class="flex gap-2 mt-4">
-                                    ${c.status === 'pendente' ? 
-                                    `<button onclick="altSt('${child.key}', 'aceito')" class="flex-1 bg-green-600 text-[10px] font-black py-2 rounded-lg">DEFERIR</button>
-                                     <button onclick="altSt('${child.key}', 'recusado')" class="flex-1 bg-red-600 text-[10px] font-black py-2 rounded-lg">INDEFERIR</button>` :
-                                    `<button onclick="del('${child.key}')" class="w-full bg-red-500/10 text-red-500 text-[10px] font-black py-2 rounded-lg border border-red-500/20">REMOVER REGISTRO</button>`}
-                                </div>
-                            </div>`;
+                        const html = `<div class="glass p-4 rounded-xl border-l-4 ${c.status === 'pendente' ? 'border-yellow-400' : 'border-blue-400'}"><p class="font-bold text-sm">${c.nome} (#${c.numero})</p><div class="flex gap-2 mt-3">${c.status === 'pendente' ? `<button onclick="altSt('${child.key}','aceito')" class="flex-1 bg-green-600 text-[10px] font-bold py-2 rounded">ACEITAR</button><button onclick="altSt('${child.key}','recusado')" class="flex-1 bg-red-600 text-[10px] font-bold py-2 rounded">RECUSAR</button>` : `<button onclick="del('${child.key}')" class="w-full bg-red-500/20 text-red-500 text-[10px] font-bold py-2 rounded">EXCLUIR</button>`}</div></div>`;
                         if(c.status === 'pendente') pend.innerHTML += html;
                         else if(c.status === 'aceito') aceit.innerHTML += html;
                     }
@@ -463,10 +319,9 @@ function registrar(e) {
             });
         }
 
-        function altSt(id, st) { db.ref('candidatos/' + id).update({ status: st }); }
-        function del(id) { if(confirm("Remover este registro permanentemente?")) db.ref('candidatos/' + id).remove(); }
-        function definirEleicao(t) { db.ref('config/tipoEleicao').set(t); alert("Sistema reconfigurado para eleição: " + t); }
-
+        function altSt(id, st) { db.ref('candidatos/'+id).update({ status: st }); }
+        function del(id) { if(confirm("Remover?")) db.ref('candidatos/'+id).remove(); }
+        function definirEleicao(t) { db.ref('config/tipoEleicao').set(t); }
     </script>
 </body>
 </html>
