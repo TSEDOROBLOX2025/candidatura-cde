@@ -11,42 +11,38 @@
 
     <style>
         :root { --gab-green: #009E49; --gab-yellow: #FCD116; --gab-blue: #3A75C4; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at top right, #0a192f, #010409); color: #fff; min-height: 100vh; overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #010409; color: #fff; min-height: 100vh; }
         
-        .floating-flags { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
-        .flag-bg {
-            position: absolute; width: 120px; height: 80px; opacity: 0.12;
-            background: linear-gradient(to bottom, var(--gab-green) 33.3%, var(--gab-yellow) 33.3% 66.6%, var(--gab-blue) 66.6%);
-            border-radius: 4px; animation: float 18s infinite linear;
-        }
-        @keyframes float { 0% { transform: translateY(110vh) rotate(0deg); } 100% { transform: translateY(-20vh) rotate(360deg); } }
-
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .input-premium { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: white; outline: none; transition: 0.3s; width: 100%; }
-        .input-premium:focus { border-color: var(--gab-yellow); background: rgba(0,0,0,0.6); }
+        .input-premium { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: white; outline: none; width: 100%; transition: 0.3s; }
+        .input-premium:focus { border-color: var(--gab-yellow); }
 
-        .btn-main { background: linear-gradient(135deg, var(--gab-yellow), #b89600); color: #000; font-weight: 800; border-radius: 12px; transition: 0.3s; text-transform: uppercase; cursor: pointer; }
-        .btn-main:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(252, 209, 22, 0.3); }
+        .btn-main { background: linear-gradient(135deg, var(--gab-yellow), #b89600); color: #000; font-weight: 800; border-radius: 12px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(252, 209, 22, 0.2); }
 
         .nav-link { padding: 12px 24px; font-weight: 800; font-size: 0.7rem; border-radius: 50px; opacity: 0.5; color: white; transition: 0.3s; cursor: pointer; }
         .nav-link.selected { opacity: 1; background: rgba(252, 209, 22, 0.1); border: 1px solid var(--gab-yellow); color: var(--gab-yellow); }
 
         .section { display: none; }
-        .section.active { display: block; animation: slideUp 0.5s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .stat-card { background: rgba(255,255,255,0.03); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-card { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Estilo específico para o Card do ADM */
+        .adm-card { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; overflow: hidden; transition: 0.3s; }
+        .adm-card:hover { border-color: rgba(252, 209, 22, 0.3); background: rgba(255,255,255,0.02); }
+        .label-adm { font-size: 9px; font-weight: 800; text-transform: uppercase; opacity: 0.4; letter-spacing: 1px; }
+        .val-adm { font-size: 11px; font-weight: 600; color: #eee; }
     </style>
 </head>
 <body>
-
-    <div class="floating-flags" id="bg-flags"></div>
 
     <div class="p-6 md:p-12 max-w-7xl mx-auto">
         <header class="flex flex-col lg:flex-row justify-between items-center mb-10 gap-8">
             <div>
                 <h1 style="font-family:'Syncopate'" class="text-4xl font-black tracking-tighter">TSE<span class="text-yellow-400">.</span>2026</h1>
-                <p class="text-[9px] tracking-[0.5em] uppercase text-yellow-400/80 font-bold">Portal de Inteligência Eleitoral</p>
+                <p class="text-[9px] tracking-[0.5em] uppercase text-yellow-400 font-bold">Painel de Controle Nacional</p>
             </div>
             <nav class="glass p-2 rounded-full flex gap-2">
                 <button onclick="mudarAba('aba-dashboard')" id="nav-aba-dashboard" class="nav-link selected">DASHBOARD</button>
@@ -59,26 +55,26 @@
         <section id="aba-dashboard" class="section active">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="stat-card">
-                    <p class="text-[10px] font-black opacity-40 uppercase mb-2">Total de Candidatos</p>
+                    <p class="text-[10px] font-black opacity-40 uppercase">Total Geral</p>
                     <h3 class="text-5xl font-black" id="stat-total">0</h3>
                 </div>
-                <div class="stat-card">
-                    <p class="text-[10px] font-black text-green-400 uppercase mb-2">Homologados</p>
+                <div class="stat-card border-l-4 border-green-500">
+                    <p class="text-[10px] font-black text-green-400 uppercase">Homologados</p>
                     <h3 class="text-5xl font-black text-green-400" id="stat-aceitos">0</h3>
                 </div>
-                <div class="stat-card">
-                    <p class="text-[10px] font-black text-yellow-400 uppercase mb-2">Em Análise</p>
+                <div class="stat-card border-l-4 border-yellow-500">
+                    <p class="text-[10px] font-black text-yellow-400 uppercase">Em Análise</p>
                     <h3 class="text-5xl font-black text-yellow-400" id="stat-pendentes">0</h3>
                 </div>
             </div>
-            <div class="glass p-8 rounded-[40px] max-w-2xl mx-auto text-center">
-                <h4 class="text-xs font-black uppercase mb-4 opacity-50">Distribuição Ideológica (Homologados)</h4>
-                <div class="h-4 bg-white/5 rounded-full overflow-hidden flex mb-4">
+            <div class="glass p-10 rounded-[40px] text-center">
+                <h4 class="text-[10px] font-black uppercase opacity-50 mb-6">Espectro Político da Eleição</h4>
+                <div class="h-3 bg-white/5 rounded-full overflow-hidden flex mb-6">
                     <div id="bar-direita" class="h-full bg-blue-500 transition-all duration-1000" style="width: 0%"></div>
                     <div id="bar-centro" class="h-full bg-gray-400 transition-all duration-1000" style="width: 0%"></div>
                     <div id="bar-esquerda" class="h-full bg-red-500 transition-all duration-1000" style="width: 0%"></div>
                 </div>
-                <div class="flex justify-between text-[10px] font-black">
+                <div class="flex justify-around text-xs font-black">
                     <span class="text-blue-500">DIREITA: <span id="txt-dir">0</span>%</span>
                     <span class="text-gray-400">CENTRO: <span id="txt-cen">0</span>%</span>
                     <span class="text-red-500">ESQUERDA: <span id="txt-esq">0</span>%</span>
@@ -87,9 +83,9 @@
         </section>
 
         <section id="aba-registro" class="section">
-            <div class="glass p-8 md:p-12 rounded-[40px] max-w-4xl mx-auto">
-                <h2 class="text-2xl font-black uppercase mb-8 border-l-4 border-yellow-400 pl-4">Protocolo de Registro</h2>
-                <form onsubmit="registrar(event)" id="formReg" class="grid md:grid-cols-2 gap-6">
+            <div class="glass p-10 rounded-[40px] max-w-4xl mx-auto border-t-4 border-yellow-400">
+                <h2 class="text-2xl font-black uppercase mb-8">Protocolo de Candidatura</h2>
+                <form onsubmit="registrar(event)" class="grid md:grid-cols-2 gap-6">
                     <input type="text" id="reg-nome" class="input-premium col-span-2" placeholder="Nome Completo RP" required>
                     <input type="text" id="reg-cpf" class="input-premium" placeholder="CPF RP" required>
                     <input type="date" id="reg-nasc" class="input-premium" required>
@@ -103,46 +99,75 @@
                     </select>
                     <select id="reg-cargo" onchange="atualizarNum()" class="input-premium" required></select>
                     <select id="reg-partido" onchange="atualizarNum()" class="input-premium" required><option value="">Selecione o Lado</option></select>
-                    <input type="text" id="reg-tiktok" class="input-premium col-span-2" placeholder="TikTok @oficial" required>
-                    <div class="col-span-2 p-6 bg-black/40 rounded-2xl border border-yellow-400/20 text-center">
-                        <div class="flex justify-center items-center gap-2">
-                            <input type="text" id="num-fixo" class="w-16 text-4xl font-black bg-transparent text-center" readonly>
+                    <input type="text" id="reg-tiktok" class="input-premium col-span-2" placeholder="TikTok Link ou @usuário" required>
+                    
+                    <div class="col-span-2 bg-yellow-400/5 p-6 rounded-2xl border border-yellow-400/20 text-center">
+                        <div class="flex justify-center items-center gap-3">
+                            <input type="text" id="num-fixo" class="w-16 text-5xl font-black bg-transparent text-yellow-400 text-center" readonly>
                             <div id="div-extra" class="hidden flex items-center gap-2">
-                                <span class="text-2xl opacity-20">+</span>
-                                <input type="text" id="num-extra" class="w-24 text-4xl font-black bg-white/5 border-b-2 border-yellow-400 text-yellow-400 outline-none px-2" placeholder="00">
+                                <span class="text-3xl opacity-20">+</span>
+                                <input type="text" id="num-extra" class="w-24 text-5xl font-black bg-white/5 border-b-4 border-yellow-400 text-yellow-400 outline-none px-2" placeholder="00">
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn-main col-span-2 py-4">Enviar Candidatura</button>
+                    <button type="submit" class="btn-main col-span-2 py-5 text-lg">Enviar Candidatura</button>
                 </form>
             </div>
         </section>
 
         <section id="aba-candidatos" class="section">
-            <div id="filtros-area" class="flex flex-wrap gap-2 mb-10 justify-center"></div>
+            <div class="space-y-4 mb-10">
+                <div id="filtros-cargo" class="flex flex-wrap gap-2 justify-center"></div>
+                <div id="filtros-estado" class="flex flex-wrap gap-2 justify-center border-t border-white/5 pt-4">
+                    <button onclick="definirFiltroEstado('todos')" class="nav-link-est selected-est text-[9px] font-black uppercase px-4 py-2 rounded-full border border-white/10">Nacional</button>
+                    <button onclick="definirFiltroEstado('Brookhaven')" class="nav-link-est text-[9px] font-black uppercase px-4 py-2 rounded-full border border-white/10">Brookhaven</button>
+                    <button onclick="definirFiltroEstado('Novacore')" class="nav-link-est text-[9px] font-black uppercase px-4 py-2 rounded-full border border-white/10">Novacore</button>
+                    <button onclick="definirFiltroEstado('Casteríber')" class="nav-link-est text-[9px] font-black uppercase px-4 py-2 rounded-full border border-white/10">Casteríber</button>
+                    <button onclick="definirFiltroEstado('Fortemega')" class="nav-link-est text-[9px] font-black uppercase px-4 py-2 rounded-full border border-white/10">Fortemega</button>
+                    <button onclick="definirFiltroEstado('Florêmix')" class="nav-link-est text-[9px] font-black uppercase px-4 py-2 rounded-full border border-white/10">Florêmix</button>
+                </div>
+            </div>
             <div id="grid-candidatos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </section>
 
         <section id="aba-adm" class="section">
-            <div class="glass p-8 rounded-3xl mb-8 flex justify-between items-center">
-                <div id="adm-sub" class="text-yellow-400 font-bold uppercase text-xs">Aguardando Login...</div>
+            <div class="glass p-6 rounded-3xl mb-10 flex justify-between items-center border-l-8 border-red-600">
+                <div>
+                    <h3 class="text-xl font-black" id="adm-sub">PAINEL RESTRITO</h3>
+                    <p class="text-[9px] font-black opacity-40 uppercase">Acesso concedido pelo TSE Brookasil</p>
+                </div>
                 <div id="adm-mestre" class="hidden flex gap-2">
-                    <button onclick="definirEleicao('Federal')" class="bg-blue-600 px-4 py-2 rounded text-[10px] font-bold">SET FEDERAL</button>
-                    <button onclick="definirEleicao('Municipal')" class="bg-green-600 px-4 py-2 rounded text-[10px] font-bold">SET MUNICIPAL</button>
+                    <button onclick="definirEleicao('Federal')" class="bg-blue-600 px-4 py-2 rounded-lg text-[10px] font-black">MUDAR PARA FEDERAL</button>
+                    <button onclick="definirEleicao('Municipal')" class="bg-green-600 px-4 py-2 rounded-lg text-[10px] font-black">MUDAR PARA MUNICIPAL</button>
                 </div>
             </div>
-            <div class="grid lg:grid-cols-2 gap-8">
-                <div><h4 class="text-yellow-400 font-bold text-xs mb-4">PENDENTES</h4><div id="lista-pendentes" class="space-y-4"></div></div>
-                <div><h4 class="text-blue-400 font-bold text-xs mb-4">HOMOLOGADOS</h4><div id="lista-aceitos" class="space-y-4"></div></div>
+
+            <div class="grid lg:grid-cols-2 gap-10">
+                <div>
+                    <h4 class="text-yellow-400 font-black text-xs mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                        FILA DE ANÁLISE
+                    </h4>
+                    <div id="lista-pendentes" class="space-y-6"></div>
+                </div>
+                <div>
+                    <h4 class="text-blue-400 font-black text-xs mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                        BASE HOMOLOGADA
+                    </h4>
+                    <div id="lista-aceitos" class="space-y-6"></div>
+                </div>
             </div>
         </section>
     </div>
 
     <div id="modal-login" class="fixed inset-0 bg-black/95 z-[999] hidden flex items-center justify-center p-6">
-        <div class="glass p-10 w-full max-w-sm rounded-[40px] text-center border-yellow-400/20">
+        <div class="glass p-10 w-full max-w-sm rounded-[40px] text-center">
+            <h3 class="font-black mb-6 uppercase tracking-widest text-yellow-400">Autenticação TSE</h3>
             <select id="log-est" class="input-premium mb-4"><option>Brookhaven</option><option>Novacore</option><option>Casteríber</option><option>Fortemega</option><option>Florêmix</option></select>
-            <input type="password" id="log-sen" class="input-premium mb-6 text-center" placeholder="Senha">
-            <button onclick="login()" class="btn-main w-full py-4">Entrar</button>
+            <input type="password" id="log-sen" class="input-premium mb-6 text-center" placeholder="Chave de Segurança">
+            <button onclick="login()" class="btn-main w-full py-4 text-sm">Entrar no Sistema</button>
+            <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="mt-4 text-[9px] opacity-30 font-bold uppercase">Cancelar</button>
         </div>
     </div>
 
@@ -160,16 +185,10 @@
 
         let eleicaoTipo = "Federal";
         let loginEst = null;
+        let fCargo = 'todos';
+        let fEst = 'todos';
 
-        // BANDEIRAS
-        const bg = document.getElementById('bg-flags');
-        for(let i=0; i<12; i++) {
-            const f = document.createElement('div'); f.className = 'flag-bg';
-            f.style.left = Math.random() * 100 + '%'; f.style.animationDelay = Math.random() * 15 + 's';
-            bg.appendChild(f);
-        }
-
-        // --- FUNÇÕES CORE ---
+        // --- CORE ---
         db.ref('config/tipoEleicao').on('value', (s) => {
             eleicaoTipo = s.val() || "Federal";
             atualizarCargosForm();
@@ -183,8 +202,6 @@
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('selected'));
             document.getElementById(id).classList.add('active');
             document.getElementById('nav-' + id).classList.add('selected');
-            if(id === 'aba-candidatos') carregarCandidatosPublicos();
-            if(id === 'aba-adm') carregarListasAdm();
         }
 
         function login() {
@@ -192,11 +209,12 @@
             const s = document.getElementById('log-sen').value;
             if(senhasTSE[e] === s) {
                 loginEst = e;
-                document.getElementById('adm-sub').innerText = "SESSÃO: " + e.toUpperCase();
+                document.getElementById('adm-sub').innerText = "TERMINAL: " + e.toUpperCase();
                 if(e === "Brookhaven") document.getElementById('adm-mestre').classList.remove('hidden');
                 document.getElementById('modal-login').classList.add('hidden');
                 mudarAba('aba-adm');
-            } else { alert("Senha incorreta!"); }
+                carregarListasAdm();
+            } else { alert("Chave incorreta!"); }
         }
 
         function registrar(e) {
@@ -211,9 +229,8 @@
                     if(c.numero === num && c.estado === est && c.eleicao === eleicaoTipo && (c.status === 'aceito' || c.status === 'pendente')) duplicado = true;
                 });
 
-                if(duplicado) {
-                    alert("ERRO: Este número já está registado ou em análise neste estado!");
-                } else {
+                if(duplicado) { alert("⚠️ NÚMERO JÁ REGISTRADO NESTE ESTADO!"); }
+                else {
                     db.ref('candidatos').push({
                         nome: document.getElementById('reg-nome').value,
                         cpf: document.getElementById('reg-cpf').value,
@@ -227,7 +244,7 @@
                         eleicao: eleicaoTipo,
                         status: 'pendente'
                     });
-                    alert("Enviado com sucesso!");
+                    alert("Protocolo enviado ao TSE!");
                     e.target.reset();
                 }
             });
@@ -235,16 +252,16 @@
 
         function atualizarEstatisticas() {
             db.ref('candidatos').on('value', (s) => {
-                let total = 0, aceitos = 0, pendentes = 0;
+                let aceitos = 0, pendentes = 0;
                 let lados = { Direita: 0, Centro: 0, Esquerda: 0 };
                 s.forEach(child => {
                     const c = child.val();
                     if(c.eleicao === eleicaoTipo) {
-                        if(c.status === 'aceito') { aceitos++; total++; lados[c.lado]++; }
-                        else if(c.status === 'pendente') { pendentes++; total++; }
+                        if(c.status === 'aceito') { aceitos++; lados[c.lado]++; }
+                        else if(c.status === 'pendente') { pendentes++; }
                     }
                 });
-                document.getElementById('stat-total').innerText = total;
+                document.getElementById('stat-total').innerText = aceitos + pendentes;
                 document.getElementById('stat-aceitos').innerText = aceitos;
                 document.getElementById('stat-pendentes').innerText = pendentes;
                 if(aceitos > 0) {
@@ -270,9 +287,21 @@
             const c = document.getElementById('reg-cargo');
             const lista = eleicaoTipo === "Federal" ? ['Presidente', 'Governador', 'Senador', 'Deputado Federal'] : ['Prefeito', 'Vereador'];
             c.innerHTML = lista.map(cargo => `<option value="${cargo}">${cargo}</option>`).join('');
-            const fArea = document.getElementById('filtros-area');
-            fArea.innerHTML = `<button onclick="carregarCandidatosPublicos('todos')" class="nav-link selected uppercase">TODOS</button>` + 
-                lista.map(cargo => `<button onclick="carregarCandidatosPublicos('${cargo}')" class="nav-link uppercase">${cargo}</button>`).join('');
+            const fArea = document.getElementById('filtros-cargo');
+            fArea.innerHTML = `<button onclick="definirFiltroCargo('todos')" class="nav-link selected">TODOS</button>` + 
+                lista.map(cargo => `<button onclick="definirFiltroCargo('${cargo}')" class="nav-link">${cargo.toUpperCase()}</button>`).join('');
+        }
+
+        function definirFiltroCargo(cargo) {
+            fCargo = cargo;
+            document.querySelectorAll('#filtros-cargo .nav-link').forEach(btn => btn.classList.toggle('selected', btn.innerText.includes(cargo.toUpperCase()) || (cargo === 'todos' && btn.innerText === 'TODOS')));
+            carregarCandidatosPublicos();
+        }
+
+        function definirFiltroEstado(estado) {
+            fEst = estado;
+            document.querySelectorAll('.nav-link-est').forEach(btn => btn.classList.toggle('selected-est', btn.innerText.toLowerCase() === estado.toLowerCase() || (estado === 'todos' && btn.innerText === 'NACIONAL')));
+            carregarCandidatosPublicos();
         }
 
         function atualizarNum() {
@@ -290,14 +319,22 @@
             }
         }
 
-        function carregarCandidatosPublicos(filtro = 'todos') {
+        function carregarCandidatosPublicos() {
             db.ref('candidatos').on('value', (s) => {
                 const grid = document.getElementById('grid-candidatos');
                 grid.innerHTML = "";
                 s.forEach(child => {
                     const c = child.val();
-                    if(c.status === 'aceito' && c.eleicao === eleicaoTipo && (filtro === 'todos' || c.cargo === filtro)) {
-                        grid.innerHTML += `<div class="stat-card"><p class="text-[8px] opacity-40">${c.partido}</p><h4 class="font-black text-lg">${c.nome}</h4><div class="text-3xl font-black text-yellow-400">#${c.numero}</div><div class="flex justify-between text-[8px] font-bold mt-2"><span class="bg-yellow-400 text-black px-2 py-1 rounded">${c.cargo}</span><span>${c.estado}</span></div></div>`;
+                    if(c.status === 'aceito' && c.eleicao === eleicaoTipo && (fCargo === 'todos' || c.cargo === fCargo) && (fEst === 'todos' || c.estado === fEst)) {
+                        grid.innerHTML += `<div class="stat-card border-t-2 border-yellow-400">
+                            <p class="text-[8px] opacity-40 uppercase mb-1">${c.partido}</p>
+                            <h4 class="font-black text-lg truncate">${c.nome}</h4>
+                            <div class="text-3xl font-black text-yellow-400">#${c.numero}</div>
+                            <div class="flex justify-between items-center mt-3 pt-3 border-t border-white/5">
+                                <span class="text-[9px] font-black bg-white/5 px-2 py-1 rounded uppercase">${c.cargo}</span>
+                                <span class="text-[9px] font-bold opacity-30">${c.estado}</span>
+                            </div>
+                        </div>`;
                     }
                 });
             });
@@ -307,11 +344,38 @@
             db.ref('candidatos').on('value', (s) => {
                 const pend = document.getElementById('lista-pendentes');
                 const aceit = document.getElementById('lista-aceitos');
+                if(!pend || !aceit) return;
                 pend.innerHTML = ""; aceit.innerHTML = "";
+                
                 s.forEach(child => {
                     const c = child.val();
                     if(loginEst === "Brookhaven" || c.estado === loginEst) {
-                        const html = `<div class="glass p-4 rounded-xl border-l-4 ${c.status === 'pendente' ? 'border-yellow-400' : 'border-blue-400'}"><p class="font-bold text-sm">${c.nome} (#${c.numero})</p><div class="flex gap-2 mt-3">${c.status === 'pendente' ? `<button onclick="altSt('${child.key}','aceito')" class="flex-1 bg-green-600 text-[10px] font-bold py-2 rounded">ACEITAR</button><button onclick="altSt('${child.key}','recusado')" class="flex-1 bg-red-600 text-[10px] font-bold py-2 rounded">RECUSAR</button>` : `<button onclick="del('${child.key}')" class="w-full bg-red-500/20 text-red-500 text-[10px] font-bold py-2 rounded">EXCLUIR</button>`}</div></div>`;
+                        const html = `
+                        <div class="adm-card p-5">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h5 class="font-black text-sm uppercase text-white">${c.nome}</h5>
+                                    <p class="text-yellow-400 font-black text-xl">#${c.numero}</p>
+                                </div>
+                                <span class="bg-white/5 px-3 py-1 rounded text-[10px] font-black">${c.estado}</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 mb-5 border-y border-white/5 py-3">
+                                <div><p class="label-adm">CPF</p><p class="val-adm">${c.cpf}</p></div>
+                                <div><p class="label-adm">Cargo</p><p class="val-adm text-yellow-400">${c.cargo}</p></div>
+                                <div><p class="label-adm">TikTok</p><a href="${c.tiktok}" target="_blank" class="val-adm text-blue-400 underline truncate block">${c.tiktok}</a></div>
+                                <div><p class="label-adm">Lado</p><p class="val-adm">${c.lado}</p></div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                ${c.status === 'pendente' ? `
+                                    <button onclick="altSt('${child.key}','aceito')" class="flex-1 bg-green-600 hover:bg-green-500 text-white text-[10px] font-black py-2 rounded-lg transition">HOMOLOGAR</button>
+                                    <button onclick="altSt('${child.key}','recusado')" class="flex-1 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-black py-2 rounded-lg transition border border-red-600/30">REJEITAR</button>
+                                ` : `
+                                    <button onclick="del('${child.key}')" class="w-full bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-black py-2 rounded-lg transition border border-red-600/20">REMOVER REGISTRO</button>
+                                `}
+                            </div>
+                        </div>`;
                         if(c.status === 'pendente') pend.innerHTML += html;
                         else if(c.status === 'aceito') aceit.innerHTML += html;
                     }
@@ -320,8 +384,8 @@
         }
 
         function altSt(id, st) { db.ref('candidatos/'+id).update({ status: st }); }
-        function del(id) { if(confirm("Remover?")) db.ref('candidatos/'+id).remove(); }
-        function definirEleicao(t) { db.ref('config/tipoEleicao').set(t); }
+        function del(id) { if(confirm("CUIDADO: Apagar este candidato permanentemente?")) db.ref('candidatos/'+id).remove(); }
+        function definirEleicao(t) { db.ref('config/tipoEleicao').set(t); alert("MODO DE ELEIÇÃO: " + t); }
     </script>
 </body>
 </html>
