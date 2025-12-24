@@ -3,86 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSE - Brookasil RP</title>
+    <title>TSE 2026 - Brookasil RP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #3b82f6;
-            --accent: #60a5fa;
-            --bg: #030712;
+            --primary: #059669; /* Verde RP */
+            --secondary: #2563eb; /* Azul RP */
+            --bg: #020617;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(30, 64, 175, 0.15) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.15) 0px, transparent 50%);
             color: #f8fafc;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         .font-title { font-family: 'Syncopate', sans-serif; }
 
         .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         .input-field {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 16px;
-            border-radius: 16px;
+            border-radius: 12px;
             width: 100%;
             color: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.3s;
         }
 
         .input-field:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 15px rgba(5, 150, 105, 0.3);
             outline: none;
-            background: rgba(0, 0, 0, 0.6);
         }
 
-        .section { display: none; animation: fadeIn 0.5s ease-out; }
-        .section.active { display: block; }
+        .section { display: none; }
+        .section.active { display: block; animation: slideUp 0.4s ease-out; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .btn-nav {
-            position: relative;
             padding: 10px 20px;
-            font-weight: 700;
-            font-size: 0.875rem;
-            transition: 0.3s;
-            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
         }
 
         .btn-nav.selected {
-            background: var(--primary);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
         }
 
-        .card-candidato {
-            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-        }
+        /* Cores Dinâmicas dos Candidatos */
+        .card-Direita { border-top: 4px solid #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); }
+        .card-Centro { border-top: 4px solid #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); }
+        .card-Esquerda { border-top: 4px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.1); }
 
-        .card-candidato:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
+        .modal-adm {
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
         }
     </style>
 
@@ -95,14 +92,23 @@
         const db = getDatabase(app);
 
         const partidosMap = {
-          Direita: ["PL (22) - Partido Liberal", "PP (11) - Progressistas", "Republicanos (10)", "PRTN (75) - Partido Republicano Trabalhista Nacional", "Patriota (51)", "PRTB (28) - Partido Renovador Trabalhista Brasileiro", "NOVO (30)", "PMB (35) - Partido da Mulher Brasileira", "DC (27) - Democracia Cristã", "UDB (38) - União da Direita Brookasileira", "Agir (36)", "POL (81) - Partido da Ordem e Liberdade", "ACN (84) - Aliança Cristã Nacional", "PRONA (57) - Partido da Reedificação da Ordem Nacional", "FIB (90) - Frente Integralista Brasileira", "PDC (17) - Partido Democrata Cristão", "PESP (48) - Partido da Esperança", "PMNL (86) - Partido Militar Nacionalista"],
-          Centro: ["MDB (15) - Movimento Democrático Brasileiro", "UNIÃO (44) - União Brasil", "PSD (55) - Partido Social Democrático", "Podemos (20)", "PSDB (45) - Partido da Social Democracia Brasileira", "Cidadania (CDN)", "Solidariedade (77)", "Avante (70)", "PMN (33) - Partido da Mobilização Nacional", "Pros (90)", "PV (43) - Partido Verde", "PUN (42) - Partido da União Nacional", "MPD (37) - Movimento Popular Democrático", "PDM (26) - Partido da Mudança", "MTB (63) - Movimento Trabalhista Brookasileiro", "PTD (46) - Partido Trabalhista Democrático", "PDSD (88) - Partido do Sindicato Democrata", "MSS (14) - Partido Missão"],
-          Esquerda: ["PT (13) - Partido dos Trabalhadores", "PSOL (50) - Partido Socialismo e Liberdade", "PCdoB (65) - Partido Comunista do Brasil", "Rede (18) - Rede Sustentabilidade", "PDT (12) - Partido Democráticos Trabalhista", "UP (80) - Unidade Popular", "PCO (29) - Partido da Causa Operária", "PCB (21) - Partido Comunista Brasileiro", "PSTU (16) - Partido Socialista dos Trabalhadores Unificado", "PPL (54) - Partido Pátria Livre", "PSB (40) - Partido Socialista Brasileiro", "PFS (60) - Partido da Frente Socialista", "PS (56) - Partido Socialista", "PSTN (31) - Partido Social Trabalhista Nacional"]
+          Direita: ["PL (22) - Partido Liberal", "PP (11) - Progressistas", "Republicanos (10)", "PRTN (75)", "Patriota (51)", "PRTB (28)", "NOVO (30)", "PMB (35)", "DC (27)", "UDB (38)", "Agir (36)", "POL (81)", "ACN (84)", "PRONA (57)", "FIB (90)", "PDC (17)", "PESP (48)", "PMNL (86)"],
+          Centro: ["MDB (15)", "UNIÃO (44)", "PSD (55)", "Podemos (20)", "PSDB (45)", "Cidadania (CDN)", "Solidariedade (77)", "Avante (70)", "PMN (33)", "Pros (90)", "PV (43)", "PUN (42)", "MPD (37)", "PDM (26)", "MTB (63)", "PTD (46)", "PDSD (88)", "MSS (14)"],
+          Esquerda: ["PT (13)", "PSOL (50)", "PCdoB (65)", "Rede (18)", "PDT (12)", "UP (80)", "PCO (29)", "PCB (21)", "PSTU (16)", "PPL (54)", "PSB (40)", "PFS (60)", "PS (56)", "PSTN (31)"]
+        };
+
+        const senhasTSE = {
+            "Brookhaven": "adminBK",
+            "Novacore": "adminNV",
+            "Casteríber": "adminCB",
+            "Fortemega": "adminFM",
+            "Florêmix": "adminFL"
         };
 
         let eleicaoTipo = "Federal";
-        let isAdmLogged = false;
+        let admEstado = null; // Estado logado
 
+        // Listener de Eleição
         onValue(ref(db, 'config/tipoEleicao'), (snap) => {
             eleicaoTipo = snap.val() || "Federal";
             document.querySelectorAll('.txt-eleicao').forEach(e => e.innerText = eleicaoTipo);
@@ -110,24 +116,34 @@
         });
 
         window.showTab = (id) => {
-            if(id === 'aba-adm' && !isAdmLogged) {
-                const pass = prompt("Senha do Painel:");
-                if(pass === "Brookasil1234") {
-                    isAdmLogged = true;
-                    alert("Acesso Autorizado.");
-                } else {
-                    alert("Senha Incorreta.");
-                    return;
-                }
+            if(id === 'aba-adm' && !admEstado) {
+                document.getElementById('modalLogin').classList.remove('hidden');
+                return;
             }
-            
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            
             document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
+            // Procura o botão que disparou o evento
+            const btn = Array.from(document.querySelectorAll('.btn-nav')).find(b => b.getAttribute('onclick').includes(id));
+            if(btn) btn.classList.add('selected');
 
             if(id === 'aba-candidatos') carregarCandidatos();
             if(id === 'aba-adm') carregarListaAdm();
+        };
+
+        window.loginTSE = () => {
+            const estado = document.getElementById('admEstadoLogin').value;
+            const pass = document.getElementById('admPassLogin').value;
+            
+            if(senhasTSE[estado] === pass) {
+                admEstado = estado;
+                document.getElementById('modalLogin').classList.add('hidden');
+                document.getElementById('admInfo').innerText = `TSE: ${estado}`;
+                showTab('aba-adm');
+            } else {
+                alert("ACESSO NEGADO: Dados incorretos para o TSE " + estado);
+            }
         };
 
         window.mudarLado = (lado) => {
@@ -139,17 +155,12 @@
 
         window.atualizarCargos = () => {
             const sel = document.getElementById('cargo');
-            const federal = ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 'Deputado Estadual'];
-            const municipal = ['Prefeito', 'Vereador'];
-            const lista = eleicaoTipo === "Federal" ? federal : municipal;
-            
+            const lista = eleicaoTipo === "Federal" ? ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 'Deputado Estadual'] : ['Prefeito', 'Vereador'];
             sel.innerHTML = lista.map(c => `<option>${c}</option>`).join('');
             
-            // Atualizar Filtros da aba de candidatos
             const filtroArea = document.getElementById('filtrosCargos');
             filtroArea.innerHTML = `<button onclick="carregarCandidatos('todos')" class="bg-white/10 px-4 py-2 rounded-lg text-xs font-bold hover:bg-white/20 transition">Todos</button>` + 
                 lista.map(c => `<button onclick="carregarCandidatos('${c}')" class="bg-blue-600/20 px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-600/40 transition border border-blue-500/30">${c}</button>`).join('');
-            
             atualizarNumeroBase();
         };
 
@@ -165,7 +176,6 @@
                 numFixo.value = match ? match[1] : "";
                 divExtra.classList.remove('hidden');
                 numExtra.value = "";
-
                 const tamMap = { "Senador": 1, "Deputado Federal": 2, "Deputado Estadual": 3, "Vereador": 3 };
                 numExtra.maxLength = tamMap[cargo] || 0;
                 if(!tamMap[cargo]) divExtra.classList.add('hidden');
@@ -174,28 +184,28 @@
 
         document.getElementById('formCandidatura').onsubmit = async (e) => {
             e.preventDefault();
-            const numFinal = document.getElementById('numFixo').value + document.getElementById('numExtra').value;
-            const cargo = document.getElementById('cargo').value;
-            
-            const tamEsperado = { "Presidente":2,"Governador":2,"Prefeito":2,"Senador":3,"Deputado Federal":4,"Deputado Estadual":5,"Vereador":5 };
-            if(numFinal.length !== tamEsperado[cargo]) return alert(`O número deve ter ${tamEsperado[cargo]} dígitos.`);
+            const nome = document.getElementById('nome').value.trim();
+            if(nome.split(' ').length < 2) return alert("Por favor, insira NOME e SOBRENOME.");
 
+            const numFinal = document.getElementById('numFixo').value + document.getElementById('numExtra').value;
             const snapshot = await get(ref(db, 'candidatos'));
             let dup = false;
             snapshot.forEach(c => { if(c.val().numero === numFinal && c.val().status !== "recusado") dup = true; });
-            if(dup) return alert("Número já em uso!");
+            if(dup) return alert("Este número já está em uso!");
 
             await push(ref(db, 'candidatos'), {
-                nome: document.getElementById('nome').value,
+                nome: nome,
                 cpf: document.getElementById('cpf').value,
+                lado: document.getElementById('lado').value,
                 partido: document.getElementById('partido').value,
-                cargo: cargo,
+                cargo: document.getElementById('cargo').value,
+                estado: document.getElementById('estadoInsc').value,
                 tiktok: document.getElementById('tiktok').value,
                 numero: numFinal,
                 status: "pendente"
             });
 
-            alert("Inscrição Realizada! Status: PENDENTE.");
+            alert("REGISTRO ENVIADO: Aguarde a análise do TSE do seu estado.");
             e.target.reset();
             atualizarNumeroBase();
         };
@@ -208,16 +218,17 @@
                     const c = child.val();
                     if(c.status === "aceito" && (filtro === 'todos' || c.cargo === filtro)) {
                         grid.innerHTML += `
-                            <div class="card-candidato p-6 rounded-3xl">
-                                <span class="text-[10px] font-extrabold text-blue-400 tracking-tighter uppercase">${c.partido.split(' ')[0]}</span>
-                                <h3 class="text-xl font-bold mt-1 text-white">${c.nome}</h3>
-                                <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 my-4">${c.numero}</div>
-                                <div class="flex justify-between items-center opacity-60">
-                                    <span class="text-[10px] font-bold uppercase">${c.cargo}</span>
-                                    <span class="text-[9px]">@${c.tiktok}</span>
+                            <div class="glass p-6 rounded-3xl card-${c.lado} relative overflow-hidden">
+                                <div class="absolute -right-2 -top-2 opacity-5 font-black text-4xl">${c.estado[0]}</div>
+                                <span class="text-[9px] font-black text-white/40 uppercase tracking-widest">${c.partido}</span>
+                                <h3 class="text-xl font-bold text-white mb-4">${c.nome}</h3>
+                                <div class="text-5xl font-black text-white mb-4">${c.numero}</div>
+                                <div class="flex justify-between items-center text-[10px] font-bold opacity-70">
+                                    <span>${c.cargo}</span>
+                                    <span class="bg-white/10 px-2 py-1 rounded text-blue-400">${c.estado}</span>
                                 </div>
                             </div>`;
-                }
+                    }
                 });
             });
         };
@@ -228,19 +239,20 @@
                 list.innerHTML = "";
                 snap.forEach(child => {
                     const c = child.val();
-                    const statusCor = c.status === 'pendente' ? 'text-yellow-400' : (c.status === 'aceito' ? 'text-green-400' : 'text-red-400');
-                    list.innerHTML += `
-                        <div class="glass p-5 rounded-2xl flex justify-between items-center mb-4 border-l-4 ${c.status === 'pendente' ? 'border-yellow-500' : ''}">
-                            <div>
-                                <p class="font-bold text-lg">${c.nome} <span class="text-blue-500 text-sm">(${c.numero})</span></p>
-                                <p class="text-[10px] font-bold uppercase opacity-50">${c.cargo} | ${c.partido}</p>
-                                <p class="text-[10px] font-black ${statusCor} uppercase mt-1">${c.status}</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="setStatus('${child.key}', 'aceito')" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-xl text-[10px] font-black transition">APROVAR</button>
-                                <button onclick="setStatus('${child.key}', 'recusado')" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-xl text-[10px] font-black transition">RECUSAR</button>
-                            </div>
-                        </div>`;
+                    // Brookhaven vê todos, outros estados veem apenas os seus
+                    if(admEstado === "Brookhaven" || c.estado === admEstado) {
+                        list.innerHTML += `
+                            <div class="glass p-4 rounded-xl flex justify-between items-center mb-3">
+                                <div>
+                                    <p class="font-bold">${c.nome} <span class="text-blue-500">(${c.numero})</span></p>
+                                    <p class="text-[10px] opacity-60 uppercase">${c.cargo} | ${c.estado} | ${c.status}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="setStatus('${child.key}', 'aceito')" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-[10px] font-black transition">ACEITAR</button>
+                                    <button onclick="setStatus('${child.key}', 'recusado')" class="bg-red-600 hover:bg-red-500 px-3 py-1 rounded text-[10px] font-black transition">RECUSAR</button>
+                                </div>
+                            </div>`;
+                    }
                 });
             });
         }
@@ -252,109 +264,122 @@
 </head>
 <body class="p-4 md:p-8">
 
+    <div id="modalLogin" class="fixed inset-0 modal-adm z-[100] hidden flex items-center justify-center p-6">
+        <div class="glass p-10 rounded-[40px] w-full max-w-md text-center">
+            <h3 class="font-title text-2xl mb-6">TSE LOGIN</h3>
+            <select id="admEstadoLogin" class="input-field mb-4">
+                <option>Brookhaven</option><option>Novacore</option><option>Casteríber</option><option>Fortemega</option><option>Florêmix</option>
+            </select>
+            <input type="password" id="admPassLogin" placeholder="Senha do Estado" class="input-field mb-6 text-center">
+            <div class="flex gap-4">
+                <button onclick="loginTSE()" class="flex-1 bg-emerald-600 p-4 rounded-2xl font-black">ENTRAR</button>
+                <button onclick="document.getElementById('modalLogin').classList.add('hidden')" class="flex-1 bg-white/10 p-4 rounded-2xl font-black">VOLTAR</button>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-6xl mx-auto">
         <header class="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
             <div class="text-center md:text-left">
-                <h1 class="text-4xl md:text-5xl font-title font-bold tracking-tighter text-white">
-                    TSE<span class="text-blue-600">.</span>RP
+                <h1 class="text-4xl md:text-5xl font-title font-bold text-white tracking-tighter">
+                    TSE<span class="text-emerald-500">.</span>2026
                 </h1>
-                <p class="text-blue-400 font-bold text-[10px] tracking-[0.5em] uppercase mt-2">Tribunal Superior Eleitoral Brookasil</p>
+                <p class="text-emerald-400 font-bold text-[10px] tracking-[0.5em] uppercase mt-2">Justiça Eleitoral Brookasil</p>
             </div>
             
             <nav class="glass p-2 rounded-2xl flex gap-2">
-                <button onclick="showTab('aba-candidatura')" class="btn-nav selected">INSCRIÇÃO</button>
+                <button onclick="showTab('aba-candidatura')" class="btn-nav selected">REGISTRO</button>
                 <button onclick="showTab('aba-candidatos')" class="btn-nav">CANDIDATOS</button>
                 <button onclick="showTab('aba-adm')" class="btn-nav text-red-500">PAINEL ADM</button>
             </nav>
         </header>
 
         <section id="aba-candidatura" class="section active">
-            <div class="max-w-3xl mx-auto">
-                <div class="glass p-8 md:p-12 rounded-[40px] relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-8 opacity-10 font-title text-6xl">2024</div>
-                    
-                    <h2 class="text-3xl font-black mb-2 uppercase italic">Registro Eleitoral</h2>
-                    <p class="text-blue-500 font-bold text-xs mb-10 tracking-widest uppercase">Sistema de Eleição <span class="txt-eleicao">Federal</span></p>
+            <div class="max-w-4xl mx-auto glass p-8 md:p-14 rounded-[50px] relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 opacity-5 font-title text-[150px]">2026</div>
+                
+                <h2 class="text-3xl font-black mb-10 uppercase italic border-l-4 border-emerald-500 pl-6">Registro de Candidatura</h2>
 
-                    <form id="formCandidatura" class="space-y-6">
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase opacity-40 ml-2">Nome Completo</label>
-                                <input type="text" id="nome" class="input-field" pattern="[A-Za-z ]+" placeholder="Ex: João Silva" required>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase opacity-40 ml-2">Registro (CPF)</label>
-                                <input type="text" id="cpf" class="input-field" pattern="[0-9]+" placeholder="Apenas números" required>
-                            </div>
+                <form id="formCandidatura" class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-[10px] font-black uppercase opacity-40 mb-2 block">Nome e Sobrenome</label>
+                            <input type="text" id="nome" class="input-field" placeholder="Ex: Gabriel Souza" required>
                         </div>
-
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase opacity-40 ml-2">Espectro Político</label>
+                        <div>
+                            <label class="text-[10px] font-black uppercase opacity-40 mb-2 block">Documento CPF</label>
+                            <input type="text" id="cpf" class="input-field" placeholder="Apenas números" required pattern="[0-9]+">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-black uppercase opacity-40 mb-2 block">Espectro</label>
                                 <select id="lado" onchange="mudarLado(this.value)" class="input-field" required>
                                     <option value="">Selecione...</option>
                                     <option>Direita</option><option>Centro</option><option>Esquerda</option>
                                 </select>
                             </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase opacity-40 ml-2">Partido Político</label>
-                                <select id="partido" onchange="atualizarNumeroBase()" class="input-field" required>
-                                    <option value="">Aguardando lado...</option>
+                            <div>
+                                <label class="text-[10px] font-black uppercase opacity-40 mb-2 block">Estado</label>
+                                <select id="estadoInsc" class="input-field" required>
+                                    <option>Brookhaven</option><option>Novacore</option><option>Casteríber</option><option>Fortemega</option><option>Florêmix</option>
                                 </select>
                             </div>
                         </div>
-
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase opacity-40 ml-2">Cargo Pretendido</label>
-                                <select id="cargo" onchange="atualizarNumeroBase()" class="input-field"></select>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase opacity-40 ml-2">TikTok Oficial</label>
-                                <input type="text" id="tiktok" class="input-field" placeholder="@usuario" pattern="[A-Za-z0-9_.]+">
-                            </div>
+                        <div>
+                            <label class="text-[10px] font-black uppercase opacity-40 mb-2 block">TikTok</label>
+                            <input type="text" id="tiktok" class="input-field" placeholder="@seu_perfil" required>
                         </div>
+                    </div>
 
-                        <div class="p-8 bg-blue-600/5 rounded-3xl border border-blue-500/20">
-                            <label class="text-[10px] font-black text-blue-400 block mb-3 uppercase tracking-tighter">Composição do Número de Urna</label>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-[10px] font-black uppercase opacity-40 mb-2 block">Cargo</label>
+                            <select id="cargo" onchange="atualizarNumeroBase()" class="input-field" required></select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black uppercase opacity-40 mb-2 block">Partido Político</label>
+                            <select id="partido" onchange="atualizarNumeroBase()" class="input-field" required>
+                                <option value="">Aguardando lado...</option>
+                            </select>
+                        </div>
+                        <div class="p-6 bg-emerald-600/5 rounded-3xl border border-emerald-500/20">
+                            <label class="text-[10px] font-black text-emerald-400 block mb-3 uppercase">Número de Urna</label>
                             <div class="flex items-center gap-3">
                                 <input type="text" id="numFixo" class="w-16 text-5xl font-black bg-transparent border-none text-white outline-none" readonly>
-                                <div id="divExtra" class="hidden flex items-center gap-3">
-                                    <span class="text-3xl opacity-20 font-light">+</span>
-                                    <input type="text" id="numExtra" class="w-40 text-4xl font-black bg-white/5 border-b-2 border-blue-500 text-blue-400 outline-none px-4 py-2 rounded-t-lg" placeholder="000" pattern="[0-9]+">
+                                <div id="divExtra" class="hidden flex items-center gap-2">
+                                    <span class="text-3xl opacity-20">+</span>
+                                    <input type="text" id="numExtra" class="w-full text-4xl font-black bg-white/5 border-b-2 border-emerald-500 text-emerald-400 outline-none px-4" placeholder="000" pattern="[0-9]+">
                                 </div>
                             </div>
                         </div>
-
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-700 to-blue-500 p-6 rounded-2xl font-black text-xl uppercase tracking-widest shadow-xl shadow-blue-900/40 hover:scale-[1.01] transition-all">Confirmar Candidatura</button>
-                    </form>
-                </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-blue-600 p-6 rounded-2xl font-black text-xl uppercase shadow-xl hover:scale-[1.02] transition-all">FINALIZAR INSCRIÇÃO</button>
+                    </div>
+                </form>
             </div>
         </section>
 
         <section id="aba-candidatos" class="section">
             <div class="mb-12">
-                <h2 class="text-4xl font-black italic uppercase mb-6">Candidatos <span class="text-blue-500">Aprovados</span></h2>
-                <div id="filtrosCargos" class="flex flex-wrap gap-2">
-                    </div>
+                <h2 class="text-4xl font-black italic uppercase mb-6">Candidatos <span class="text-emerald-500">Aprovados</span></h2>
+                <div id="filtrosCargos" class="flex flex-wrap gap-2"></div>
             </div>
             <div id="gridCandidatos" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
         </section>
 
         <section id="aba-adm" class="section">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6 glass p-8 rounded-[30px]">
                 <div>
-                    <h2 class="text-3xl font-black text-red-500 italic uppercase">Gestão Governamental</h2>
-                    <p class="text-xs opacity-50 font-bold uppercase tracking-widest">Painel de Controle de Pleitos</p>
+                    <h2 id="admInfo" class="text-2xl font-black text-emerald-500 italic uppercase">TSE PAINEL</h2>
+                    <p class="text-xs opacity-50 font-bold uppercase tracking-widest">Gestão de Candidaturas 2026</p>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="setEleicao('Federal')" class="bg-blue-600/20 border border-blue-500 text-blue-400 px-6 py-3 rounded-xl font-black text-[10px] hover:bg-blue-600 hover:text-white transition">ATIVAR FEDERAL</button>
-                    <button onclick="setEleicao('Municipal')" class="bg-green-600/20 border border-green-500 text-green-400 px-6 py-3 rounded-xl font-black text-[10px] hover:bg-green-600 hover:text-white transition">ATIVAR MUNICIPAL</button>
+                    <button onclick="setEleicao('Federal')" class="bg-blue-600/20 border border-blue-500 text-blue-400 px-4 py-2 rounded-xl text-[10px] font-black">FEDERAL</button>
+                    <button onclick="setEleicao('Municipal')" class="bg-emerald-600/20 border border-emerald-500 text-emerald-400 px-4 py-2 rounded-xl text-[10px] font-black">MUNICIPAL</button>
+                    <button onclick="admEstado = null; location.reload()" class="bg-red-600/20 border border-red-500 text-red-400 px-4 py-2 rounded-xl text-[10px] font-black">SAIR</button>
                 </div>
             </div>
-            <div id="listaAdm" class="max-w-4xl mx-auto"></div>
+            <div id="listaAdm" class="grid gap-4 max-w-4xl mx-auto"></div>
         </section>
     </div>
-
 </body>
 </html>
