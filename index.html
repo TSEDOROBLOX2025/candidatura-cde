@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brookasil RP - Candidaturas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // CONFIGURAÇÃO DO SEU FIREBASE
+        const firebaseConfig = {
+            databaseURL: "https://candidatura-cde-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Estado Global
+        let eleicaoTipo = "federal";
+
+        // --- FUNÇÃO PARA MUDAR TIPO DE ELEIÇÃO ---
+        window.setEleicao = (tipo) => {
+            eleicaoTipo = tipo;
+            document.getElementById('tipo_titulo').innerText = tipo === 'federal' ? "ELEIÇÃO FEDERAL" : "ELEIÇÃO MUNICIPAL";
+            const cargoSelect = document.getElementById('cargo');
+            cargoSelect.innerHTML = "";
+            
+            const cargos = tipo === 'federal' 
+                ? ["Presidente", "Senador", "Deputado Federal"] 
+                : ["Prefeito", "Vereador"];
+            
+            cargos.forEach(c => {
+                let opt = document.createElement('option');
+                opt.value = c; opt.innerText = c;
+                cargoSelect.appendChild(opt);
+            });
+        };
+
+        // --- VALIDAÇÃO DE VAGAS E DÍGITOS ---
+        async function validarInscricao(cargo, partido, numero) {
+            const snapshot = await get(ref(db, 'candidatos'));
+            const lista = [];
+            if (snapshot.exists()) {
+                snapshot.forEach(child => {
+                    if (child.val().status === "aceito") lista.push(child.val());
+                });
+            }
+
+            const numDigitos = numero.toString().length;
+            const candidatosNoCargo = lista.filter(c => c.cargo === cargo);
+            const partidoNoCargo = candidatosNoCargo.filter(c => c.partido === partido);
+
+            if (numDigitos === 2) {
+                if (partidoNoCargo.length >= 1) return "ERRO: Este partido já tem 1 candidato para este cargo (Limite de 2 dígitos).";
+                if (candidatosNoCargo.length >= 8) return "ERRO: Limite total de 8 candidatos para este cargo atingido.";
+            } else if (numDigitos >= 3) {
+                if (partidoNoCargo.length >= 4) return "ERRO: Este partido já tem 4 candidatos para este cargo (Limite de 3+ dígitos).";
+                if (candidatosNoCargo.length >= 18) return "ERRO: Limite total de 18 candidatos para este cargo atingido.";
+            }
+            return null;
+        }
+
+        // --- ENVIAR FORMULÁRIO ---
+        document.getElementById('formCandidato').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = "Verificando...";
+
+            const nome = document.getElementById('nome').value;
+            const estado = document.getElementById('estado').value;
+            const partido = document.getElementById('partido').value;
+            const cargo = document.getElementById('cargo').value;
+            const numero = document.getElementById('numero').value;
+
+            const erro = await validarInscricao(cargo, partido, numero);
+            if (erro) {
+                alert(erro);
+                btn.disabled = false;
+                btn.innerText = "ENVIAR CANDIDATURA";
+                return;
+            }
+
+            await push(ref(db, 'candidatos'), {
+                nome, estado, partido, cargo, numero,
+                status: "pendente",
+                tipoEleicao: eleicaoTipo,
+                data: new Date().toISOString()
+            });
+
+            alert("Candidatura enviada! Aguarde a aprovação no Painel ADM.");
+            e.target.reset();
+            btn.disabled = false;
+            btn.innerText = "ENVIAR CANDIDATURA";
+        };
+
+        // --- MOSTRAR CONFIRMADOS ---
+        onValue(ref(db, 'candidatos'), (snapshot) => {
+            const listaDiv = document.getElementById('lista_confirmados');
+            listaDiv.innerHTML = "";
+            if (snapshot.exists()) {
+                snapshot.forEach(child => {
+                    const c = child.val();
+                    if (c.status === "aceito") {
+                        listaDiv.innerHTML += `
+                            <div class="p-3 border-b bg-green-50 mb-2 rounded">
+                                <p class="font-bold text-blue-900">${c.nome} (${c.numero})</p>
+                                <p class="text-xs">${c.cargo} - ${c.partido} | ${c.estado}</p>
+                            </div>`;
+                    }
+                });
+            }
+        });
+
+        // --- PAINEL ADM ---
+        window.abrirAdm = () => {
+            const senha = prompt("Senha do Administrador:");
+            if (senha === "admin123") { // Altere sua senha aqui
+                document.getElementById('seccao_adm').classList.remove('hidden');
+                carregarAdm();
+            } else { alert("Senha incorreta!"); }
+        };
+
+        function carregarAdm() {
+            onValue(ref(db, 'candidatos'), (snapshot) => {
+                const admDiv = document.getElementById('lista_adm');
+                admDiv.innerHTML = "";
+                snapshot.forEach(child => {
+                    const c = child.val();
+                    const id = child.key;
+                    admDiv.innerHTML += `
+                        <div class="p-2 border-b text-sm flex justify-between items-center">
+                            <div><b>${c.nome}</b> (${c.status})<br>${c.cargo} - ${c.numero}</div>
+                            <div class="space-x-1">
+                                <button onclick="setAt('${id}', 'aceito')" class="bg-green-500 text-white px-2 rounded">Sim</button>
+                                <button onclick="setAt('${id}', 'recusado')" class="bg-red-500 text-white px-2 rounded">Não</button>
+                                <button onclick="setAt('${id}', 'pendente')" class="bg-gray-400 text-white px-2 rounded">P</button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        window.setAt = (id, status) => {
+            update(ref(db, `candidatos/${id}`), { status });
+        };
+
+        window.switchTab = (tab) => {
+            document.getElementById('seccao_form').classList.add('hidden');
+            document.getElementById('seccao_confirmados').classList.add('hidden');
+            document.getElementById(tab).classList.remove('hidden');
+        };
+
+        // Inicia como Federal
+        setEleicao('federal');
+    </script>
+</head>
+<body class="bg-slate-100 font-sans p-4">
+
+    <div class="max-w-md mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
+        <div class="bg-blue-900 text-white p-6 text-center">
+            <h1 class="text-2xl font-black italic">BROOKASIL RP</h1>
+            <p id="tipo_titulo" class="text-blue-300 text-xs font-bold mt-1 tracking-tighter">ELEIÇÃO FEDERAL</p>
+        </div>
+
+        <div class="flex border-b text-xs font-bold">
+            <button onclick="switchTab('seccao_form')" class="flex-1 py-3 hover:bg-gray-100">CANDIDATAR</button>
+            <button onclick="switchTab('seccao_confirmados')" class="flex-1 py-3 hover:bg-gray-100 border-x">CONFIRMADOS</button>
+            <button onclick="abrirAdm()" class="flex-1 py-3 text-red-600 hover:bg-red-50">PAINEL ADM</button>
+        </div>
+
+        <div class="p-6">
+            <section id="seccao_form">
+                <form id="formCandidato" class="space-y-3">
+                    <input type="text" id="nome" placeholder="Seu Nome Completo" class="w-full p-2 border rounded text-sm" required>
+                    <input type="text" id="partido" placeholder="Sigla do Partido (Ex: PBR)" class="w-full p-2 border rounded text-sm" required>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="estado" class="p-2 border rounded text-sm">
+                            <option>Brookhaven</option><option>Novacore</option><option>Casteríber</option><option>Fortemega</option><option>Florêmix</option>
+                        </select>
+                        <select id="cargo" class="p-2 border rounded text-sm"></select>
+                    </div>
+
+                    <input type="number" id="numero" placeholder="Número do Candidato" class="w-full p-2 border rounded text-sm" required>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold p-3 rounded-xl hover:bg-blue-700 transition">ENVIAR CANDIDATURA</button>
+                </form>
+            </section>
+
+            <section id="seccao_confirmados" class="hidden">
+                <h2 class="font-bold mb-4 border-b">Candidatos Confirmados</h2>
+                <div id="lista_confirmados" class="max-h-80 overflow-y-auto"></div>
+            </section>
+
+            <section id="seccao_adm" class="hidden mt-4 p-4 border-2 border-red-200 rounded-xl bg-red-50">
+                <h2 class="font-bold text-red-600 mb-2">Administração</h2>
+                <div class="flex gap-2 mb-4">
+                    <button onclick="setEleicao('federal')" class="bg-white text-xs border px-2 py-1 rounded">Mudar p/ Federal</button>
+                    <button onclick="setEleicao('municipal')" class="bg-white text-xs border px-2 py-1 rounded">Mudar p/ Municipal</button>
+                </div>
+                <div id="lista_adm" class="max-h-60 overflow-y-auto bg-white rounded p-2 shadow-inner"></div>
+            </section>
+        </div>
+    </div>
+
+</body>
+</html>
