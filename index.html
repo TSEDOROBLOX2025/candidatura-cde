@@ -198,23 +198,79 @@
         });
 
         function atualizarEstatisticas() {
-            db.ref('candidatos').on('value', (s) => {
-                let total = 0, aceitos = 0, pendentes = 0;
-                let lados = { Direita: 0, Centro: 0, Esquerda: 0 };
-                let cargosCount = {};
+    db.ref('candidatos').on('value', (s) => {
+        // Reinicia os contadores para não somar com o valor anterior
+        let totalValidos = 0; 
+        let aceitos = 0; 
+        let pendentes = 0;
+        let lados = { Direita: 0, Centro: 0, Esquerda: 0 };
+        let cargosCount = {};
 
-                s.forEach(child => {
-                    const c = child.val();
-                    if(c.eleicao === eleicaoTipo) {
-                        total++;
-                        if(c.status === 'aceito') {
-                            aceitos++;
-                            lados[c.lado]++;
-                            cargosCount[c.cargo] = (cargosCount[c.cargo] || 0) + 1;
-                        }
-                        if(c.status === 'pendente') pendentes++;
-                    }
-                });
+        s.forEach(child => {
+            const c = child.val();
+            
+            // FILTRO CRÍTICO: Só conta se for da eleição ativa (Federal ou Municipal)
+            if(c.eleicao === eleicaoTipo) {
+                
+                if(c.status === 'aceito') {
+                    aceitos++;
+                    totalValidos++; // Soma ao total
+                    lados[c.lado]++;
+                    cargosCount[c.cargo] = (cargosCount[c.cargo] || 0) + 1;
+                } 
+                else if(c.status === 'pendente') {
+                    pendentes++;
+                    totalValidos++; // Soma ao total
+                }
+                // Candidatos 'recusados' são ignorados no cálculo
+            }
+        });
+
+        // Atualiza a tela com os valores exatos
+        document.getElementById('stat-total').innerText = totalValidos;
+        document.getElementById('stat-aceitos').innerText = aceitos;
+        document.getElementById('stat-pendentes').innerText = pendentes;
+
+        // Atualiza as barras de espectro político
+        if(aceitos > 0) {
+            const pDir = Math.round((lados.Direita / aceitos) * 100);
+            const pCen = Math.round((lados.Centro / aceitos) * 100);
+            const pEsq = Math.round((lados.Esquerda / aceitos) * 100);
+            
+            document.getElementById('bar-direita').style.width = pDir + "%";
+            document.getElementById('bar-centro').style.width = pCen + "%";
+            document.getElementById('bar-esquerda').style.width = pEsq + "%";
+            
+            document.getElementById('txt-dir').innerText = pDir;
+            document.getElementById('txt-cen').innerText = pCen;
+            document.getElementById('txt-esq').innerText = pEsq;
+        } else {
+            // Zera as barras se não houver ninguém aceito
+            document.querySelectorAll('.bar-item').forEach(b => b.style.width = "0%");
+            document.getElementById('txt-dir').innerText = "0";
+            document.getElementById('txt-cen').innerText = "0";
+            document.getElementById('txt-esq').innerText = "0";
+        }
+
+        // Atualiza a lista de cargos
+        const listaC = document.getElementById('lista-cargos-stats');
+        listaC.innerHTML = "";
+        Object.keys(cargosCount).forEach(cargo => {
+            const pCargo = aceitos > 0 ? Math.round((cargosCount[cargo] / aceitos) * 100) : 0;
+            listaC.innerHTML += `
+                <div class="text-[10px] mb-3">
+                    <div class="flex justify-between font-bold mb-1">
+                        <span>${cargo.toUpperCase()}</span>
+                        <span>${cargosCount[cargo]}</span>
+                    </div>
+                    <div class="h-1 bg-white/5 rounded-full">
+                        <div class="h-full bg-yellow-400 rounded-full transition-all duration-500" style="width:${pCargo}%"></div>
+                    </div>
+                </div>`;
+        });
+    });
+}
+
 
                 // Update Números
                 document.getElementById('stat-total').innerText = total;
