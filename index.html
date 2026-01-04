@@ -3,1954 +3,880 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tribunal Superior Eleitoral - Portal de Candidaturas 2026</title>
+    <title>TSE 2026 | Portal Oficial de Candidaturas</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fontes premium para portal governamental -->
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Manrope:wght@400;600;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tse: {
+                            gold: '#FFD700',
+                            dark: '#0a0f1c',
+                            card: 'rgba(15, 23, 42, 0.6)',
+                            border: 'rgba(255, 215, 0, 0.15)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        tech: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --tse-green: #009E49;
-            --tse-yellow: #FCD116;
-            --tse-blue: #3A75C4;
-            --tse-red: #E63946;
-            --tse-gray: #0F172A;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #010409 0%, #0F172A 100%);
-            color: #fff;
-            min-height: 100vh;
+            background-color: #050505;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(255, 215, 0, 0.05) 0px, transparent 50%);
+            color: #e2e8f0;
+            overflow-x: hidden;
         }
 
-        h1, h2, h3, .stat-card h3, .card-title {
-            font-family: 'Manrope', sans-serif;
+        /* Glassmorphism Premium */
+        .glass-panel {
+            background: var(--tse-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--tse-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .logo-tse {
-            font-family: 'Syncopate', sans-serif;
-        }
-
-        /* Glassmorphism refinado */
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
-        }
-
-        .glass-heavy {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(30px) saturate(200%);
-            -webkit-backdrop-filter: blur(30px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        /* Inputs premium */
-        .input-tse {
-            background: rgba(0, 0, 0, 0.25);
+        .input-premium {
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 16px 18px;
-            border-radius: 14px;
-            color: white;
-            outline: none;
-            width: 100%;
-            transition: all 0.35s ease;
-            font-size: 15px;
+            transition: all 0.3s ease;
         }
 
-        .input-tse:focus {
-            border-color: var(--tse-yellow);
-            box-shadow: 0 0 0 3px rgba(252, 209, 22, 0.1);
-            transform: translateY(-1px);
-        }
-
-        /* Botões premium */
-        .btn-tse {
-            background: linear-gradient(135deg, var(--tse-yellow), #b89600);
-            color: #000;
-            font-weight: 800;
-            border-radius: 14px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            letter-spacing: 0.5px;
-            padding: 18px 28px;
-            font-size: 14px;
-        }
-
-        .btn-tse:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(252, 209, 22, 0.25);
-        }
-
-        .btn-tse-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-weight: 600;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            letter-spacing: 0.3px;
-        }
-
-        .btn-tse-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .input-premium:focus {
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-
-        /* Navegação premium */
-        .nav-tse {
-            padding: 14px 26px;
-            font-weight: 800;
-            font-size: 0.75rem;
-            border-radius: 50px;
-            opacity: 0.6;
-            color: white;
-            transition: all 0.35s ease;
-            cursor: pointer;
-            letter-spacing: 0.8px;
-        }
-
-        .nav-tse.selected {
-            opacity: 1;
-            background: rgba(252, 209, 22, 0.12);
-            border: 1px solid rgba(252, 209, 22, 0.4);
-            color: var(--tse-yellow);
-            box-shadow: 0 5px 15px rgba(252, 209, 22, 0.1);
         }
 
         /* Animações */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 0 0 rgba(252, 209, 22, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(252, 209, 22, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(252, 209, 22, 0); }
+        .animate-enter {
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes slideInRight {
-            from { transform: translateX(20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0f1c; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FFD700; }
+
+        .active-nav {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), transparent);
+            border-left: 3px solid #FFD700;
+            color: #FFD700;
         }
-
-        .section {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* Cards premium */
-        .stat-card {
-            background: rgba(255,255,255,0.03);
-            border-radius: 24px;
-            padding: 28px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.35s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 45px rgba(0,0,0,0.4);
-            border-color: rgba(252, 209, 22, 0.1);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--tse-yellow), var(--tse-green));
-        }
-
-        .adm-card {
-            background: rgba(0,0,0,0.25);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.35s ease;
-        }
-
-        .adm-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
-        }
-
-        .label-adm {
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            opacity: 0.5;
-            letter-spacing: 1.2px;
-        }
-
-        .val-adm {
-            font-size: 12px;
-            font-weight: 600;
-            color: #eee;
-        }
-
-        .nav-est {
-            opacity: 0.5;
-            transition: all 0.35s ease;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
-            font-size: 10px;
-            padding: 10px 20px;
-        }
-
-        .nav-est.selected-est {
-            opacity: 1;
-            border-color: var(--tse-yellow);
-            color: var(--tse-yellow);
-            background: rgba(252, 209, 22, 0.08);
-            box-shadow: 0 5px 15px rgba(252, 209, 22, 0.1);
-        }
-
-        /* Badges de status */
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-pendente {
-            background: rgba(252, 209, 22, 0.15);
-            color: var(--tse-yellow);
-            border: 1px solid rgba(252, 209, 22, 0.3);
-        }
-
-        .badge-aceito {
-            background: rgba(0, 158, 73, 0.15);
-            color: #00E676;
-            border: 1px solid rgba(0, 158, 73, 0.3);
-        }
-
-        .badge-recusado {
-            background: rgba(230, 57, 70, 0.15);
-            color: #FF6B6B;
-            border: 1px solid rgba(230, 57, 70, 0.3);
-        }
-
-        /* Número da urna - design premium */
-        .urna-box {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(252, 209, 22, 0.2);
-            border-radius: 20px;
-            padding: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .urna-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(252, 209, 22, 0.03) 0%, rgba(0, 158, 73, 0.03) 100%);
-            z-index: 0;
-        }
-
-        /* Barras de estatística */
-        .bar-container {
-            height: 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .bar {
-            height: 100%;
-            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* Loading spinner */
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top: 3px solid var(--tse-yellow);
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Alertas visuais */
-        .alert {
-            padding: 16px 20px;
-            border-radius: 14px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            display: none;
-            animation: slideInRight 0.4s ease;
-        }
-
-        .alert-success {
-            background: rgba(0, 158, 73, 0.15);
-            border: 1px solid rgba(0, 158, 73, 0.3);
-            color: #00E676;
-        }
-
-        .alert-error {
-            background: rgba(230, 57, 70, 0.15);
-            border: 1px solid rgba(230, 57, 70, 0.3);
-            color: #FF6B6B;
-        }
-
-        .alert-warning {
-            background: rgba(252, 209, 22, 0.15);
-            border: 1px solid rgba(252, 209, 22, 0.3);
-            color: var(--tse-yellow);
-        }
-
-        /* Preview de candidatura */
-        .preview-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(252, 209, 22, 0.2);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        /* Tooltips */
-        .tooltip {
-            position: relative;
-            cursor: help;
-        }
-
-        .tooltip-text {
-            visibility: hidden;
-            width: 250px;
-            background-color: rgba(0, 0, 0, 0.9);
-            color: #fff;
-            text-align: center;
-            border-radius: 10px;
-            padding: 12px;
-            position: absolute;
-            z-index: 100;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-            font-weight: 400;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-
-/* Badges de nível de acesso */
-.badge-nivel {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 50px;
-    font-size: 9px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-}
-
-.nivel-super {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    color: #000;
-    border: 1px solid #FFD700;
-}
-
-.nivel-admin {
-    background: linear-gradient(135deg, #3A75C4, #2A55A4);
-    color: #fff;
-    border: 1px solid #3A75C4;
-}
-        }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
+        
+        .urna-digital {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
         }
     </style>
 </head>
-<body class="antialiased">
-    <!-- Sistema de Alertas Visuais -->
-    <div id="alert-container" class="fixed top-6 right-6 w-96 z-50 space-y-4"></div>
+<body class="antialiased min-h-screen flex flex-col md:flex-row">
 
-    <!-- Modal de Login -->
-    <div id="modal-login" class="fixed inset-0 bg-black/95 z-[999] hidden flex items-center justify-center p-6">
-        <div class="glass p-10 w-full max-w-md rounded-3xl text-center border border-white/10">
-            <div class="mb-8">
-                <div class="logo-tse text-3xl font-black tracking-tighter text-center mb-2">TSE<span class="text-yellow-400">.</span>2026</div>
-                <p class="text-xs tracking-widest uppercase text-yellow-400 font-bold">Acesso Restrito ao Sistema</p>
-                <p class="text-xs opacity-50 mt-2">Terminal de Controle TSE - Autenticação Obrigatória</p>
-            </div>
-            
-            <div class="mb-6">
-                <label class="block text-left text-xs font-bold uppercase opacity-60 mb-2">UNIDADE FEDERATIVA</label>
-                <select id="log-est" class="input-tse">
-                    <option value="" disabled selected>Selecione uma unidade</option>
-                    <option>Brookhaven</option><option>Novacore</option><option>Casteríber</option><option>Fortemega</option><option>Florêmix</option>
-                </select>
-            </div>
-            
-            <div class="mb-8">
-                <label class="block text-left text-xs font-bold uppercase opacity-60 mb-2">CHAVE DE SEGURANÇA</label>
-                <input type="password" id="log-sen" class="input-tse text-center tracking-widest" placeholder="••••••••••••">
-            </div>
-            
-            <button onclick="login()" class="btn-tse w-full py-4 text-sm mb-4">
-                <i class="fas fa-lock mr-2"></i> AUTENTICAR
-            </button>
-            <button onclick="fecharModalLogin()" class="text-xs opacity-50 font-bold uppercase hover:opacity-80 transition">
-                <i class="fas fa-times mr-1"></i> Cancelar
-            </button>
-        </div>
-    </div>
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-2"></div>
 
-    <!-- Modal de Preview de Candidatura -->
-    <div id="modal-preview" class="fixed inset-0 bg-black/90 z-[998] hidden flex items-center justify-center p-6">
-        <div class="glass p-10 w-full max-w-2xl rounded-3xl border border-white/10">
-            <div class="flex justify-between items-center mb-8">
+    <div id="modal-login" class="fixed inset-0 bg-black/90 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-panel w-full max-w-md p-8 rounded-2xl relative animate-enter">
+            <button onclick="toggleModal('modal-login')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            
+            <div class="text-center mb-8">
+                <i class="fas fa-shield-alt text-4xl text-tse-gold mb-3"></i>
+                <h2 class="font-tech text-2xl font-bold text-white uppercase tracking-widest">Acesso Restrito</h2>
+                <p class="text-xs text-gray-400">Sistema Administrativo do TSE</p>
+            </div>
+
+            <div class="space-y-4">
                 <div>
-                    <h3 class="text-xl font-black text-yellow-400 uppercase">Pré-visualização da Candidatura</h3>
-                    <p class="text-xs opacity-60">Confira os dados antes de enviar para análise</p>
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Unidade Federativa</label>
+                    <select id="login-estado" class="input-premium w-full p-3 rounded-lg text-white outline-none mt-1">
+                        <option value="" disabled selected>Selecione seu TRE</option>
+                        <option value="Brookhaven">Brookhaven (TSE Central)</option>
+                        <option value="Novacore">Novacore</option>
+                        <option value="Casteríber">Casteríber</option>
+                        <option value="Fortemega">Fortemega</option>
+                        <option value="Florêmix">Florêmix</option>
+                    </select>
                 </div>
-                <button onclick="fecharModalPreview()" class="text-xl opacity-50 hover:opacity-100"><i class="fas fa-times"></i></button>
-            </div>
-            
-            <div id="preview-content" class="space-y-6 mb-8"></div>
-            
-            <div class="flex gap-4">
-                <button onclick="fecharModalPreview()" class="btn-tse-secondary flex-1 py-4">Corrigir Dados</button>
-                <button onclick="enviarCandidatura()" class="btn-tse flex-1 py-4" id="btn-confirmar-envio">
-                    <i class="fas fa-paper-plane mr-2"></i> Confirmar Envio
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Chave de Segurança</label>
+                    <input type="password" id="login-senha" class="input-premium w-full p-3 rounded-lg text-white outline-none mt-1 text-center tracking-[5px]" placeholder="••••••">
+                </div>
+                <button onclick="autenticar()" class="w-full bg-tse-gold hover:bg-yellow-400 text-black font-bold py-3 rounded-lg transition-all transform hover:scale-[1.02] shadow-lg shadow-yellow-500/20">
+                    ACESSAR SISTEMA
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="p-6 md:p-12 max-w-7xl mx-auto">
-        <!-- Cabeçalho Premium -->
-        <header class="flex flex-col lg:flex-row justify-between items-center mb-16 gap-10">
-            <div class="text-center lg:text-left">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-green-500 flex items-center justify-center">
-                        <i class="fas fa-vote-yea text-black text-xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="logo-tse text-5xl font-black tracking-tighter">TSE<span class="text-yellow-400">.</span>2026</h1>
-                        <p class="text-xs tracking-[0.5em] uppercase text-yellow-400 font-bold mb-1">Justiça Eleitoral Brookasil</p>
-                        <p class="text-[10px] opacity-50 font-bold">Tribunal Superior Eleitoral - Sistema Nacional de Candidaturas</p>
-                    </div>
-                </div>
-                
-                <!-- Indicador de Modo Eleitoral -->
-                <div id="modo-eleitoral" class="inline-flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                    <div id="modo-indicator" class="w-3 h-3 rounded-full bg-yellow-400 animate-pulse"></div>
-                    <span id="modo-texto" class="text-xs font-bold uppercase">Eleições Federais 2026</span>
-                </div>
+    <aside class="w-full md:w-64 bg-[#050505] border-r border-white/5 flex-shrink-0 flex flex-col h-auto md:h-screen sticky top-0 z-40">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded bg-gradient-to-br from-tse-gold to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
+                <i class="fas fa-vote-yea text-black text-lg"></i>
             </div>
-            
-            <nav class="glass p-2 rounded-full flex gap-1">
-                <button onclick="mudarAba('aba-dashboard')" id="nav-aba-dashboard" class="nav-tse selected">
-                    <i class="fas fa-chart-bar mr-2"></i> DASHBOARD
-                </button>
-                <button onclick="mudarAba('aba-registro')" id="nav-aba-registro" class="nav-tse">
-                    <i class="fas fa-user-plus mr-2"></i> REGISTRO
-                </button>
-                <button onclick="mudarAba('aba-candidatos')" id="nav-aba-candidatos" class="nav-tse">
-                    <i class="fas fa-users mr-2"></i> CANDIDATOS
-                </button>
-                <button onclick="mudarAba('aba-adm')" id="nav-aba-adm" class="nav-tse text-red-300">
-                    <i class="fas fa-shield-alt mr-2"></i> ADMIN
-                </button>
-            </nav>
-        </header>
+            <div>
+                <h1 class="font-tech text-xl font-bold tracking-wider text-white">TSE<span class="text-tse-gold">2026</span></h1>
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Portal Oficial</p>
+            </div>
+        </div>
 
-        <!-- Dashboard -->
-        <section id="aba-dashboard" class="section active">
-            <div class="mb-12">
-                <h2 class="text-3xl font-black mb-2">Painel Nacional Eleitoral</h2>
-                <p class="opacity-60">Estatísticas em tempo real das candidaturas para as Eleições 2026</p>
-            </div>
+        <nav class="flex-1 overflow-y-auto py-4 space-y-1">
+            <button onclick="navTo('dashboard')" id="btn-dashboard" class="w-full text-left px-6 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3 active-nav">
+                <i class="fas fa-chart-pie w-5"></i> Dashboard
+            </button>
+            <button onclick="navTo('candidatos')" id="btn-candidatos" class="w-full text-left px-6 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3">
+                <i class="fas fa-users w-5"></i> Candidatos
+            </button>
+            <button onclick="navTo('registro')" id="btn-registro" class="w-full text-left px-6 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3">
+                <i class="fas fa-file-signature w-5"></i> Registrar
+            </button>
             
-            <!-- Cards de Estatísticas -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                <div class="stat-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-black opacity-40 uppercase mb-2">Total de Processos</p>
-                            <h3 class="text-5xl font-black" id="stat-total">0</h3>
-                        </div>
-                        <div class="text-2xl opacity-30"><i class="fas fa-file-alt"></i></div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-white/5">
-                        <p class="text-[10px] opacity-50 font-bold">Atualizado em tempo real</p>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-black text-green-400 uppercase mb-2">Homologados</p>
-                            <h3 class="text-5xl font-black text-green-400" id="stat-aceitos">0</h3>
-                        </div>
-                        <div class="text-2xl text-green-400 opacity-50"><i class="fas fa-check-circle"></i></div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-white/5">
-                        <p id="percent-aceitos" class="text-[10px] font-bold text-green-400">0% do total</p>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-black text-yellow-400 uppercase mb-2">Em Análise</p>
-                            <h3 class="text-5xl font-black text-yellow-400" id="stat-pendentes">0</h3>
-                        </div>
-                        <div class="text-2xl text-yellow-400 opacity-50"><i class="fas fa-clock"></i></div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-white/5">
-                        <p id="percent-pendentes" class="text-[10px] font-bold text-yellow-400">0% do total</p>
-                    </div>
-                </div>
+            <div class="pt-4 mt-4 border-t border-white/5 px-6">
+                <p class="text-[10px] uppercase font-bold text-gray-600 mb-2">Administração</p>
+                <button onclick="checkAdminAccess()" id="btn-admin" class="w-full text-left px-0 py-2 text-sm font-medium text-red-400/70 hover:text-red-400 transition-all flex items-center gap-3">
+                    <i class="fas fa-lock w-5"></i> Área Restrita
+                </button>
             </div>
-            
-            <!-- Gráfico de Equilíbrio Ideológico -->
-            <div class="glass p-10 rounded-3xl mb-8">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-                    <div>
-                        <h4 class="text-lg font-black mb-2">Equilíbrio Ideológico Nacional</h4>
-                        <p class="text-xs opacity-60">Distribuição percentual por posicionamento político</p>
-                    </div>
-                    <div class="mt-4 md:mt-0">
-                        <div class="text-2xl opacity-30"><i class="fas fa-balance-scale"></i></div>
+        </nav>
+
+        <div class="p-6 border-t border-white/5">
+            <div id="modo-eleicao-badge" class="px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
+                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Eleição Federal</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto max-h-screen relative">
+        
+        <section id="sec-dashboard" class="space-y-8 animate-enter">
+            <header class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-white mb-1">Painel em Tempo Real</h2>
+                    <p class="text-sm text-gray-400">Estatísticas atualizadas das Eleições 2026</p>
+                </div>
+                <div class="text-right hidden md:block">
+                    <p class="text-xs font-mono text-tse-gold" id="clock">00:00:00</p>
+                    <p class="text-[10px] text-gray-500 uppercase">Horário de Brasília</p>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all"></div>
+                    <p class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2">Total de Registros</p>
+                    <h3 class="text-4xl font-tech font-bold text-white" id="stat-total">0</h3>
+                    <div class="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-500 w-full opacity-50"></div>
                     </div>
                 </div>
-                
-                <div class="bar-container mb-6">
-                    <div id="bar-direita" class="bar bg-gradient-to-r from-blue-500 to-blue-600" style="width: 0%"></div>
-                    <div id="bar-centro" class="bar bg-gradient-to-r from-gray-400 to-gray-500" style="width: 0%"></div>
-                    <div id="bar-esquerda" class="bar bg-gradient-to-r from-red-500 to-red-600" style="width: 0%"></div>
+
+                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/10 rounded-full blur-xl group-hover:bg-green-500/20 transition-all"></div>
+                    <p class="text-xs font-bold text-green-400 uppercase tracking-wider mb-2">Candidaturas Ativas</p>
+                    <h3 class="text-4xl font-tech font-bold text-white" id="stat-aprovados">0</h3>
+                    <div class="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div id="bar-aprovados" class="h-full bg-green-500 w-0 transition-all duration-1000"></div>
+                    </div>
                 </div>
-                
-                <div class="flex flex-wrap justify-between gap-4 text-sm font-bold">
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded bg-blue-500"></div>
-                        <span class="text-blue-400">DIREITA: <span id="txt-dir" class="text-white">0</span>%</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded bg-gray-400"></div>
-                        <span class="text-gray-300">CENTRO: <span id="txt-cen" class="text-white">0</span>%</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded bg-red-500"></div>
-                        <span class="text-red-400">ESQUERDA: <span id="txt-esq" class="text-white">0</span>%</span>
+
+                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-500/10 rounded-full blur-xl group-hover:bg-yellow-500/20 transition-all"></div>
+                    <p class="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2">Em Análise</p>
+                    <h3 class="text-4xl font-tech font-bold text-white" id="stat-pendentes">0</h3>
+                    <div class="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div id="bar-pendentes" class="h-full bg-yellow-500 w-0 transition-all duration-1000"></div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Distribuição por Cargo -->
-            <div class="glass p-10 rounded-3xl">
-                <h4 class="text-lg font-black mb-6">Distribuição por Cargo</h4>
-                <div id="distribuicao-cargos" class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <!-- Será preenchido dinamicamente -->
-                    <div class="text-center p-4 bg-white/5 rounded-2xl">
-                        <div class="text-3xl font-black text-yellow-400 mb-2">0</div>
-                        <p class="text-xs font-bold opacity-60">PRESIDENTE</p>
-                    </div>
+
+            <div class="glass-panel p-8 rounded-2xl">
+                <h3 class="font-bold text-lg mb-6">Equilíbrio Ideológico</h3>
+                <div class="flex h-4 rounded-full overflow-hidden mb-4">
+                    <div id="chart-esq" class="bg-red-500 h-full hover:opacity-80 transition-all w-0" title="Esquerda"></div>
+                    <div id="chart-cen" class="bg-gray-400 h-full hover:opacity-80 transition-all w-0" title="Centro"></div>
+                    <div id="chart-dir" class="bg-blue-600 h-full hover:opacity-80 transition-all w-0" title="Direita"></div>
+                </div>
+                <div class="flex justify-between text-xs font-bold uppercase tracking-widest">
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-500"></span> Esquerda <span id="val-esq" class="opacity-50 ml-1">0%</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gray-400"></span> Centro <span id="val-cen" class="opacity-50 ml-1">0%</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-600"></span> Direita <span id="val-dir" class="opacity-50 ml-1">0%</span></div>
                 </div>
             </div>
         </section>
 
-        <!-- Registro de Candidatura -->
-        <section id="aba-registro" class="section">
-            <div class="glass p-10 rounded-3xl max-w-5xl mx-auto border-t-4 border-yellow-400">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-green-500 flex items-center justify-center">
-                        <i class="fas fa-user-check text-black text-2xl"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-black uppercase">Protocolar Candidatura</h2>
-                        <p class="text-sm opacity-60">Preencha todos os campos obrigatórios para registrar sua candidatura</p>
-                    </div>
+        <section id="sec-registro" class="hidden animate-enter pb-20">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-white">Registro de Candidatura</h2>
+                    <p class="text-sm text-gray-400 mt-2">Preencha os dados com atenção. O registro passará por análise.</p>
                 </div>
-                
-                <!-- Alertas do formulário -->
-                <div id="form-alerts" class="mb-8"></div>
-                
-                <!-- Preview da Candidatura -->
-                <div id="preview-candidatura" class="preview-card">
-                    <!-- Será preenchido dinamicamente -->
-                </div>
-                
-                <form onsubmit="previewCandidatura(event)" class="grid md:grid-cols-2 gap-6">
-                    <!-- Campo: Nome Completo -->
-                    <div class="col-span-2">
-                        <label class="block text-sm font-bold mb-2">Nome Completo do Candidato <span class="text-red-400">*</span></label>
-                        <input type="text" id="reg-nome" class="input-tse" placeholder="Digite o nome completo conforme registro civil" required>
-                    </div>
+
+                <form id="form-registro" onsubmit="preRegister(event)" class="glass-panel p-8 md:p-12 rounded-3xl border-t-4 border-t-tse-gold relative">
                     
-                    <!-- Campo: CPF -->
-                    <div>
-                        <label class="block text-sm font-bold mb-2">CPF <span class="text-red-400">*</span></label>
-                        <input type="text" id="reg-cpf" class="input-tse" placeholder="000.000.000-00" required>
-                    </div>
-                    
-                    <!-- Campo: Data de Nascimento -->
-                    <div>
-                        <label class="block text-sm font-bold mb-2">Data de Nascimento <span class="text-red-400">*</span></label>
-                        <input type="date" id="reg-nasc" class="input-tse" required>
-                    </div>
-                    
-                    <!-- Campo: Lado Político -->
-                    <div>
-                        <label class="block text-sm font-bold mb-2">Posicionamento Político <span class="text-red-400">*</span></label>
-                        <select id="reg-lado" onchange="carregarPartidos(this.value)" class="input-tse" required>
-                            <option value="">Selecione o posicionamento</option>
-                            <option value="Direita">Direita</option>
-                            <option value="Centro">Centro</option>
-                            <option value="Esquerda">Esquerda</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Campo: Tipo de Eleição -->
-                    <div>
-                        <label class="block text-sm font-bold mb-2">Tipo de Eleição <span class="text-red-400">*</span></label>
-                        <select id="reg-eleicao-tipo" onchange="atualizarCamposLocalizacao()" class="input-tse" required>
-                            <option value="Federal" selected>Federal</option>
-                            <option value="Municipal">Municipal</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Campo: Cargo -->
-                    <div>
-                        <label class="block text-sm font-bold mb-2">Cargo <span class="text-red-400">*</span></label>
-                        <select id="reg-cargo" onchange="atualizarCamposLocalizacao(); atualizarNum();" class="input-tse" required></select>
-                    </div>
-                    
-                    <!-- Campo: País (apenas para Presidente) -->
-                    <div id="campo-pais" class="hidden">
-                        <label class="block text-sm font-bold mb-2">País <span class="text-red-400">*</span></label>
-                        <select id="reg-pais" class="input-tse">
-                            <option value="Brookasil" selected>Brookasil</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Campo: Estado -->
-                    <div id="campo-estado">
-                        <label class="block text-sm font-bold mb-2">Estado <span class="text-red-400">*</span></label>
-                        <select id="reg-estado" onchange="atualizarCidades()" class="input-tse" required>
-                            <option value="">Selecione o estado</option>
-                            <option>Brookhaven</option><option>Novacore</option><option>Casteríber</option><option>Fortemega</option><option>Florêmix</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Campo: Cidade -->
-                    <div id="campo-cidade" class="hidden">
-                        <label class="block text-sm font-bold mb-2">Cidade <span class="text-red-400">*</span></label>
-                        <select id="reg-cidade" class="input-tse">
-                            <option value="">Selecione a cidade</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Campo: Partido -->
-                    <div>
-                        <label class="block text-sm font-bold mb-2">Partido <span class="text-red-400">*</span></label>
-                        <select id="reg-partido" onchange="atualizarNum()" class="input-tse" required>
-                            <option value="">Primeiro selecione o posicionamento político</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Campo: TikTok -->
-                    <div class="col-span-2">
-                        <label class="block text-sm font-bold mb-2">Perfil no TikTok <span class="text-red-400">*</span></label>
-                        <input type="text" id="reg-tiktok" class="input-tse" placeholder="Link completo ou @usuário" required>
-                    </div>
-                    
-                    <!-- Número da Urna -->
-                    <div class="col-span-2">
-                        <label class="block text-sm font-bold mb-2">Número Eleitoral <span class="text-red-400">*</span></label>
-                        <div class="urna-box">
-                            <div class="flex flex-col items-center">
-                                <p class="text-xs font-bold opacity-30 mb-4">NÚMERO DA URNA</p>
-                                <div class="flex justify-center items-center gap-4 mb-2">
-                                    <div class="text-center">
-                                        <div class="text-5xl font-black text-yellow-400 mb-1" id="num-fixo">00</div>
-                                        <p class="text-[9px] opacity-50">Número do Partido</p>
-                                    </div>
-                                    
-                                    <div id="div-extra" class="hidden flex flex-col items-center">
-                                        <span class="text-3xl opacity-20 mb-1">+</span>
-                                        <div class="text-center">
-                                            <input type="text" id="num-extra" class="w-28 text-5xl font-black bg-transparent border-b-2 border-yellow-400/50 text-yellow-400 text-center outline-none px-2 tracking-widest" placeholder="00" maxlength="3">
-                                            <p class="text-[9px] opacity-50 mt-1">Número do Candidato</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-center opacity-60 mt-4">O número completo será: <span id="numero-completo" class="font-black text-yellow-400">00</span></p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="col-span-2 md:col-span-1 space-y-4">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Nome Completo</label>
+                                <input type="text" id="reg-nome" required class="input-premium w-full p-3 rounded-lg text-white mt-1" placeholder="Ex: João da Silva">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">CPF</label>
+                                <input type="text" id="reg-cpf" required class="input-premium w-full p-3 rounded-lg text-white mt-1" placeholder="000.000.000-00">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">TikTok (Divulgação)</label>
+                                <input type="text" id="reg-tiktok" required class="input-premium w-full p-3 rounded-lg text-white mt-1" placeholder="@usuario">
                             </div>
                         </div>
+
+                        <div class="col-span-2 md:col-span-1 space-y-4">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Posicionamento</label>
+                                <select id="reg-lado" onchange="loadParties(this.value)" required class="input-premium w-full p-3 rounded-lg text-white mt-1">
+                                    <option value="">Selecione...</option>
+                                    <option value="Direita">Direita</option>
+                                    <option value="Centro">Centro</option>
+                                    <option value="Esquerda">Esquerda</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Partido</label>
+                                <select id="reg-partido" onchange="updateUrnaNumber()" required class="input-premium w-full p-3 rounded-lg text-white mt-1" disabled>
+                                    <option value="">Selecione o posicionamento primeiro</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Estado</label>
+                                <select id="reg-estado" required class="input-premium w-full p-3 rounded-lg text-white mt-1">
+                                    <option value="">Selecione...</option>
+                                    <option value="Brookhaven">Brookhaven</option>
+                                    <option value="Novacore">Novacore</option>
+                                    <option value="Casteríber">Casteríber</option>
+                                    <option value="Fortemega">Fortemega</option>
+                                    <option value="Florêmix">Florêmix</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-span-2 mt-4 pt-6 border-t border-white/10">
+                            <label class="text-xs font-bold text-gray-400 uppercase block mb-4 text-center">Configuração da Urna</label>
+                            
+                            <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                                <div class="w-full md:w-1/2">
+                                    <label class="text-xs font-bold text-gray-500 uppercase">Cargo Disputado</label>
+                                    <select id="reg-cargo" onchange="updateUrnaStructure()" class="input-premium w-full p-3 rounded-lg text-white mt-1">
+                                        </select>
+                                </div>
+
+                                <div class="urna-digital p-6 rounded-xl flex items-center gap-2">
+                                    <div class="text-center">
+                                        <div id="display-num-partido" class="bg-gray-200 text-black font-mono text-3xl px-2 py-1 rounded w-16 h-12 flex items-center justify-center">--</div>
+                                        <span class="text-[9px] text-gray-500 uppercase mt-1 block">Partido</span>
+                                    </div>
+                                    <div id="urna-extra-container" class="flex gap-1 hidden">
+                                        <input type="text" id="reg-num-extra" maxlength="3" class="bg-gray-200 text-black font-mono text-3xl px-2 py-1 rounded w-24 h-12 text-center outline-none border-b-4 border-transparent focus:border-green-500" placeholder="000">
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-center text-xs text-tse-gold mt-4 font-mono">Número Final: <span id="final-number">--</span></p>
+                        </div>
                     </div>
-                    
-                    <!-- Botões de Ação -->
-                    <div class="col-span-2 flex gap-4 mt-4">
-                        <button type="button" onclick="limparFormulario()" class="btn-tse-secondary flex-1 py-5">
-                            <i class="fas fa-eraser mr-2"></i> Limpar
-                        </button>
-                        <button type="submit" class="btn-tse flex-1 py-5 text-lg">
-                            <i class="fas fa-eye mr-2"></i> Pré-visualizar
-                        </button>
-                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-tse-gold to-yellow-600 text-black font-bold text-lg py-4 rounded-xl shadow-lg shadow-yellow-500/20 hover:scale-[1.01] transition-transform uppercase tracking-wider">
+                        <i class="fas fa-paper-plane mr-2"></i> Protocolar Candidatura
+                    </button>
                 </form>
             </div>
         </section>
 
-        <!-- Lista de Candidatos -->
-        <section id="aba-candidatos" class="section">
-            <div class="mb-12">
-                <h2 class="text-3xl font-black mb-2">Candidaturas Homologadas</h2>
-                <p class="opacity-60">Lista completa de candidatos aprovados para as Eleições 2026</p>
-            </div>
-            
-            <!-- Filtros -->
-            <div class="glass p-6 rounded-3xl mb-10">
-                <div class="mb-6">
-                    <p class="text-sm font-bold mb-3">FILTRAR POR CARGO:</p>
-                    <div id="filtros-cargo" class="flex flex-wrap gap-2">
-                        <!-- Será preenchido dinamicamente -->
-                    </div>
-                </div>
+        <section id="sec-candidatos" class="hidden animate-enter">
+            <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <h2 class="text-2xl font-bold text-white">Candidaturas Homologadas</h2>
                 
-                <div class="pt-6 border-t border-white/5">
-                    <p class="text-sm font-bold mb-3">FILTRAR POR UNIDADE FEDERATIVA:</p>
-                    <div id="filtros-estado" class="flex flex-wrap gap-2">
-                        <button onclick="definirFiltroEstado('todos')" class="nav-est selected-est">
-                            <i class="fas fa-flag mr-1"></i> NACIONAL
-                        </button>
-                        <button onclick="definirFiltroEstado('Brookhaven')" class="nav-est">
-                            <i class="fas fa-city mr-1"></i> Brookhaven
-                        </button>
-                        <button onclick="definirFiltroEstado('Novacore')" class="nav-est">
-                            <i class="fas fa-mountain mr-1"></i> Novacore
-                        </button>
-                        <button onclick="definirFiltroEstado('Casteríber')" class="nav-est">
-                            <i class="fas fa-landmark mr-1"></i> Casteríber
-                        </button>
-                        <button onclick="definirFiltroEstado('Fortemega')" class="nav-est">
-                            <i class="fas fa-fort-awesome mr-1"></i> Fortemega
-                        </button>
-                        <button onclick="definirFiltroEstado('Florêmix')" class="nav-est">
-                            <i class="fas fa-leaf mr-1"></i> Florêmix
-                        </button>
-                    </div>
+                <div class="flex gap-2 bg-black/30 p-1 rounded-lg border border-white/10">
+                    <button onclick="filterCandidates('todos')" class="px-4 py-2 rounded-md text-xs font-bold uppercase bg-white/10 text-white hover:bg-white/20 transition-all filter-btn active-filter" data-filter="todos">Todos</button>
+                    <button onclick="filterCandidates('Presidente')" class="px-4 py-2 rounded-md text-xs font-bold uppercase text-gray-400 hover:text-white hover:bg-white/10 transition-all filter-btn" data-filter="Presidente">Presidente</button>
+                    <button onclick="filterCandidates('Governador')" class="px-4 py-2 rounded-md text-xs font-bold uppercase text-gray-400 hover:text-white hover:bg-white/10 transition-all filter-btn" data-filter="Governador">Gov</button>
+                    <button onclick="filterCandidates('Outros')" class="px-4 py-2 rounded-md text-xs font-bold uppercase text-gray-400 hover:text-white hover:bg-white/10 transition-all filter-btn" data-filter="Outros">Legis</button>
                 </div>
-            </div>
+            </header>
+
+            <div id="grid-candidatos" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                </div>
             
-            <!-- Grid de Candidatos -->
-            <div id="grid-candidatos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"></div>
-            
-            <!-- Mensagem sem resultados -->
-            <div id="sem-candidatos" class="glass p-12 rounded-3xl text-center hidden">
-                <div class="text-5xl opacity-20 mb-6"><i class="fas fa-user-slash"></i></div>
-                <h3 class="text-xl font-black mb-2">Nenhuma candidatura encontrada</h3>
-                <p class="opacity-60">Não há candidatos homologados para os filtros selecionados.</p>
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 opacity-50">
+                <i class="fas fa-search text-4xl mb-4"></i>
+                <p>Nenhum candidato encontrado com este filtro.</p>
             </div>
         </section>
 
-        <!-- Painel Administrativo -->
-        <section id="aba-adm" class="section">
-            <div class="glass p-8 rounded-3xl mb-10 border-l-8 border-red-600">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div>
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
-                                <i class="fas fa-shield-alt text-white text-xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-black" id="adm-sub">PAINEL DE CONTROLE TSE</h3>
-                                <p class="text-xs font-black opacity-40 uppercase">Acesso Restrito - Terminal Administrativo</p>
-                            </div>
-                        </div>
-                        <p class="text-sm opacity-60">Sistema de homologação e gerenciamento de candidaturas</p>
-                    </div>
-                    
-                    <div id="adm-mestre" class="hidden flex flex-col gap-3">
-                        <div class="text-center">
-                            <p class="text-xs font-bold uppercase opacity-60 mb-2">MODO ELEITORAL ATUAL</p>
-                            <div class="flex gap-2">
-                                <button onclick="definirEleicao('Federal')" class="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl text-sm font-black transition-all">
-                                    <i class="fas fa-flag-usa mr-2"></i> FEDERAL
-                                </button>
-                                <button onclick="definirEleicao('Municipal')" class="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-xl text-sm font-black transition-all">
-                                    <i class="fas fa-city mr-2"></i> MUNICIPAL
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+        <section id="sec-admin" class="hidden animate-enter pb-20">
+            <div class="glass-panel p-6 rounded-2xl mb-8 border-l-4 border-l-red-500 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-user-shield text-red-500"></i> Painel Administrativo
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-1" id="admin-info-text">Conectado como Visitante</p>
+                </div>
+                <div id="admin-controls" class="hidden gap-2">
+                    <button onclick="logoutAdmin()" class="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded hover:bg-red-500/20 text-xs font-bold">SAIR</button>
                 </div>
             </div>
-            
-            <!-- Alertas do Admin -->
-            <div id="admin-alerts" class="mb-8"></div>
-            <div id="filtros-admin" class="glass p-4 rounded-2x1 mb-8">
-            </div>
-            <div class="grid lg:grid-cols2 gap-10">
-                <!-- Coluna: Pendentes -->
-                <div>
-                    <div class="flex justify-between items-center mb-6">
-                        <h4 class="text-yellow-400 font-black text-lg uppercase">
-                            <i class="fas fa-clock mr-2"></i> Pendentes de Homologação
-                        </h4>
-                        <span id="contador-pendentes" class="badge badge-pendente">0</span>
-                    </div>
-                    <div id="lista-pendentes" class="space-y-8"></div>
-                    
-                    <!-- Mensagem sem pendentes -->
-                    <div id="sem-pendentes" class="glass p-10 rounded-3xl text-center hidden">
-                        <div class="text-4xl opacity-20 mb-4"><i class="fas fa-check-circle"></i></div>
-                        <h4 class="text-lg font-black mb-2">Nenhuma pendência</h4>
-                        <p class="opacity-60 text-sm">Todas as candidaturas foram analisadas.</p>
-                    </div>
+
+            <div id="super-admin-tools" class="hidden glass-panel p-6 rounded-2xl mb-8">
+                <h3 class="text-sm font-bold text-tse-gold uppercase mb-4">Configuração Global (TSE Central)</h3>
+                <div class="flex gap-4">
+                    <button onclick="setElectionMode('Federal')" class="flex-1 bg-blue-900/30 border border-blue-500/30 hover:bg-blue-900/50 p-4 rounded-xl text-center transition-all group">
+                        <i class="fas fa-globe-americas text-2xl text-blue-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                        <p class="text-xs font-bold text-blue-100">ATIVAR ELEIÇÕES FEDERAIS</p>
+                    </button>
+                    <button onclick="setElectionMode('Municipal')" class="flex-1 bg-green-900/30 border border-green-500/30 hover:bg-green-900/50 p-4 rounded-xl text-center transition-all group">
+                        <i class="fas fa-city text-2xl text-green-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                        <p class="text-xs font-bold text-green-100">ATIVAR ELEIÇÕES MUNICIPAIS</p>
+                    </button>
                 </div>
-                
-                <!-- Coluna: Homologados -->
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
                 <div>
-                    <div class="flex justify-between items-center mb-6">
-                        <h4 class="text-green-400 font-black text-lg uppercase">
-                            <i class="fas fa-check-circle mr-2"></i> Candidaturas Ativas
-                        </h4>
-                        <span id="contador-aceitos" class="badge badge-aceito">0</span>
-                    </div>
-                    <div id="lista-aceitos" class="space-y-8"></div>
-                    
-                    <!-- Mensagem sem homologados -->
-                    <div id="sem-aceitos" class="glass p-10 rounded-3xl text-center hidden">
-                        <div class="text-4xl opacity-20 mb-4"><i class="fas fa-user-plus"></i></div>
-                        <h4 class="text-lg font-black mb-2">Nenhuma candidatura ativa</h4>
-                        <p class="opacity-60 text-sm">Não há candidatos homologados no momento.</p>
-                    </div>
+                    <h3 class="text-sm font-bold text-yellow-400 uppercase mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span> Aguardando Análise
+                    </h3>
+                    <div id="list-admin-pendentes" class="space-y-4"></div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold text-green-400 uppercase mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full"></span> Base de Dados Ativa
+                    </h3>
+                    <div id="list-admin-aprovados" class="space-y-4"></div>
                 </div>
             </div>
         </section>
-        
-        <!-- Rodapé -->
-        <footer class="mt-20 pt-10 border-t border-white/5 text-center">
-            <div class="logo-tse text-2xl font-black tracking-tighter mb-4">TSE<span class="text-yellow-400">.</span>2026</div>
-            <p class="text-xs opacity-40 font-bold uppercase tracking-widest">Tribunal Superior Eleitoral - Justiça Eleitoral Brookasil</p>
-            <p class="text-xs opacity-30 mt-2">Sistema Nacional de Candidaturas - Versão 2.1.0</p>
-            <p class="text-xs opacity-20 mt-6">© 2026 Todos os direitos reservados. Este é um sistema oficial do Governo de Brookasil.</p>
-        </footer>
-    </div>
+
+    </main>
 
     <script>
-        // ===================== CONFIGURAÇÃO INICIAL =====================
-        const firebaseConfig = { databaseURL: "https://candidatura-cde-default-rtdb.firebaseio.com" };
+        // CONFIGURAÇÃO FIREBASE 
+        // Use a configuração pública padrão ou a sua própria
+        const firebaseConfig = {
+            databaseURL: "https://candidatura-cde-default-rtdb.firebaseio.com"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Senhas de acesso por estado
-        const senhasTSE = { 
-            "Brookhaven": "Brookasil1234", 
-            "Novacore": "williamNC", 
-            "Casteríber": "henriqueCB", 
-            "Fortemega": "lucasFM", 
-            "Florêmix": "charlesFX" 
-        };
+        // Variáveis de Estado
+        let currentTab = 'dashboard';
+        let electionMode = 'Federal'; // Federal ou Municipal
+        let currentUser = null; // { estado: 'Brookhaven', nivel: 'admin' }
+        let candidatesCache = [];
         
-        // Mapeamento de partidos por posicionamento político
-        const partidosMap = {
-            Direita: [
-                "PL (22)", "PP (11)", "Republicanos (10)", "PRTN (75)", "Patriota (51)", 
-                "PRTB (28)", "NOVO (30)", "PMB (35)", "DC (27)", "UDB (38)", "Agir (36)", 
-                "POL (81)", "ACN (84)", "PRONA (57)", "PSL (17)", "PESP (48)", "PMNL (86)"
-            ],
-            Centro: [
-                "MDB (15)", "UNIÃO (44)", "PSD (55)", "Podemos (20)", "PSDB (45)", 
-                "CDN (23)", "Solidariedade (77)", "Avante (70)", "PMN (33)",
-                "PV (43)", "PUN (42)", "MPD (37)", "PDM (26)", "MTB (63)", "PTD (46)", "PDSD (88)", "MSS (14), "PC (85)"
-            ],
-            Esquerda: [
-                "PT (13)", "PSOL (50)", "PCdoB (65)", "Rede (18)", "PDT (12)", 
-                "UP (80)", "PCO (29)", "PCB (21)", "PSTU (16)", "PPL (54)", "PSB (40)", 
-                "PFS (60)", "PS (56)", "PSTN (31)"
-            ]
+        // Dados Estáticos
+        const parties = {
+            Direita: ["PL (22)", "PP (11)", "Republicanos (10)", "PRTB (28)", "NOVO (30)", "Patriota (51)"],
+            Centro: ["MDB (15)", "PSD (55)", "PSDB (45)", "Podemos (20)", "União (44)"],
+            Esquerda: ["PT (13)", "PSOL (50)", "PDT (12)", "PCdoB (65)", "PSB (40)", "Rede (18)"]
         };
 
-        // Mapeamento de estados para cidades (para eleições municipais)
-        const cidadesPorEstado = {
-            "Brookhaven": ["Cidade Eleitoral", "Liberty City"],
-            "Novacore": ["Nexaville"],
-            "Casteríber": ["Castelo Verde"],
-            "Fortemega": ["Marinha City"],
-            "Florêmix": ["Florápolis"]
+        const passwords = {
+            "Brookhaven": "Brookasil1234",
+            "Novacore": "williamNC",
+            "Casteríber": "henriqueCB",
+            "Fortemega": "lucasFM",
+            "Florêmix": "charlesFX"
         };
 
-        // Variáveis globais
-        let eleicaoTipo = "Federal";
-        let loginEst = null;
-        let fCargo = 'todos';
-        let fEst = 'todos';
-        let fEstAdmin = 'todos'
-        let dadosCandidaturaPreview = null;
-
-// ===================== CONFIGURAÇÃO DE PERMISSÕES =====================
-const permissoesTSE = {
-    "Brookhaven": {
-        nivel: "super",
-        nome: "TSE Central - Brookhaven",
-        podeMudarModo: true,
-        verTodosEstados: true,
-        verTodosCandidatos: true,
-        cor: "#FFD700",
-        icon: "fa-crown"
-    },
-    "Novacore": {
-        nivel: "admin",
-        nome: "TRE Novacore",
-        podeMudarModo: false,
-        verTodosEstados: false,
-        verTodosCandidatos: false,
-        cor: "#3A75C4",
-        icon: "fa-landmark"
-    },
-    "Casteríber": {
-        nivel: "admin", 
-        nome: "TRE Casteríber",
-        podeMudarModo: false,
-        verTodosEstados: false,
-        verTodosCandidatos: false,
-        cor: "#009E49",
-        icon: "fa-landmark"
-    },
-    "Fortemega": {
-        nivel: "admin",
-        nome: "TRE Fortemega", 
-        podeMudarModo: false,
-        verTodosEstados: false,
-        verTodosCandidatos: false,
-        cor: "#E63946",
-        icon: "fa-landmark"
-    },
-    "Florêmix": {
-        nivel: "admin",
-        nome: "TRE Florêmix",
-        podeMudarModo: false,
-        verTodosEstados: false,
-        verTodosCandidatos: false,
-        cor: "#7B3FE4",
-        icon: "fa-landmark"
-    }
-};
-
-        // ===================== INICIALIZAÇÃO =====================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar Firebase
-            db.ref('config/tipoEleicao').on('value', (snapshot) => {
-                eleicaoTipo = snapshot.val() || "Federal";
-                atualizarModoEleitoral();
-                atualizarCargosForm();
-                carregarCandidatosPublicos();
-                atualizarEstatisticas();
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ouvinte de Configuração Global
+            db.ref('config/mode').on('value', snap => {
+                electionMode = snap.val() || 'Federal';
+                updateInterfaceMode();
+                loadCandidates(); // Recarrega com base no novo modo
             });
-            
-            // Inicializar formulário
-            atualizarCargosForm();
-            atualizarCamposLocalizacao();
-            
-            // Inicializar filtros
-            atualizarFiltrosCargo();
-            
-            // Configurar máscara de CPF
+
+            // Atualizar Relógio
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('pt-BR');
+            }, 1000);
+
+            // Máscara CPF
             document.getElementById('reg-cpf').addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 3 && value.length <= 6) {
-                    value = value.replace(/(\d{3})(\d+)/, '$1.$2');
-                } else if (value.length > 6 && value.length <= 9) {
-                    value = value.replace(/(\d{3})(\d{3})(\d+)/, '$1.$2.$3');
-                } else if (value.length > 9) {
-                    value = value.replace(/(\d{3})(\d{3})(\d{3})(\d+)/, '$1.$2.$3-$4');
-                }
-                e.target.value = value.substring(0, 14);
+                let v = e.target.value.replace(/\D/g, "");
+                if (v.length > 11) v = v.slice(0, 11);
+                if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+                else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{3})/, "$1.$2.$3");
+                else if (v.length > 3) v = v.replace(/(\d{3})(\d{3})/, "$1.$2");
+                e.target.value = v;
             });
+
+            // Input listener para numero extra da urna
+            document.getElementById('reg-num-extra').addEventListener('input', updateUrnaNumber);
         });
 
-        // ===================== FUNÇÕES DE UI =====================
-        function mostrarAlerta(tipo, mensagem, duracao = 5000) {
-            const container = document.getElementById('alert-container');
-            const alertId = 'alert-' + Date.now();
+        // --- NAVEGAÇÃO ---
+        function navTo(tabId) {
+            // Esconder todas as seções
+            ['dashboard', 'registro', 'candidatos', 'admin'].forEach(id => {
+                document.getElementById('sec-' + id).classList.add('hidden');
+                const btn = document.getElementById('btn-' + id);
+                if(btn) btn.classList.remove('active-nav');
+            });
+
+            // Mostrar a desejada
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) activeBtn.classList.add('active-nav');
             
-            const alertDiv = document.createElement('div');
-            alertDiv.id = alertId;
-            alertDiv.className = `alert alert-${tipo}`;
-            alertDiv.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>
-                        <span>${mensagem}</span>
-                    </div>
-                    <button onclick="document.getElementById('${alertId}').remove()" class="opacity-50 hover:opacity-100 ml-4">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
+            // Re-renderizar se necessário
+            if(tabId === 'dashboard') updateDashboardStats();
             
-            container.appendChild(alertDiv);
-            
-            if (duracao > 0) {
-                setTimeout(() => {
-                    const alertElement = document.getElementById(alertId);
-                    if (alertElement) {
-                        alertElement.style.opacity = '0';
-                        alertElement.style.transform = 'translateX(20px)';
-                        setTimeout(() => alertElement.remove(), 300);
-                    }
-                }, duracao);
-            }
-            
-            return alertId;
+            currentTab = tabId;
         }
 
-        function mudarAba(id) {
-            if(id === 'aba-adm' && !loginEst) { 
-                document.getElementById('modal-login').classList.remove('hidden'); 
-                return; 
-            }
-            
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-tse').forEach(n => n.classList.remove('selected'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('nav-' + id).classList.add('selected');
-            
-            // Rolagem suave para o topo
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function atualizarModoEleitoral() {
-            const modoTexto = document.getElementById('modo-texto');
-            const modoIndicator = document.getElementById('modo-indicator');
-            
-            if (eleicaoTipo === "Federal") {
-                modoTexto.textContent = "Eleições Federais 2026";
-                modoIndicator.className = "w-3 h-3 rounded-full bg-blue-500 animate-pulse";
+        function checkAdminAccess() {
+            if(currentUser) {
+                navTo('admin');
+                renderAdminList();
             } else {
-                modoTexto.textContent = "Eleições Municipais 2026";
-                modoIndicator.className = "w-3 h-3 rounded-full bg-green-500 animate-pulse";
+                toggleModal('modal-login');
             }
         }
 
-        // ===================== FUNÇÕES DE FORMULÁRIO =====================
-        function atualizarCamposLocalizacao() {
-            const tipoEleicao = document.getElementById('reg-eleicao-tipo').value;
-            const cargo = document.getElementById('reg-cargo').value;
-            const campoPais = document.getElementById('campo-pais');
-            const campoEstado = document.getElementById('campo-estado');
-            const campoCidade = document.getElementById('campo-cidade');
-            const selectEstado = document.getElementById('reg-estado');
-            const selectCidade = document.getElementById('reg-cidade');
-            
-            // Resetar visibilidade
-            campoPais.classList.add('hidden');
-            campoEstado.classList.remove('hidden');
-            campoCidade.classList.add('hidden');
-            
-            // Resetar required
-            selectEstado.required = true;
-            selectCidade.required = false;
-            
-            // Lógica baseada no tipo de eleição e cargo
-            if (tipoEleicao === "Municipal") {
-                // Eleição Municipal: Obrigatório selecionar CIDADE
-                campoCidade.classList.remove('hidden');
-                selectCidade.required = true;
+        function toggleModal(id) {
+            const el = document.getElementById(id);
+            if(el.classList.contains('hidden')) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        // --- AUTH ADMIN ---
+        function autenticar() {
+            const est = document.getElementById('login-estado').value;
+            const sen = document.getElementById('login-senha').value;
+
+            if(passwords[est] === sen) {
+                currentUser = { estado: est };
+                showToast('success', `Bem-vindo, Admin ${est}`);
+                toggleModal('modal-login');
                 
-                // Atualizar cidades quando estado mudar
-                if (selectEstado.value) {
-                    atualizarCidades();
+                // Atualizar UI Admin
+                document.getElementById('admin-info-text').innerText = `Acesso Autorizado: TRE ${est}`;
+                document.getElementById('admin-controls').classList.remove('hidden');
+                
+                if(est === 'Brookhaven') {
+                    document.getElementById('super-admin-tools').classList.remove('hidden');
                 }
-            } else if (tipoEleicao === "Federal") {
-                // Eleição Federal: Lógica por cargo
-                switch(cargo) {
-                    case "Presidente":
-                        campoPais.classList.remove('hidden');
-                        campoEstado.classList.add('hidden');
-                        campoCidade.classList.add('hidden');
-                        selectEstado.required = false;
-                        break;
-                        
-                    case "Governador":
-                    case "Senador":
-                    case "Deputado Estadual":
-                        // Apenas estado
-                        campoEstado.classList.remove('hidden');
-                        campoCidade.classList.add('hidden');
-                        break;
-                        
-                    case "Deputado Federal":
-                        // Estado + Cidade Eleitoral
-                        campoEstado.classList.remove('hidden');
-                        campoCidade.classList.remove('hidden');
-                        selectCidade.required = true;
-                        
-                        // Atualizar cidades quando estado mudar
-                        if (selectEstado.value) {
-                            atualizarCidades();
-                        }
-                        break;
-                }
-            }
-        }
 
-        function atualizarCidades() {
-            const estado = document.getElementById('reg-estado').value;
-            const selectCidade = document.getElementById('reg-cidade');
-            
-            if (estado && cidadesPorEstado[estado]) {
-                selectCidade.innerHTML = '<option value="">Selecione a cidade</option>';
-                cidadesPorEstado[estado].forEach(cidade => {
-                    selectCidade.innerHTML += `<option value="${cidade}">${cidade}</option>`;
-                });
+                navTo('admin');
+                renderAdminList();
             } else {
-                selectCidade.innerHTML = '<option value="">Selecione primeiro o estado</option>';
+                showToast('error', 'Credenciais Inválidas');
             }
         }
 
-        function carregarPartidos(lado) {
-            const selectPartido = document.getElementById('reg-partido');
-            selectPartido.innerHTML = '<option value="">Selecione o Partido</option>';
-            
-            if(lado && partidosMap[lado]) {
-                partidosMap[lado].forEach(item => {
-                    selectPartido.innerHTML += `<option value="${item}">${item}</option>`;
-                });
-            }
-            
-            // Atualizar número da urna
-            atualizarNum();
+        function logoutAdmin() {
+            currentUser = null;
+            document.getElementById('super-admin-tools').classList.add('hidden');
+            navTo('dashboard');
+            showToast('info', 'Desconectado com sucesso');
         }
 
-        function atualizarNum() {
-            const partido = document.getElementById('reg-partido').value;
-            const cargo = document.getElementById('reg-cargo').value;
-            const numFixo = document.getElementById('num-fixo');
-            const divExtra = document.getElementById('div-extra');
-            const numExtra = document.getElementById('num-extra');
-            const numeroCompleto = document.getElementById('numero-completo');
-            
-            if(partido) {
-                // Extrair número do partido do formato "PL (22)"
-                const match = partido.match(/\((\d+)\)/);
-                numFixo.textContent = match ? match[1] : "00";
-                
-                // Mostrar campo extra para certos cargos
-                const cargosComNumeroExtra = { 
-                    "Senador": 1, 
-                    "Deputado Federal": 3, 
-                    "Vereador": 3,
-                    "Deputado Estadual": 3
-                };
-                
-                if (cargosComNumeroExtra[cargo]) {
-                    divExtra.classList.remove('hidden');
-                    numExtra.maxLength = cargosComNumeroExtra[cargo];
-                    numExtra.placeholder = "0".repeat(cargosComNumeroExtra[cargo]);
-                } else {
-                    divExtra.classList.add('hidden');
-                    numExtra.value = "";
-                }
-                
-                // Atualizar número completo
-                atualizarNumeroCompleto();
-            } else {
-                numFixo.textContent = "00";
-                divExtra.classList.add('hidden');
-                numeroCompleto.textContent = "00";
-            }
-        }
-
-        function atualizarNumeroCompleto() {
-            const numFixo = document.getElementById('num-fixo').textContent;
-            const numExtra = document.getElementById('num-extra').value;
-            const numeroCompleto = document.getElementById('numero-completo');
-            
-            if (numExtra) {
-                numeroCompleto.textContent = numFixo + numExtra;
-            } else {
-                numeroCompleto.textContent = numFixo;
-            }
-        }
-
-        // Adicionar evento para atualizar número completo em tempo real
-        document.getElementById('num-extra').addEventListener('input', function() {
-            atualizarNumeroCompleto();
-        });
-
-        function atualizarCargosForm() {
+        // --- LÓGICA DE DADOS ---
+        function updateInterfaceMode() {
+            const badge = document.getElementById('modo-eleicao-badge');
             const selectCargo = document.getElementById('reg-cargo');
-            const cargos = eleicaoTipo === "Federal" 
-                ? ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 'Deputado Estadual'] 
-                : ['Prefeito', 'Vereador'];
             
-            selectCargo.innerHTML = cargos.map(cargo => `<option value="${cargo}">${cargo}</option>`).join('');
-            
-            // Atualizar filtros na aba de candidatos
-            atualizarFiltrosCargo();
+            if(electionMode === 'Federal') {
+                badge.innerHTML = `<div class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div><span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Eleições Federais</span>`;
+                selectCargo.innerHTML = `
+                    <option value="Presidente">Presidente</option>
+                    <option value="Governador">Governador</option>
+                    <option value="Senador">Senador</option>
+                    <option value="Deputado Federal">Deputado Federal</option>
+                    <option value="Deputado Estadual">Deputado Estadual</option>
+                `;
+            } else {
+                badge.innerHTML = `<div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div><span class="text-[10px] font-bold text-green-400 uppercase tracking-wider">Eleições Municipais</span>`;
+                selectCargo.innerHTML = `
+                    <option value="Prefeito">Prefeito</option>
+                    <option value="Vereador">Vereador</option>
+                `;
+            }
+            updateUrnaStructure();
         }
 
-        function atualizarFiltrosCargo() {
-            const filtrosArea = document.getElementById('filtros-cargo');
-            const cargos = eleicaoTipo === "Federal" 
-                ? ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 'Deputado Estadual'] 
-                : ['Prefeito', 'Vereador'];
+        function loadParties(side) {
+            const sel = document.getElementById('reg-partido');
+            sel.innerHTML = '<option value="">Selecione...</option>';
+            sel.disabled = true;
             
-            filtrosArea.innerHTML = `
-                <button onclick="definirFiltroCargo('todos')" class="nav-est selected-est">
-                    <i class="fas fa-layer-group mr-1"></i> TODOS
-                </button>
-            ` + cargos.map(cargo => `
-                <button onclick="definirFiltroCargo('${cargo}')" class="nav-est">
-                    ${cargo.toUpperCase()}
-                </button>
-            `).join('');
+            if(parties[side]) {
+                parties[side].forEach(p => {
+                    sel.innerHTML += `<option value="${p}">${p}</option>`;
+                });
+                sel.disabled = false;
+            }
         }
 
-        // ===================== FUNÇÕES DE PREVIEW E ENVIO =====================
-        function previewCandidatura(event) {
-            event.preventDefault();
+        function updateUrnaStructure() {
+            const cargo = document.getElementById('reg-cargo').value;
+            const extraContainer = document.getElementById('urna-extra-container');
+            const numExtraInput = document.getElementById('reg-num-extra');
             
-            // Coletar dados do formulário
-            const dados = {
+            // Regra: Presidente/Gov/Prefeito = Apenas numero partido (2 digitos)
+            // Senador (3), Deputados/Vereador (4 ou 5)
+            // Aqui simplificaremos: Executivo = Partido, Legislativo = Partido + 3 dígitos
+            
+            const isLegislativo = ['Senador', 'Deputado Federal', 'Deputado Estadual', 'Vereador'].includes(cargo);
+            
+            if(isLegislativo) {
+                extraContainer.classList.remove('hidden');
+                numExtraInput.value = '';
+            } else {
+                extraContainer.classList.add('hidden');
+                numExtraInput.value = '';
+            }
+            updateUrnaNumber();
+        }
+
+        function updateUrnaNumber() {
+            const partidoStr = document.getElementById('reg-partido').value;
+            const numExtra = document.getElementById('reg-num-extra').value;
+            const displayP = document.getElementById('display-num-partido');
+            const finalDisplay = document.getElementById('final-number');
+            
+            let numPartido = '--';
+            if(partidoStr) {
+                const match = partidoStr.match(/\((\d+)\)/);
+                if(match) numPartido = match[1];
+            }
+            
+            displayP.innerText = numPartido;
+            
+            if(document.getElementById('urna-extra-container').classList.contains('hidden')) {
+                finalDisplay.innerText = numPartido !== '--' ? numPartido : '--';
+                finalDisplay.className = numPartido !== '--' ? "text-2xl font-black text-tse-gold" : "text-gray-500";
+            } else {
+                const full = (numPartido !== '--' ? numPartido : '') + numExtra;
+                finalDisplay.innerText = full || '--';
+                finalDisplay.className = full.length >= 4 ? "text-2xl font-black text-tse-gold" : "text-gray-500";
+            }
+        }
+
+        // --- CRUD CANDIDATOS ---
+        function preRegister(e) {
+            e.preventDefault();
+            
+            // Coletar dados
+            const data = {
                 nome: document.getElementById('reg-nome').value,
                 cpf: document.getElementById('reg-cpf').value,
-                nascimento: document.getElementById('reg-nasc').value,
-                lado: document.getElementById('reg-lado').value,
-                eleicaoTipo: document.getElementById('reg-eleicao-tipo').value,
-                cargo: document.getElementById('reg-cargo').value,
-                estado: document.getElementById('reg-estado').value || '',
-                cidade: document.getElementById('reg-cidade').value || '',
-                pais: document.getElementById('reg-pais') ? document.getElementById('reg-pais').value : '',
-                partido: document.getElementById('reg-partido').value,
                 tiktok: document.getElementById('reg-tiktok').value,
-                numero: document.getElementById('numero-completo').textContent
+                lado: document.getElementById('reg-lado').value,
+                partido: document.getElementById('reg-partido').value,
+                estado: document.getElementById('reg-estado').value,
+                cargo: document.getElementById('reg-cargo').value,
+                numero: document.getElementById('final-number').innerText,
+                eleicao: electionMode,
+                status: 'pendente',
+                timestamp: Date.now()
             };
-            
-            // Validações
-            if (!validarCandidatura(dados)) {
+
+            // Validar
+            if(data.numero === '--' || data.numero.length < 2) {
+                showToast('error', 'Número da urna inválido');
                 return;
             }
-            
-            // Salvar dados para envio posterior
-            dadosCandidaturaPreview = dados;
-            
-            // Exibir preview
-            exibirPreviewCandidatura(dados);
-            
-            // Abrir modal de preview
-            document.getElementById('modal-preview').classList.remove('hidden');
+
+            // Verificar duplicidade (simples)
+            const exists = candidatesCache.find(c => c.numero === data.numero && c.eleicao === electionMode && c.estado === data.estado);
+            if(exists) {
+                showToast('error', 'Este número já está em uso neste estado!');
+                return;
+            }
+
+            // Enviar
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+            btn.disabled = true;
+
+            db.ref('candidatos').push(data).then(() => {
+                showToast('success', 'Registro enviado para análise!');
+                e.target.reset();
+                document.getElementById('final-number').innerText = '--';
+                document.getElementById('display-num-partido').innerText = '--';
+                navTo('candidatos'); // Redireciona para mostrar que foi, mas só aparecerá após aprovação se filtrar ou no admin
+            }).catch(err => {
+                showToast('error', 'Erro ao salvar: ' + err.message);
+            }).finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
         }
 
-        function validarCandidatura(dados) {
-            const alertasDiv = document.getElementById('form-alerts');
-            alertasDiv.innerHTML = '';
-            
-            let valido = true;
-            
-            // Validar CPF
-            const cpfNumerico = dados.cpf.replace(/\D/g, '');
-            if (cpfNumerico.length !== 11) {
-                alertasDiv.innerHTML += `
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle mr-2"></i> CPF inválido. Deve conter 11 dígitos.
-                    </div>
-                `;
-                valido = false;
-            }
-            
-            // Validar número da urna
-            if (dados.numero.length < 2) {
-                alertasDiv.innerHTML += `
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle mr-2"></i> Número eleitoral inválido.
-                    </div>
-                `;
-                valido = false;
-            }
-            
-            // Validar TikTok
-            if (!dados.tiktok.includes('tiktok.com') && !dados.tiktok.includes('@')) {
-                alertasDiv.innerHTML += `
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle mr-2"></i> Formato do TikTok inválido. Use link completo ou @usuário.
-                    </div>
-                `;
-            }
-            
-            // Validações específicas por tipo de eleição
-            if (dados.eleicaoTipo === "Municipal" && !dados.cidade) {
-                alertasDiv.innerHTML += `
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle mr-2"></i> Para eleição municipal, a cidade é obrigatória.
-                    </div>
-                `;
-                valido = false;
-            }
-            
-            return valido;
+        function loadCandidates() {
+            db.ref('candidatos').on('value', snap => {
+                candidatesCache = [];
+                snap.forEach(child => {
+                    candidatesCache.push({ id: child.key, ...child.val() });
+                });
+                
+                updateDashboardStats();
+                renderPublicList();
+                if(currentUser) renderAdminList();
+            });
         }
 
-        function exibirPreviewCandidatura(dados) {
-            const previewContent = document.getElementById('preview-content');
+        function renderPublicList(filterCargo = 'todos') {
+            const grid = document.getElementById('grid-candidatos');
+            grid.innerHTML = '';
             
-            // Determinar localização
-            let localizacao = '';
-            if (dados.eleicaoTipo === "Municipal") {
-                localizacao = `${dados.cidade}, ${dados.estado}`;
-            } else if (dados.cargo === "Presidente") {
-                localizacao = dados.pais;
-            } else if (dados.cargo === "Deputado Federal") {
-                localizacao = `${dados.cidade || dados.estado}, ${dados.estado}`;
+            const filtered = candidatesCache.filter(c => {
+                if(c.eleicao !== electionMode) return false;
+                if(c.status !== 'aprovado') return false;
+                if(filterCargo === 'todos') return true;
+                if(filterCargo === 'Outros') return !['Presidente', 'Governador', 'Prefeito'].includes(c.cargo);
+                return c.cargo === filterCargo;
+            });
+
+            if(filtered.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                return;
             } else {
-                localizacao = dados.estado;
+                document.getElementById('empty-state').classList.add('hidden');
             }
-            
-            previewContent.innerHTML = `
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="col-span-2">
-                        <div class="flex items-center gap-4 p-4 bg-white/5 rounded-2xl">
-                            <div class="text-4xl font-black text-yellow-400">#${dados.numero}</div>
+
+            filtered.forEach(c => {
+                const color = c.lado === 'Direita' ? 'blue' : (c.lado === 'Esquerda' ? 'red' : 'gray');
+                const card = `
+                    <div class="glass-panel p-6 rounded-2xl border-t-2 border-${color}-500 hover:transform hover:-translate-y-1 transition-all duration-300 relative group">
+                        <div class="absolute top-4 right-4 opacity-50 text-xs font-mono border border-white/20 px-2 py-1 rounded">
+                            ${c.estado}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-${color}-400">${c.lado}</span>
+                            <h3 class="text-xl font-bold text-white truncate" title="${c.nome}">${c.nome}</h3>
+                            <p class="text-xs text-gray-400 truncate">${c.partido}</p>
+                        </div>
+
+                        <div class="bg-black/40 rounded-xl p-4 flex justify-between items-center border border-white/5">
                             <div>
-                                <h4 class="font-black text-lg">${dados.nome}</h4>
-                                <p class="text-sm opacity-60">${dados.partido}</p>
+                                <p class="text-[10px] text-gray-500 uppercase">Número</p>
+                                <p class="text-3xl font-tech font-bold text-tse-gold">${c.numero}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-gray-500 uppercase">Cargo</p>
+                                <p class="text-sm font-bold text-white">${c.cargo}</p>
                             </div>
                         </div>
+
+                        <div class="mt-4 flex justify-between items-center">
+                            <a href="https://tiktok.com/${c.tiktok.startsWith('@') ? c.tiktok : '@'+c.tiktok}" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                                <i class="fab fa-tiktok"></i> Ver Perfil
+                            </a>
+                        </div>
                     </div>
-                    
-                    <div>
-                        <p class="label-adm">CARGO</p>
-                        <p class="val-adm text-yellow-400 font-bold">${dados.cargo}</p>
-                    </div>
-                    
-                    <div>
-                        <p class="label-adm">ELEIÇÃO</p>
-                        <p class="val-adm">${dados.eleicaoTipo === "Federal" ? "Federal" : "Municipal"}</p>
-                    </div>
-                    
-                    <div>
-                        <p class="label-adm">LOCALIZAÇÃO</p>
-                        <p class="val-adm">${localizacao}</p>
-                    </div>
-                    
-                    <div>
-                        <p class="label-adm">POSICIONAMENTO</p>
-                        <p class="val-adm">${dados.lado}</p>
-                    </div>
-                    
-                    <div class="col-span-2">
-                        <p class="label-adm">TikTok</p>
-                        <p class="val-adm truncate"><a href="${dados.tiktok.startsWith('http') ? dados.tiktok : 'https://tiktok.com/@' + dados.tiktok.replace('@', '')}" target="_blank" class="text-blue-400 hover:underline">${dados.tiktok}</a></p>
-                    </div>
-                    
-                    <div>
-                        <p class="label-adm">CPF</p>
-                        <p class="val-adm">${dados.cpf}</p>
-                    </div>
-                    
-                    <div>
-                        <p class="label-adm">NASCIMENTO</p>
-                        <p class="val-adm">${new Date(dados.nascimento).toLocaleDateString('pt-BR')}</p>
-                    </div>
-                </div>
-            `;
+                `;
+                grid.innerHTML += card;
+            });
         }
 
-        function enviarCandidatura() {
-            if (!dadosCandidaturaPreview) return;
-            
-            const btnEnviar = document.getElementById('btn-confirmar-envio');
-            const originalText = btnEnviar.innerHTML;
-            
-            // Mostrar loading
-            btnEnviar.innerHTML = '<div class="spinner"></div>';
-            btnEnviar.disabled = true;
-            
-            // Verificar duplicação de número
-            db.ref('candidatos').once('value', (snapshot) => {
-                let duplicado = false;
-                const estado = dadosCandidaturaPreview.estado || "Brookasil";
-                
-                snapshot.forEach(child => {
-                    const c = child.val();
-                    if (c.numero === dadosCandidaturaPreview.numero && 
-                        c.estado === estado && 
-                        c.eleicao === dadosCandidaturaPreview.eleicaoTipo && 
-                        (c.status === 'aceito' || c.status === 'pendente')) {
-                        duplicado = true;
-                    }
-                });
-
-                if(duplicado) {
-                    mostrarAlerta('error', '⚠️ NÚMERO JÁ REGISTRADO PARA ESTA ELEIÇÃO E LOCALIDADE!');
-                    btnEnviar.innerHTML = originalText;
-                    btnEnviar.disabled = false;
-                    return;
+        function filterCandidates(filter) {
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('active-filter', 'bg-white/10', 'text-white');
+                b.classList.add('text-gray-400');
+                if(b.dataset.filter === filter) {
+                    b.classList.add('bg-white/10', 'text-white');
+                    b.classList.remove('text-gray-400');
                 }
-                
-                // Enviar para o Firebase
-                db.ref('candidatos').push({
-                    nome: dadosCandidaturaPreview.nome,
-                    cpf: dadosCandidaturaPreview.cpf,
-                    nascimento: dadosCandidaturaPreview.nascimento,
-                    lado: dadosCandidaturaPreview.lado,
-                    estado: estado,
-                    cidade: dadosCandidaturaPreview.cidade || '',
-                    pais: dadosCandidaturaPreview.pais || '',
-                    tiktok: dadosCandidaturaPreview.tiktok,
-                    cargo: dadosCandidaturaPreview.cargo,
-                    partido: dadosCandidaturaPreview.partido,
-                    numero: dadosCandidaturaPreview.numero,
-                    eleicao: dadosCandidaturaPreview.eleicaoTipo,
-                    status: 'pendente',
-                    dataRegistro: new Date().toISOString()
-                }).then(() => {
-                    mostrarAlerta('success', '✅ Candidatura enviada para análise do TSE!');
-                    
-                    // Limpar formulário
-                    limparFormulario();
-                    
-                    // Fechar modal
-                    fecharModalPreview();
-                    
-                    // Restaurar botão
-                    setTimeout(() => {
-                        btnEnviar.innerHTML = originalText;
-                        btnEnviar.disabled = false;
-                    }, 1000);
-                    
-                    // Atualizar estatísticas
-                    atualizarEstatisticas();
-                }).catch(error => {
-                    mostrarAlerta('error', '❌ Erro ao enviar candidatura: ' + error.message);
-                    btnEnviar.innerHTML = originalText;
-                    btnEnviar.disabled = false;
-                });
             });
+            renderPublicList(filter);
         }
 
-        function limparFormulario() {
-            document.getElementById('reg-nome').value = '';
-            document.getElementById('reg-cpf').value = '';
-            document.getElementById('reg-nasc').value = '';
-            document.getElementById('reg-lado').value = '';
-            document.getElementById('reg-estado').value = '';
-            document.getElementById('reg-cidade').value = '';
-            document.getElementById('reg-partido').innerHTML = '<option value="">Primeiro selecione o posicionamento político</option>';
-            document.getElementById('reg-tiktok').value = '';
-            document.getElementById('num-fixo').textContent = '00';
-            document.getElementById('num-extra').value = '';
-            document.getElementById('div-extra').classList.add('hidden');
-            document.getElementById('numero-completo').textContent = '00';
-            document.getElementById('form-alerts').innerHTML = '';
-        }
-
-        function fecharModalPreview() {
-            document.getElementById('modal-preview').classList.add('hidden');
-        }
-
-        function fecharModalLogin() {
-            document.getElementById('modal-login').classList.add('hidden');
-        }
-
-        // ===================== FUNÇÕES DE DASHBOARD =====================
-        function atualizarEstatisticas() {
-            db.ref('candidatos').on('value', (snapshot) => {
-                let aceitos = 0, pendentes = 0, total = 0;
-                let lados = { Direita: 0, Centro: 0, Esquerda: 0 };
-                let cargos = {};
-                
-                snapshot.forEach(child => {
-                    const c = child.val();
-                    if(c.eleicao === eleicaoTipo) {
-                        total++;
-                        
-                        if(c.status === 'aceito') { 
-                            aceitos++; 
-                            lados[c.lado]++; 
-                            
-                            // Contar por cargo
-                            if (!cargos[c.cargo]) cargos[c.cargo] = 0;
-                            cargos[c.cargo]++;
-                        }
-                        else if(c.status === 'pendente') { 
-                            pendentes++; 
-                        }
-                    }
-                });
-                
-                // Atualizar números
-                document.getElementById('stat-total').textContent = total;
-                document.getElementById('stat-aceitos').textContent = aceitos;
-                document.getElementById('stat-pendentes').textContent = pendentes;
-                
-                // Atualizar percentuais
-                document.getElementById('percent-aceitos').textContent = total > 0 ? Math.round((aceitos/total)*100) + '% do total' : '0% do total';
-                document.getElementById('percent-pendentes').textContent = total > 0 ? Math.round((pendentes/total)*100) + '% do total' : '0% do total';
-                
-                // Atualizar gráfico de equilíbrio ideológico
-                if(aceitos > 0) {
-                    const dirPercent = Math.round((lados.Direita/aceitos)*100);
-                    const cenPercent = Math.round((lados.Centro/aceitos)*100);
-                    const esqPercent = Math.round((lados.Esquerda/aceitos)*100);
-                    
-                    document.getElementById('bar-direita').style.width = dirPercent + "%";
-                    document.getElementById('bar-centro').style.width = cenPercent + "%";
-                    document.getElementById('bar-esquerda').style.width = esqPercent + "%";
-                    
-                    document.getElementById('txt-dir').textContent = dirPercent;
-                    document.getElementById('txt-cen').textContent = cenPercent;
-                    document.getElementById('txt-esq').textContent = esqPercent;
-                } else {
-                    document.getElementById('bar-direita').style.width = "0%";
-                    document.getElementById('bar-centro').style.width = "0%";
-                    document.getElementById('bar-esquerda').style.width = "0%";
-                    
-                    document.getElementById('txt-dir').textContent = "0";
-                    document.getElementById('txt-cen').textContent = "0";
-                    document.getElementById('txt-esq').textContent = "0";
-                }
-                
-                // Atualizar distribuição por cargo
-                atualizarDistribuicaoCargos(cargos);
-            });
-        }
-
-        function atualizarDistribuicaoCargos(cargos) {
-            const container = document.getElementById('distribuicao-cargos');
-            const cargosLista = eleicaoTipo === "Federal" 
-                ? ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 'Deputado Estadual'] 
-                : ['Prefeito', 'Vereador'];
+        // --- ADMIN FUNCS ---
+        function renderAdminList() {
+            if(!currentUser) return;
             
-            container.innerHTML = cargosLista.map(cargo => `
-                <div class="text-center p-5 bg-white/5 rounded-2xl hover:bg-white/10 transition">
-                    <div class="text-3xl font-black text-yellow-400 mb-2">${cargos[cargo] || 0}</div>
-                    <p class="text-xs font-bold uppercase opacity-60">${cargo}</p>
-                </div>
-            `).join('');
-        }
+            const pendContainer = document.getElementById('list-admin-pendentes');
+            const aprovContainer = document.getElementById('list-admin-aprovados');
+            pendContainer.innerHTML = '';
+            aprovContainer.innerHTML = '';
 
-        // ===================== FUNÇÕES DE LISTAGEM PÚBLICA =====================
-        function definirFiltroCargo(cargo) {
-            fCargo = cargo;
-            document.querySelectorAll('#filtros-cargo .nav-est').forEach(btn => {
-                btn.classList.toggle('selected-est', 
-                    (cargo === 'todos' && btn.innerText.includes('TODOS')) ||
-                    btn.innerText.includes(cargo.toUpperCase())
-                );
+            const myList = candidatesCache.filter(c => {
+                // Brookhaven vê tudo, outros veem apenas seu estado
+                if(currentUser.estado === 'Brookhaven') return true;
+                return c.estado === currentUser.estado;
             });
-            carregarCandidatosPublicos();
-        }
 
-        function definirFiltroEstado(estado) {
-            fEst = estado;
-            document.querySelectorAll('#filtros-estado .nav-est').forEach(btn => {
-                btn.classList.toggle('selected-est', 
-                    (estado === 'todos' && btn.innerText.includes('NACIONAL')) ||
-                    btn.innerText.includes(estado.toUpperCase())
-                );
-            });
-            carregarCandidatosPublicos();
-        }
-
-        function carregarCandidatosPublicos() {
-            db.ref('candidatos').on('value', (snapshot) => {
-                const grid = document.getElementById('grid-candidatos');
-                const semCandidatosDiv = document.getElementById('sem-candidatos');
-                let count = 0;
-                grid.innerHTML = "";
-                
-                snapshot.forEach(child => {
-                    const c = child.val();
-                    if(c.status === 'aceito' && 
-                       c.eleicao === eleicaoTipo && 
-                       (fCargo === 'todos' || c.cargo === fCargo) && 
-                       (fEst === 'todos' || c.estado === fEst)) {
-                        count++;
-                        
-                        // Determinar ícone baseado no cargo
-                        let icon = 'fa-user';
-                        if (c.cargo.includes('Presidente')) icon = 'fa-flag';
-                        else if (c.cargo.includes('Governador')) icon = 'fa-landmark';
-                        else if (c.cargo.includes('Senador')) icon = 'fa-scale-balanced';
-                        else if (c.cargo.includes('Deputado')) icon = 'fa-person-chalkboard';
-                        else if (c.cargo.includes('Prefeito')) icon = 'fa-city';
-                        else if (c.cargo.includes('Vereador')) icon = 'fa-users';
-                        
-                        grid.innerHTML += `
-                            <div class="stat-card">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div>
-                                        <p class="text-[9px] opacity-40 uppercase truncate mb-1">${c.partido}</p>
-                                        <h4 class="font-black text-lg truncate uppercase">${c.nome}</h4>
-                                    </div>
-                                    <div class="text-2xl opacity-20">
-                                        <i class="fas ${icon}"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-4xl font-black text-yellow-400 mb-6">#${c.numero}</div>
-                                
-                                <div class="flex justify-between items-center mt-3 pt-4 border-t border-white/5">
-                                    <span class="text-xs font-black bg-white/5 px-3 py-1.5 rounded-full uppercase">${c.cargo}</span>
-                                    <div class="text-right">
-                                        <span class="text-xs font-bold opacity-60 block">${c.estado}</span>
-                                        <span class="text-[10px] font-bold opacity-30">${c.eleicao === 'Federal' ? 'Federal' : 'Municipal'}</span>
-                                    </div>
-                                </div>
+            myList.forEach(c => {
+                const isPend = c.status === 'pendente';
+                const html = `
+                    <div class="glass-panel p-4 rounded-xl border-l-2 ${isPend ? 'border-yellow-500' : 'border-green-500'} flex justify-between items-center">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-tse-gold font-mono font-bold">${c.numero}</span>
+                                <h4 class="font-bold text-sm text-white">${c.nome}</h4>
                             </div>
-                        `;
+                            <p class="text-xs text-gray-400">${c.cargo} | ${c.estado} | ${c.partido}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            ${isPend ? `
+                                <button onclick="setStatus('${c.id}', 'aprovado')" class="w-8 h-8 rounded bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white transition flex items-center justify-center" title="Aprovar"><i class="fas fa-check"></i></button>
+                                <button onclick="deleteCandidate('${c.id}')" class="w-8 h-8 rounded bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition flex items-center justify-center" title="Rejeitar/Excluir"><i class="fas fa-times"></i></button>
+                            ` : `
+                                <button onclick="deleteCandidate('${c.id}')" class="w-8 h-8 rounded bg-red-900/20 text-red-600 hover:bg-red-600 hover:text-white transition flex items-center justify-center" title="Revogar"><i class="fas fa-trash"></i></button>
+                            `}
+                        </div>
+                    </div>
+                `;
+
+                if(isPend) pendContainer.innerHTML += html;
+                else if(c.status === 'aprovado') aprovContainer.innerHTML += html;
+            });
+            
+            if(pendContainer.innerHTML === '') pendContainer.innerHTML = '<p class="text-xs text-gray-500 italic">Nenhuma pendência.</p>';
+        }
+
+        function setStatus(id, status) {
+            db.ref(`candidatos/${id}`).update({ status: status }).then(() => {
+                showToast('success', 'Status atualizado!');
+            });
+        }
+
+        function deleteCandidate(id) {
+            if(confirm('Tem certeza? Isso apagará o registro permanentemente.')) {
+                db.ref(`candidatos/${id}`).remove();
+                showToast('info', 'Registro removido.');
+            }
+        }
+
+        function setElectionMode(mode) {
+            if(currentUser.estado !== 'Brookhaven') {
+                showToast('error', 'Apenas TSE Central pode alterar isso.');
+                return;
+            }
+            if(confirm(`Alterar sistema para Eleições ${mode}? Isso afetará a exibição pública.`)) {
+                db.ref('config/mode').set(mode);
+                showToast('success', `Modo alterado para ${mode}`);
+            }
+        }
+
+        // --- DASHBOARD CHARTS ---
+        function updateDashboardStats() {
+            let total = 0, aprov = 0, pend = 0;
+            let ideologia = { Direita: 0, Centro: 0, Esquerda: 0 };
+
+            candidatesCache.forEach(c => {
+                if(c.eleicao === electionMode) {
+                    total++;
+                    if(c.status === 'aprovado') {
+                        aprov++;
+                        if(ideologia[c.lado] !== undefined) ideologia[c.lado]++;
+                    } else if (c.status === 'pendente') {
+                        pend++;
                     }
-                });
-                
-                // Mostrar mensagem se não houver candidatos
-                if (count === 0) {
-                    semCandidatosDiv.classList.remove('hidden');
-                } else {
-                    semCandidatosDiv.classList.add('hidden');
                 }
             });
-        }
 
-        // ===================== FUNÇÕES ADMINISTRATIVAS =====================
-        // Substitua a função login COMPLETA (linhas ~150-180) por esta versão:
+            // Update Numbers
+            animateValue('stat-total', parseInt(document.getElementById('stat-total').innerText), total, 1000);
+            animateValue('stat-aprovados', parseInt(document.getElementById('stat-aprovados').innerText), aprov, 1000);
+            animateValue('stat-pendentes', parseInt(document.getElementById('stat-pendentes').innerText), pend, 1000);
 
-function login() {
-    const estado = document.getElementById('log-est').value;
-    const senha = document.getElementById('log-sen').value;
-    
-    if (!estado) {
-        mostrarAlerta('error', 'Selecione uma unidade federativa');
-        return;
-    }
-    
-    if(senhasTSE[estado] === senha) {
-        loginEst = estado;
-        const permissao = permissoesTSE[estado];
-        
-        // Atualizar interface com nível de acesso
-        document.getElementById('adm-sub').innerHTML = `
-            ${permissao.nome.toUpperCase()}
-            <span class="badge-nivel nivel-${permissao.nivel} ml-2">
-                <i class="fas ${permissao.icon} mr-1"></i>
-                ${permissao.nivel === 'super' ? 'SUPER ADMIN' : 'ADMIN ESTADUAL'}
-            </span>
-        `;
-        
-        // Mostrar/ocultar controles baseado nas permissões
-        if(permissao.podeMudarModo) {
-            document.getElementById('adm-mestre').classList.remove('hidden');
-        } else {
-            document.getElementById('adm-mestre').classList.add('hidden');
-        }
-        
-        // Atualizar cor do badge no header
-        const modoIndicator = document.getElementById('modo-indicator');
-        modoIndicator.className = `w-3 h-3 rounded-full animate-pulse`;
-        modoIndicator.style.backgroundColor = permissao.cor;
-        
-        document.getElementById('modal-login').classList.add('hidden');
-        mudarAba('aba-adm');
-        criarFiltrosAdmin(); // ← NOVO: cria filtros
-        carregarListasAdm();
-        mostrarAlerta('success', `Autenticado como ${permissao.nome}`);
-    } else {
-        mostrarAlerta('error', "Acesso Negado! Credenciais inválidas.");
-    }
-}
+            // Update Bars
+            document.getElementById('bar-aprovados').style.width = total > 0 ? `${(aprov/total)*100}%` : '0%';
+            document.getElementById('bar-pendentes').style.width = total > 0 ? `${(pend/total)*100}%` : '0%';
 
-        function carregarListasAdm() {
-            db.ref('candidatos').on('value', (snapshot) => {
-                const pendDiv = document.getElementById('lista-pendentes');
-                const aceitDiv = document.getElementById('lista-aceitos');
-                const semPendentesDiv = document.getElementById('sem-pendentes');
-                const semAceitosDiv = document.getElementById('sem-aceitos');
-                const contadorPendentes = document.getElementById('contador-pendentes');
-                const contadorAceitos = document.getElementById('contador-aceitos');
-                
-                if(!pendDiv || !aceitDiv) return;
-                
-                pendDiv.innerHTML = ""; 
-                aceitDiv.innerHTML = "";
-                
-                let pendCount = 0;
-                let aceitCount = 0;
-                
-            
-snapshot.forEach(child => {
-    const c = child.val();
-    const key = child.key;
-    
-    // VERIFICAÇÃO DE PERMISSÃO CRUCIAL ← ADICIONE ESTE BLOCO
-    const permissao = permissoesTSE[loginEst];
-    const temPermissao = 
-        permissao.verTodosCandidatos || // Brookhaven vê tudo
-        c.estado === loginEst; // Outros veem apenas seu estado
-        
-    if(!temPermissao) return; // Pula candidatos sem permissão
-                    
-                    // Verificar permissão (Brookhaven tem acesso total)
-                    if(loginEst === "Brookhaven" || c.estado === loginEst) {
-                        // Determinar cor do badge de lado político
-                        let ladoColor = 'gray';
-                        if (c.lado === 'Direita') ladoColor = 'blue';
-                        else if (c.lado === 'Esquerda') ladoColor = 'red';
-                        else if (c.lado === 'Centro') ladoColor = 'gray';
-                        
-                        const html = `
-                            <div class="adm-card p-6">
-                                <div class="flex justify-between items-start mb-5">
-                                    <div>
-                                        <h5 class="font-black text-base uppercase truncate max-w-[200px]">${c.nome}</h5>
-                                        <div class="flex items-center gap-3 mt-2">
-                                            <p class="text-yellow-400 font-black text-xl">#${c.numero}</p>
-                                            <span class="text-xs font-bold px-2 py-1 rounded-full bg-${ladoColor}-500/20 text-${ladoColor}-300">${c.lado}</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="bg-white/5 px-3 py-1.5 rounded text-xs font-black">${c.estado || 'Nacional'}</span>
-                                        <p class="text-[10px] opacity-40 mt-1">${c.eleicao === 'Federal' ? 'Federal' : 'Municipal'}</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-y-3 gap-x-4 mb-5 border-y border-white/5 py-4">
-                                    <div><p class="label-adm">CPF</p><p class="val-adm font-mono">${c.cpf}</p></div>
-                                    <div><p class="label-adm">CARGO</p><p class="val-adm text-yellow-400 font-bold">${c.cargo}</p></div>
-                                    <div><p class="label-adm">PARTIDO</p><p class="val-adm truncate">${c.partido}</p></div>
-                                    <div><p class="label-adm">TIKTOK</p><p class="val-adm truncate"><a href="${c.tiktok.startsWith('http') ? c.tiktok : 'https://tiktok.com/@' + c.tiktok.replace('@', '')}" target="_blank" class="text-blue-400 hover:underline">${c.tiktok}</a></p></div>
-                                    ${c.cidade ? `<div><p class="label-adm">CIDADE</p><p class="val-adm">${c.cidade}</p></div>` : ''}
-                                    <div><p class="label-adm">DATA REGISTRO</p><p class="val-adm">${c.dataRegistro ? new Date(c.dataRegistro).toLocaleDateString('pt-BR') : 'N/A'}</p></div>
-                                </div>
-                                
-                                <div class="flex gap-3">
-                                    ${c.status === 'pendente' ? `
-                                        <button onclick="alterarStatus('${key}','aceito')" class="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white text-xs font-black py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition">
-                                            <i class="fas fa-check mr-2"></i> DEFERIR
-                                        </button>
-                                        <button onclick="alterarStatus('${key}','recusado')" class="flex-1 bg-red-600/20 text-red-400 text-xs font-black py-3 rounded-lg border border-red-600/30 hover:bg-red-600/30 transition">
-                                            <i class="fas fa-times mr-2"></i> INDEFERIR
-                                        </button>
-                                    ` : `
-                                        <button onclick="removerCandidatura('${key}')" class="w-full bg-red-600/10 text-red-400 text-xs font-black py-3 rounded-lg border border-red-600/20 hover:bg-red-600/20 transition">
-                                            <i class="fas fa-trash-alt mr-2"></i> REMOVER REGISTRO
-                                        </button>
-                                    `}
-                                </div>
-                            </div>
-                        `;
-                        
-                        if(c.status === 'pendente') {
-                            pendDiv.innerHTML += html;
-                            pendCount++;
-                        } else if(c.status === 'aceito') {
-                            aceitDiv.innerHTML += html;
-                            aceitCount++;
-                        }
-                    }
-                });
-                
-                // Atualizar contadores
-                contadorPendentes.textContent = pendCount;
-                contadorAceitos.textContent = aceitCount;
-                
-                // Mostrar mensagens se não houver registros
-                semPendentesDiv.classList.toggle('hidden', pendCount > 0);
-                semAceitosDiv.classList.toggle('hidden', aceitCount > 0);
-            });
-        }
+            // Update Chart
+            if(aprov > 0) {
+                const esqPct = (ideologia.Esquerda / aprov) * 100;
+                const cenPct = (ideologia.Centro / aprov) * 100;
+                const dirPct = (ideologia.Direita / aprov) * 100;
 
-        function alterarStatus(id, novoStatus) {
-            const statusText = novoStatus === 'aceito' ? 'deferida' : 'indeferida';
-            
-            if (confirm(`Tem certeza que deseja ${novoStatus === 'aceito' ? 'DEFERIR' : 'INDEFERIR'} esta candidatura?`)) {
-                db.ref('candidatos/' + id).update({ 
-                    status: novoStatus,
-                    dataAnalise: new Date().toISOString()
-                }).then(() => {
-                    mostrarAlerta('success', `Candidatura ${statusText} com sucesso!`);
-                }).catch(error => {
-                    mostrarAlerta('error', `Erro ao alterar status: ${error.message}`);
+                document.getElementById('chart-esq').style.width = `${esqPct}%`;
+                document.getElementById('val-esq').innerText = `${Math.round(esqPct)}%`;
+                
+                document.getElementById('chart-cen').style.width = `${cenPct}%`;
+                document.getElementById('val-cen').innerText = `${Math.round(cenPct)}%`;
+                
+                document.getElementById('chart-dir').style.width = `${dirPct}%`;
+                document.getElementById('val-dir').innerText = `${Math.round(dirPct)}%`;
+            } else {
+                ['esq', 'cen', 'dir'].forEach(k => {
+                    document.getElementById(`chart-${k}`).style.width = '0%';
+                    document.getElementById(`val-${k}`).innerText = '0%';
                 });
             }
         }
 
-        function removerCandidatura(id) {
-            if (confirm("CUIDADO: Esta ação é irreversível!\n\nDeseja realmente remover permanentemente este registro do sistema?")) {
-                db.ref('candidatos/' + id).remove()
-                    .then(() => {
-                        mostrarAlerta('success', 'Registro removido com sucesso!');
-                    })
-                    .catch(error => {
-                        mostrarAlerta('error', `Erro ao remover registro: ${error.message}`);
-                    });
-            }
+        // Helper: Toast UI
+        function showToast(type, msg) {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            const colors = {
+                success: 'bg-green-500 text-white',
+                error: 'bg-red-500 text-white',
+                info: 'bg-blue-500 text-white'
+            };
+            
+            el.className = `${colors[type]} px-6 py-3 rounded-lg shadow-xl text-sm font-bold transform translate-x-full transition-transform duration-300 flex items-center gap-3`;
+            el.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : (type === 'error' ? 'exclamation-circle' : 'info-circle')}"></i> ${msg}`;
+            
+            container.appendChild(el);
+            
+            // Animation In
+            setTimeout(() => el.classList.remove('translate-x-full'), 10);
+            
+            // Animation Out
+            setTimeout(() => {
+                el.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
         }
 
-        // Substitua a função definirEleicao COMPLETA por esta versão:
-
-function definirEleicao(tipo) {
-    const permissao = permissoesTSE[loginEst];
-    
-    // VERIFICAÇÃO DE PERMISSÃO
-    if (!permissao.podeMudarModo) {
-        mostrarAlerta('error', '❌ ACESSO NEGADO: Apenas o TSE Central (Brookhaven) pode alterar o modo eleitoral.');
-        return;
-    }
-    
-    if (confirm(`Alterar modo eleitoral para ${tipo === "Federal" ? "ELEIÇÕES FEDERAIS" : "ELEIÇÕES MUNICIPAIS"}?\n\nTodos os dados serão filtrados conforme o novo modo.`)) {
-        db.ref('config/tipoEleicao').set(tipo)
-            .then(() => {
-                mostrarAlerta('success', `✅ Modo eleitoral alterado para ${tipo === "Federal" ? "Federal" : "Municipal"}`);
-                eleicaoTipo = tipo;
-                atualizarModoEleitoral();
-                atualizarCargosForm();
-                carregarCandidatosPublicos();
-                atualizarEstatisticas();
-            })
-            .catch(error => {
-                mostrarAlerta('error', `❌ Erro ao alterar modo eleitoral: ${error.message}`);
-            });
-    }
-}
-
-        // ===================== INICIALIZAÇÃO FINAL =====================
-        // Adicionar evento para fechar modais com ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                fecharModalPreview();
-                fecharModalLogin();
-            }
-        });
-
-        // Inicializar tooltips
-        document.querySelectorAll('.tooltip').forEach(element => {
-            element.addEventListener('mouseenter', function() {
-                const tooltip = this.querySelector('.tooltip-text');
-                if (tooltip) {
-                    tooltip.style.visibility = 'visible';
-                    tooltip.style.opacity = '1';
-                }
-            });
+        // Helper: Count Animation
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            if (start === end) return;
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            if(stepTime < 10) stepTime = 10; // Cap speed
             
-            element.addEventListener('mouseleave', function() {
-                const tooltip = this.querySelector('.tooltip-text');
-                if (tooltip) {
-                    tooltip.style.visibility = 'hidden';
-                    tooltip.style.opacity = '0';
-                }
-            });
-        });
+            let timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) clearInterval(timer);
+            }, stepTime);
+        }
 
-// ===================== FUNÇÃO CRIAR FILTROS ADMIN =====================
-function criarFiltrosAdmin() {
-    const permissao = permissoesTSE[loginEst];
-    const filtrosDiv = document.getElementById('filtros-admin');
-    
-    if (!filtrosDiv) return;
-    
-    // Só Brookhaven vê filtro de estado (porque vê tudo)
-    if (permissao.verTodosEstados) {
-        filtrosDiv.innerHTML = `
-            <div class="flex flex-wrap gap-2 mb-6">
-                <p class="text-xs font-bold opacity-60 w-full">FILTRAR POR ESTADO:</p>
-                <button onclick="filtrarAdminEstado('todos')" class="nav-est selected-est text-[10px]">
-                    <i class="fas fa-flag mr-1"></i> TODOS
-                </button>
-                <button onclick="filtrarAdminEstado('Brookhaven')" class="nav-est text-[10px]">
-                    Brookhaven
-                </button>
-                <button onclick="filtrarAdminEstado('Novacore')" class="nav-est text-[10px]">
-                    Novacore
-                </button>
-                <button onclick="filtrarAdminEstado('Casteríber')" class="nav-est text-[10px]">
-                    Casteríber
-                </button>
-                <button onclick="filtrarAdminEstado('Fortemega')" class="nav-est text-[10px]">
-                    Fortemega
-                </button>
-                <button onclick="filtrarAdminEstado('Florêmix')" class="nav-est text-[10px]">
-                    Florêmix
-                </button>
-            </div>
-        `;
-    } else {
-        filtrosDiv.innerHTML = `
-            <div class="mb-6">
-                <p class="text-xs font-bold opacity-60">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Visualizando apenas candidaturas do ${permissao.nome}
-                </p>
-            </div>
-        `;
-    }
-}
-
-// ===================== FUNÇÃO FILTRAR ADMIN ESTADO =====================
-function filtrarAdminEstado(estado) {
-    fEstAdmin = estado;
-    document.querySelectorAll('#filtros-admin .nav-est').forEach(btn => {
-        btn.classList.toggle('selected-est', 
-            (estado === 'todos' && btn.innerText.includes('TODOS')) ||
-            btn.innerText.includes(estado)
-        );
-    });
-    carregarListasAdm();
-}
-        
-        console.log('Sistema TSE 2026 - Portal de Candidaturas inicializado com sucesso.');
+        // Carregar Inicial
+        loadCandidates();
     </script>
 </body>
 </html>
