@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TSE — Brookasil 2026 | Sistema Oficial</title>
+  <title>TSE — Sistema Eleitoral 2026</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+
   <script src="https://cdn.tailwindcss.com"></script>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,24 +22,32 @@
         extend: {
           fontFamily: {
             sans: ['Outfit', 'sans-serif'],
-            display: ['Chakra Petch', 'sans-serif'],
+            mono: ['Space Grotesk', 'monospace'], // Usado para números e títulos
           },
           colors: {
-            gov: {
-              900: '#020617',
-              800: '#0f172a',
-              accent: '#fbbf24', // Ouro
-              blue: '#3b82f6',
+            dark: {
+              900: '#0B0C15', // Fundo quase preto
+              800: '#151725', // Cards
+              700: '#1E2130', // Bordas
+            },
+            brand: {
+              gold: '#FFD700',
+              blue: '#3B82F6',
+              accent: '#6366F1'
             }
           },
           animation: {
-            'fade-in': 'fadeIn 0.6s ease-out forwards',
-            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
           },
           keyframes: {
-            fadeIn: {
-              '0%': { opacity: '0', transform: 'translateY(10px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
             }
           }
         }
@@ -48,248 +56,243 @@
   </script>
 
   <style>
-    /* Background Complexo */
+    /* Reset & Base */
     body {
-      background-color: #020617;
+      background-color: #0B0C15;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(251, 191, 36, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(15, 23, 42, 1) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: #e2e8f0;
+        radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.08), transparent 25%);
+      color: #E2E8F0;
+      overflow: hidden; /* App feel */
     }
 
-    /* Scrollbar Moderna */
+    /* Scrollbar Minimalista */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-    /* Glassmorphism Premium */
-    .glass-card {
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      transition: all 0.3s ease;
+    /* Glass Cards Premium */
+    .card-glass {
+      background: rgba(21, 23, 37, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
     }
     
-    .glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    .card-glass:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
     }
 
     /* Inputs Futuristas */
-    .tech-input {
-      background: rgba(2, 6, 23, 0.6);
-      border: 1px solid rgba(51, 65, 85, 0.5);
+    .input-tech {
+      background: #0B0C15;
+      border: 1px solid #1E2130;
       color: white;
-      transition: all 0.2s;
+      transition: all 0.3s;
+      font-family: 'Space Grotesk', monospace;
     }
-    .tech-input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-      background: rgba(2, 6, 23, 0.9);
+    .input-tech:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
       outline: none;
     }
-    
-    /* Botões */
+
+    /* Botão Dourado Premium */
     .btn-primary {
-      background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
-      color: #0f172a;
-      text-transform: uppercase;
-      font-family: 'Chakra Petch', sans-serif;
+      background: linear-gradient(135deg, #F59E0B 0%, #FFD700 100%);
+      color: #000;
       font-weight: 700;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.5px;
       position: relative;
       overflow: hidden;
-      transition: all 0.3s;
+      z-index: 1;
+      border: none;
     }
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-    }
-    .btn-primary::after {
+    .btn-primary::before {
       content: '';
       position: absolute;
-      top: 0; left: -100%; width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-      transition: 0.5s;
+      top: 0; left: 0; w: 100%; h: 100%;
+      background: linear-gradient(135deg, #FFD700 0%, #F59E0B 100%);
+      opacity: 0;
+      z-index: -1;
+      transition: opacity 0.3s;
     }
-    .btn-primary:hover::after { left: 100%; }
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary:hover {
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+      transform: translateY(-2px);
+    }
 
-    /* Nav Item */
-    .nav-item {
-      position: relative;
-      overflow: hidden;
-    }
+    /* Sidebar Navigation Active State */
     .nav-item.active {
-      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent);
-      border-left-color: #3b82f6;
-      color: #60a5fa;
+      background: rgba(59, 130, 246, 0.1);
+      color: #60A5FA;
+      border-right: 3px solid #60A5FA;
     }
-    .nav-item.active i { color: #3b82f6; text-shadow: 0 0 10px rgba(59,130,246,0.5); }
+    .nav-item:hover:not(.active) {
+      background: rgba(255,255,255,0.03);
+      color: white;
+    }
 
-    /* Loader */
+    /* Custom Loader */
     .loader {
-      width: 20px; height: 20px;
-      border: 2px solid #FFF;
+      width: 18px; height: 18px;
+      border: 2px solid #000;
       border-bottom-color: transparent;
       border-radius: 50%;
       display: inline-block;
-      box-sizing: border-box;
       animation: rotation 1s linear infinite;
     }
     @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Toast */
-    .toast-enter { animation: slideInRight 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards; }
-    @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+    /* Toast Notification */
+    #toast-container { z-index: 9999; }
+    .toast-enter { animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes slideIn { from { transform: translateX(100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
   </style>
 </head>
-<body class="h-screen overflow-hidden flex flex-col md:flex-row antialiased selection:bg-blue-500 selection:text-white">
+<body class="flex h-screen selection:bg-brand-gold selection:text-black">
 
-  <aside class="w-full md:w-72 glass-card flex flex-col z-20 md:h-full border-r border-white/5 relative">
-    <div class="p-6 border-b border-white/5 relative overflow-hidden">
-      <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl text-white pointer-events-none">
-        <i class="fa fa-scale-balanced"></i>
-      </div>
-      <div class="flex items-center gap-3 relative z-10">
-        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-slate-900 flex items-center justify-center shadow-lg shadow-blue-900/50 border border-blue-400/30">
-          <i class="fa fa-landmark text-white text-lg"></i>
+  <aside class="w-20 lg:w-72 bg-dark-900 border-r border-dark-700 flex flex-col justify-between flex-shrink-0 z-20 transition-all duration-300">
+    <div>
+      <div class="h-20 flex items-center justify-center lg:justify-start lg:px-6 border-b border-dark-700">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+          <i class="fa fa-scale-balanced text-white"></i>
         </div>
-        <div>
-          <h1 class="font-display font-bold text-2xl text-white tracking-wide leading-none">TSE</h1>
-          <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-1">Brookasil 2026</p>
+        <div class="hidden lg:block ml-3">
+          <h1 class="text-xl font-bold tracking-tight text-white font-mono">TSE <span class="text-blue-500">2026</span></h1>
+          <p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Sistema Oficial</p>
         </div>
       </div>
+
+      <nav class="mt-8 space-y-2 px-2">
+        <button onclick="switchTab('dashboard', this)" class="nav-item active w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 transition-all group">
+          <i class="fa fa-chart-pie text-lg w-6 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="hidden lg:block font-medium">Visão Geral</span>
+        </button>
+
+        <button onclick="switchTab('candidatos', this)" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 transition-all group">
+          <i class="fa fa-users-viewfinder text-lg w-6 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="hidden lg:block font-medium">Candidaturas</span>
+        </button>
+
+        <button onclick="switchTab('registro', this)" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 transition-all group">
+          <i class="fa fa-file-pen text-lg w-6 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="hidden lg:block font-medium">Novo Registro</span>
+        </button>
+      </nav>
     </div>
 
-    <nav class="flex-1 overflow-y-auto p-4 space-y-1">
-      <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-3 pt-2">Menu Principal</div>
+    <div class="p-4 border-t border-dark-700">
+      <button onclick="switchTab('admin', this)" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-amber-500/70 hover:text-amber-400 transition-all mb-4">
+        <i class="fa fa-shield-halved text-lg w-6 text-center"></i>
+        <span class="hidden lg:block font-medium">Área Restrita</span>
+      </button>
       
-      <button onclick="switchTab('dashboard', this)" class="nav-item active w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all border-l-2 border-transparent text-sm font-medium group">
-        <i class="fa fa-chart-pie w-5 text-center transition-colors group-hover:text-blue-400"></i>
-        Visão Geral
-      </button>
-
-      <button onclick="switchTab('candidatos', this)" class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all border-l-2 border-transparent text-sm font-medium group">
-        <i class="fa fa-users-viewfinder w-5 text-center transition-colors group-hover:text-blue-400"></i>
-        Candidatos
-      </button>
-
-      <button onclick="switchTab('registro', this)" class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all border-l-2 border-transparent text-sm font-medium group">
-        <i class="fa fa-file-signature w-5 text-center transition-colors group-hover:text-blue-400"></i>
-        Registrar
-      </button>
-
-      <div class="mt-8 pt-4 border-t border-white/5">
-        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-3">Restrito</div>
-        <button onclick="switchTab('admin', this)" class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-amber-500/80 hover:text-amber-400 hover:bg-amber-500/10 transition-all border-l-2 border-transparent text-sm font-medium">
-          <i class="fa fa-shield-halved w-5 text-center"></i>
-          Acesso TRE
-        </button>
+      <div class="hidden lg:block bg-dark-800 rounded-xl p-4 border border-dark-700 relative overflow-hidden">
+        <div class="absolute -right-4 -top-4 w-12 h-12 bg-blue-500 blur-xl opacity-20"></div>
+        <p class="text-xs text-gray-500 uppercase font-bold mb-1">Modo Atual</p>
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          <span id="displayMode" class="text-sm font-mono font-bold text-white">CARREGANDO...</span>
+        </div>
       </div>
-    </nav>
-
-    <div class="p-4 border-t border-white/5 bg-slate-900/50">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-[10px] text-slate-400 uppercase font-bold">Modo Eleição</span>
-        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse-slow shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-      </div>
-      <div id="displayMode" class="font-display font-bold text-lg text-blue-100 tracking-wide">Carregando...</div>
-      <div class="text-[10px] text-slate-500 mt-1">Sistema Integrado Firebase v9</div>
     </div>
   </aside>
 
-  <main class="flex-1 h-full overflow-hidden flex flex-col relative">
-    <header class="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-slate-900/30 backdrop-blur-sm z-10">
-      <div class="flex items-center gap-2 text-slate-400">
-        <i class="fa fa-server text-xs"></i>
-        <span class="text-xs font-mono" id="serverID">SRV-BRA-2026-ALPHA</span>
+  <main class="flex-1 flex flex-col relative h-screen overflow-hidden">
+    
+    <header class="h-20 bg-dark-900/50 backdrop-blur-md border-b border-dark-700 flex items-center justify-between px-8 z-10">
+      <div class="flex flex-col">
+        <span class="text-xs text-gray-500 font-mono" id="serverDate">...</span>
+        <h2 class="text-lg font-bold text-white" id="pageTitle">Painel de Controle</h2>
       </div>
-      <div class="text-right">
-        <div id="clock" class="font-display font-bold text-xl text-white leading-none">00:00</div>
-        <div id="dateDisplay" class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">---</div>
+      <div class="flex items-center gap-6">
+        <div class="text-right">
+          <div id="clock" class="text-2xl font-mono font-bold text-white leading-none">00:00</div>
+          <span class="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Horário de Brasília</span>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-dark-700 border border-dark-700 flex items-center justify-center text-gray-400">
+          <i class="fa fa-user"></i>
+        </div>
       </div>
     </header>
 
-    <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth relative">
+    <div class="flex-1 overflow-y-auto p-4 lg:p-10 relative scroll-smooth">
       
-      <div class="fixed top-20 right-20 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-      <div class="fixed bottom-20 left-60 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+      <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
 
-      <section id="dashboard" class="space-y-6 max-w-7xl mx-auto animate-fade-in">
-        
+      <section id="dashboard" class="space-y-8 animate-slide-up max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="glass-card rounded-2xl p-6 relative overflow-hidden group">
-            <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <i class="fa fa-users text-6xl text-blue-500"></i>
+          <div class="card-glass p-6 relative overflow-hidden group">
+            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition group-hover:scale-110 duration-500">
+              <i class="fa fa-globe text-6xl text-white"></i>
             </div>
-            <div class="text-sm text-slate-400 font-medium">Total de Candidatos</div>
-            <div id="statTotal" class="font-display text-4xl font-bold text-white mt-2 drop-shadow-lg">0</div>
-            <div class="mt-4 flex items-center text-xs text-blue-400 font-mono">
-              <i class="fa fa-database mr-2"></i> BASE NACIONAL
+            <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">Total de Registros</p>
+            <h3 id="statTotal" class="text-5xl font-mono font-bold text-white mt-2">0</h3>
+            <div class="mt-4 inline-flex items-center text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
+              <i class="fa fa-arrow-up mr-1"></i> Atualizado agora
             </div>
-            <div class="absolute bottom-0 left-0 h-1 bg-blue-500 w-0 group-hover:w-full transition-all duration-700"></div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 relative overflow-hidden group">
-            <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <i class="fa fa-clock text-6xl text-amber-500"></i>
+          <div class="card-glass p-6 relative overflow-hidden group border-l-4 border-l-amber-500">
+            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+              <i class="fa fa-gavel text-6xl text-amber-500"></i>
             </div>
-            <div class="text-sm text-slate-400 font-medium">Em Análise (TRE)</div>
-            <div id="statPending" class="font-display text-4xl font-bold text-amber-400 mt-2 drop-shadow-lg">0</div>
-            <div class="mt-4 flex items-center text-xs text-amber-500/80 font-mono">
-              <i class="fa fa-triangle-exclamation mr-2"></i> REQUER ATENÇÃO
+            <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">Aguardando TRE</p>
+            <h3 id="statPending" class="text-5xl font-mono font-bold text-amber-500 mt-2">0</h3>
+            <div class="mt-4 text-xs text-gray-500">
+              Requer aprovação judicial
             </div>
-            <div class="absolute bottom-0 left-0 h-1 bg-amber-500 w-0 group-hover:w-full transition-all duration-700"></div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 relative overflow-hidden group">
-            <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+          <div class="card-glass p-6 relative overflow-hidden group border-l-4 border-l-green-500">
+            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
               <i class="fa fa-check-circle text-6xl text-green-500"></i>
             </div>
-            <div class="text-sm text-slate-400 font-medium">Deferidos / Aptos</div>
-            <div id="statApproved" class="font-display text-4xl font-bold text-green-400 mt-2 drop-shadow-lg">0</div>
-            <div class="mt-4 flex items-center text-xs text-green-500/80 font-mono">
-              <i class="fa fa-satellite-dish mr-2"></i> ONLINE NA URNA
+            <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">Candidatos Aptos</p>
+            <h3 id="statApproved" class="text-5xl font-mono font-bold text-green-500 mt-2">0</h3>
+            <div class="mt-4 text-xs text-gray-500">
+              Visíveis na urna eletrônica
             </div>
-            <div class="absolute bottom-0 left-0 h-1 bg-green-500 w-0 group-hover:w-full transition-all duration-700"></div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="glass-card rounded-2xl p-6">
-            <h3 class="font-display font-bold text-lg text-white mb-6 flex items-center gap-2">
-              <span class="w-1 h-5 bg-blue-500 rounded-full"></span>
-              Espectro Político
-            </h3>
-            <div class="h-64 flex justify-center items-center relative">
-              <canvas id="chartIdeologia"></canvas>
-            </div>
-          </div>
-          <div class="glass-card rounded-2xl p-6">
-            <h3 class="font-display font-bold text-lg text-white mb-6 flex items-center gap-2">
-              <span class="w-1 h-5 bg-purple-500 rounded-full"></span>
-              Distribuição por Cargo
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="card-glass p-6 lg:col-span-2">
+            <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <i class="fa fa-chart-bar text-blue-500"></i> Disputa por Cargo
             </h3>
             <div class="h-64 w-full">
               <canvas id="chartCargos"></canvas>
             </div>
           </div>
+          <div class="card-glass p-6 flex flex-col items-center justify-center">
+            <h3 class="text-lg font-bold text-white mb-6 w-full text-left flex items-center gap-2">
+              <i class="fa fa-chart-pie text-purple-500"></i> Espectro
+            </h3>
+            <div class="h-48 w-full relative">
+              <canvas id="chartIdeologia"></canvas>
+            </div>
+            <div class="mt-4 text-center text-xs text-gray-500 w-full border-t border-white/5 pt-4">
+              Baseado em candidaturas aprovadas
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="candidatos" class="hidden space-y-6 max-w-7xl mx-auto animate-fade-in">
-        <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 mb-8">
+      <section id="candidatos" class="hidden animate-slide-up max-w-7xl mx-auto pb-20">
+        <div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
           <div>
-            <h2 class="font-display text-3xl font-bold text-white">Candidaturas Oficiais</h2>
-            <p class="text-slate-400 text-sm mt-1">Lista pública de registros deferidos pelo tribunal.</p>
+            <h2 class="text-3xl font-mono font-bold text-white">Candidaturas Oficiais</h2>
+            <p class="text-gray-400 text-sm mt-1">Lista pública de registros deferidos.</p>
           </div>
-          <div class="flex gap-3">
-            <select id="filterPublicLado" class="tech-input rounded-lg px-4 py-2 text-sm">
+          <div class="bg-dark-800 p-1 rounded-lg border border-dark-700 flex">
+            <select id="filterPublicLado" class="bg-transparent text-white text-sm outline-none px-4 py-2 cursor-pointer">
               <option value="">Todas as Ideologias</option>
               <option value="Direita">Direita</option>
               <option value="Centro">Centro</option>
@@ -298,52 +301,52 @@
           </div>
         </div>
         
-        <div id="publicGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div id="publicGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           </div>
       </section>
 
-      <section id="registro" class="hidden max-w-4xl mx-auto animate-fade-in pb-20">
+      <section id="registro" class="hidden animate-slide-up max-w-3xl mx-auto pb-20">
         <div class="text-center mb-10">
-          <div class="inline-block p-3 rounded-full bg-blue-500/10 border border-blue-500/30 mb-4">
-            <i class="fa fa-pen-nib text-blue-400 text-xl"></i>
+          <div class="w-16 h-16 mx-auto bg-gradient-to-br from-amber-400 to-yellow-600 rounded-2xl flex items-center justify-center text-black text-2xl shadow-lg shadow-amber-500/20 mb-4">
+            <i class="fa fa-signature"></i>
           </div>
-          <h2 class="font-display text-3xl font-bold text-white">Ficha de Candidatura</h2>
-          <p class="text-slate-400 mt-2 text-sm">Preencha os dados com atenção. Falsidade ideológica é crime inafiançável.</p>
+          <h2 class="text-3xl font-mono font-bold text-white">Ficha de Candidatura</h2>
+          <p class="text-gray-400 mt-2">Preencha os dados oficiais. Falsidade ideológica é crime inafiançável.</p>
         </div>
 
-        <div class="glass-card rounded-2xl p-8 border-t-4 border-t-amber-500">
+        <div class="card-glass p-8 border-t-4 border-t-amber-500">
           <form id="formCandidato" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Nome Completo (RP)</label>
-                <input id="regNome" required type="text" class="tech-input w-full rounded-lg px-4 py-3" placeholder="Ex: Roberto da Silva">
+                <label class="text-xs font-bold text-blue-400 uppercase tracking-widest">Nome Completo</label>
+                <input id="regNome" required type="text" class="input-tech w-full rounded-lg px-4 py-3" placeholder="Ex: Roberto da Silva">
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Data de Nascimento</label>
-                <input id="regNasc" required type="date" class="tech-input w-full rounded-lg px-4 py-3">
+                <label class="text-xs font-bold text-blue-400 uppercase tracking-widest">Nascimento</label>
+                <input id="regNasc" required type="date" class="input-tech w-full rounded-lg px-4 py-3">
               </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">CPF</label>
-                <input id="regCPF" required type="text" class="tech-input w-full rounded-lg px-4 py-3" placeholder="000.000.000-00">
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">CPF</label>
+                <input id="regCPF" required type="text" class="input-tech w-full rounded-lg px-4 py-3" placeholder="000.000.000-00">
               </div>
               <div class="space-y-2 md:col-span-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">TikTok (Divulgação)</label>
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Social (TikTok)</label>
                 <div class="relative">
-                  <span class="absolute left-4 top-3.5 text-slate-500"><i class="fab fa-tiktok"></i></span>
-                  <input id="regTikTok" type="text" class="tech-input w-full rounded-lg pl-10 pr-4 py-3" placeholder="@usuario">
+                  <span class="absolute left-4 top-3.5 text-gray-500"><i class="fab fa-tiktok"></i></span>
+                  <input id="regTikTok" type="text" class="input-tech w-full rounded-lg pl-10 pr-4 py-3" placeholder="@usuario">
                 </div>
               </div>
             </div>
 
-            <hr class="border-white/10 my-2">
+            <div class="h-px bg-white/5 my-4"></div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Espectro</label>
-                <select id="regLado" required class="tech-input w-full rounded-lg px-4 py-3">
+                <label class="text-xs font-bold text-purple-400 uppercase tracking-widest">Espectro</label>
+                <select id="regLado" required class="input-tech w-full rounded-lg px-4 py-3">
                   <option value="">Selecione...</option>
                   <option value="Direita">Direita</option>
                   <option value="Centro">Centro</option>
@@ -351,8 +354,8 @@
                 </select>
               </div>
               <div class="space-y-2 md:col-span-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Partido / Sigla</label>
-                <select id="regPartido" required class="tech-input w-full rounded-lg px-4 py-3 text-slate-300">
+                <label class="text-xs font-bold text-purple-400 uppercase tracking-widest">Partido</label>
+                <select id="regPartido" required class="input-tech w-full rounded-lg px-4 py-3 text-gray-300">
                   <option value="">Selecione o espectro primeiro</option>
                 </select>
               </div>
@@ -360,44 +363,43 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Número Urna</label>
-                <input id="regNumero" required type="number" class="tech-input w-full rounded-lg px-4 py-3 font-mono text-lg tracking-widest text-amber-400 placeholder-slate-600" placeholder="00">
+                <label class="text-xs font-bold text-amber-500 uppercase tracking-widest">Número</label>
+                <input id="regNumero" required type="number" class="input-tech w-full rounded-lg px-4 py-3 font-mono text-xl text-amber-400 placeholder-gray-700" placeholder="00">
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Cargo</label>
-                <select id="regCargo" required class="tech-input w-full rounded-lg px-4 py-3"></select>
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Cargo Almejado</label>
+                <select id="regCargo" required class="input-tech w-full rounded-lg px-4 py-3"></select>
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Jurisdição</label>
-                <select id="regTerritorio" required class="tech-input w-full rounded-lg px-4 py-3"></select>
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Jurisdição</label>
+                <select id="regTerritorio" required class="input-tech w-full rounded-lg px-4 py-3"></select>
               </div>
             </div>
 
             <div class="pt-6">
-              <button type="submit" id="btnSubmit" class="btn-primary w-full py-4 rounded-xl text-lg shadow-lg shadow-amber-500/20 flex justify-center items-center gap-3">
-                <i class="fa fa-paper-plane"></i>
-                <span>Protocolar Registro</span>
+              <button type="submit" id="btnSubmit" class="btn-primary w-full py-4 rounded-xl text-lg shadow-lg flex justify-center items-center gap-3 transition-transform active:scale-95">
+                <span>PROTOCOLAR REGISTRO</span>
+                <i class="fa fa-arrow-right"></i>
               </button>
-              <p class="text-center text-xs text-slate-500 mt-4">Ao enviar, você concorda com os termos do TSE vigente.</p>
             </div>
           </form>
         </div>
       </section>
 
-      <section id="admin" class="hidden animate-fade-in max-w-5xl mx-auto">
+      <section id="admin" class="hidden animate-slide-up max-w-5xl mx-auto pb-20">
         
-        <div id="adminLogin" class="glass-card rounded-2xl max-w-md mx-auto p-10 mt-10 text-center border border-amber-500/20 relative overflow-hidden">
-          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
+        <div id="adminLogin" class="card-glass rounded-2xl max-w-md mx-auto p-10 mt-10 text-center border border-red-500/20 relative overflow-hidden">
+          <div class="absolute -top-10 -left-10 w-32 h-32 bg-red-600/20 blur-3xl rounded-full"></div>
           
-          <div class="w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-500 text-3xl border border-amber-500/20 shadow-[0_0_30px_rgba(251,191,36,0.2)]">
-            <i class="fa fa-gavel"></i>
+          <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500 text-2xl border border-red-500/20">
+            <i class="fa fa-lock"></i>
           </div>
           
-          <h2 class="font-display text-2xl font-bold text-white mb-2">Magistratura</h2>
-          <p class="text-slate-400 text-sm mb-8">Acesso restrito aos juízes dos TREs.</p>
+          <h2 class="text-2xl font-bold text-white mb-2">Acesso Magistrado</h2>
+          <p class="text-gray-400 text-sm mb-8">Login restrito aos juízes dos TREs.</p>
           
           <div class="space-y-4">
-            <select id="loginEstado" class="tech-input w-full rounded-lg px-4 py-3">
+            <select id="loginEstado" class="input-tech w-full rounded-lg px-4 py-3">
               <option value="">Selecione a Jurisdição...</option>
               <option value="Brookhaven">Brookhaven (TSE Central)</option>
               <option value="Novacore">Novacore</option>
@@ -405,37 +407,37 @@
               <option value="Fortemega">Fortemega</option>
               <option value="Florêmix">Florêmix</option>
             </select>
-            <input id="loginSenha" type="password" placeholder="Chave de Acesso" class="tech-input w-full rounded-lg px-4 py-3">
-            <button id="btnLogin" class="btn-primary w-full py-3 rounded-lg mt-2">Autenticar</button>
+            <input id="loginSenha" type="password" placeholder="Chave de Acesso" class="input-tech w-full rounded-lg px-4 py-3">
+            <button id="btnLogin" class="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition">ENTRAR</button>
           </div>
         </div>
 
         <div id="adminPanel" class="hidden space-y-6">
-          <div class="glass-card rounded-xl p-4 flex flex-col md:flex-row justify-between items-center bg-amber-950/20 border-amber-500/30">
+          <div class="card-glass p-6 flex flex-col md:flex-row justify-between items-center bg-amber-900/10 border-amber-500/20">
             <div class="flex items-center gap-4 mb-4 md:mb-0">
-              <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-black font-bold">
-                <i class="fa fa-user-tie"></i>
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-black font-bold shadow-lg shadow-orange-500/20">
+                <i class="fa fa-gavel"></i>
               </div>
               <div>
-                <div class="text-[10px] text-amber-500 font-bold uppercase tracking-widest">Sessão Ativa</div>
-                <div id="adminUserDisplay" class="font-display text-xl font-bold text-white">---</div>
+                <div class="text-[10px] text-amber-500 font-bold uppercase tracking-widest">Juiz Eleitoral</div>
+                <div id="adminUserDisplay" class="text-2xl font-mono font-bold text-white">---</div>
               </div>
             </div>
             
             <div class="flex items-center gap-3">
               <div id="adminControls" class="hidden flex gap-2 mr-4 border-r border-white/10 pr-4">
-                <button onclick="setElectionMode('Federal')" class="px-3 py-1 rounded border border-blue-500/50 text-blue-400 text-xs hover:bg-blue-500/10 transition">MODO FEDERAL</button>
-                <button onclick="setElectionMode('Municipal')" class="px-3 py-1 rounded border border-green-500/50 text-green-400 text-xs hover:bg-green-500/10 transition">MODO MUNICIPAL</button>
+                <button onclick="setElectionMode('Federal')" class="px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold hover:bg-blue-500/20 transition">FEDERAL</button>
+                <button onclick="setElectionMode('Municipal')" class="px-3 py-1.5 rounded bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-bold hover:bg-green-500/20 transition">MUNICIPAL</button>
               </div>
-              <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-bold flex items-center gap-2 px-4 py-2 rounded hover:bg-red-500/10 transition">
+              <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-bold flex items-center gap-2 px-4 py-2 rounded bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 transition">
                 <i class="fa fa-power-off"></i> Sair
               </button>
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 min-h-[400px]">
-            <h3 class="font-display font-bold text-lg text-white mb-6 flex items-center gap-2 pb-4 border-b border-white/5">
-              <i class="fa fa-list-check text-amber-500"></i>
+          <div class="card-glass p-6 min-h-[400px]">
+            <h3 class="font-bold text-lg text-white mb-6 flex items-center gap-2 pb-4 border-b border-white/5">
+              <i class="fa fa-list-check text-blue-500"></i>
               Fila de Julgamento
             </h3>
             <div id="pendingList" class="space-y-4">
@@ -447,18 +449,16 @@
     </div>
   </main>
 
-  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+  <div id="toast-container" class="fixed top-6 right-6 flex flex-col gap-3 pointer-events-none"></div>
 
   <script type="module">
-    // --- IMPORTAÇÃO MODULAR (V9) ---
+    // --- FIREBASE SETUP ---
+    // IMPORTANTE: Preencha com suas credenciais reais
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, push, update, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // --- CONFIGURAÇÃO FIREBASE ---
-    // ATENÇÃO: Substitua as strings vazias pelas suas chaves reais do Console Firebase.
-    // Não compartilhe este código com as chaves preenchidas publicamente.
     const firebaseConfig = {
-      apiKey: "SUA_API_KEY_AQUI", 
+      apiKey: "AIzaSyAwFLV5X9ICB3mvU4WU1ihxGUeG9UsrbtQ", // Coloque sua chave aqui
       authDomain: "candidatura-cde.firebaseapp.com",
       databaseURL: "https://candidatura-cde-default-rtdb.firebaseio.com",
       projectId: "candidatura-cde",
@@ -467,11 +467,10 @@
       appId: "1:958958180950:web:51427276d0a83978fdb9f7"
     };
 
-    // Inicialização segura
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- DADOS ESTÁTICOS & CONFIGURAÇÃO ---
+    // --- DADOS ---
     const TRE_PASSWORDS = {
       "Brookhaven": "Brookasil1234", 
       "Novacore": "williamNC",
@@ -480,24 +479,12 @@
       "Florêmix": "popoFX"
     };
 
+    // Erro de sintaxe corrigido aqui
     const PARTIDOS = {
-        Direita: [
-            "PL (22)", "PP (11)", "Republicanos (10)", "PRTN (75)", "Patriota (51)", 
-            "PRTB (28)", "NOVO (30)", "PMB (35)", "DC (27)", "UDB (38)", "Agir (36)", 
-            "POL (81)", "ACN (84)", "PRONA (57)", "PDC (17)", "PESP (48)", "PMNL (86)"
-        ],
-        Centro: [
-            "MDB (15)", "UNIÃO (44)", "PSD (55)", "Podemos (20)", "PSDB (45)", 
-            "CDN (23)", "Solidariedade (77)", "Avante (70)", "PMN (33)",
-            "PV (43)", "PUN (42)", "MPD (37)", "PDM (26)", "MTB (63)", "PTD (46)", 
-            "PDSD (88)", "MSS (14)", "PC (85)"
-        ],
-        Esquerda: [
-            "PT (13)", "PSOL (50)", "PCdoB (65)", "Rede (18)", "PDT (12)", 
-            "UP (80)", "PCO (29)", "PCB (21)", "PSTU (16)", "PPL (54)", "PSB (40)", 
-            "PFS (60)", "PS (56)", "PSTN (31)"
-        ]
-    }; // ERRO CORRIGIDO AQUI (removemos o }; extra)
+        Direita: ["PL (22)", "PP (11)", "Republicanos (10)", "PRTN (75)", "Patriota (51)", "PRTB (28)", "NOVO (30)", "PMB (35)", "DC (27)", "UDB (38)", "Agir (36)", "POL (81)", "ACN (84)", "PRONA (57)", "PDC (17)", "PESP (48)", "PMNL (86)"],
+        Centro: ["MDB (15)", "UNIÃO (44)", "PSD (55)", "Podemos (20)", "PSDB (45)", "CDN (23)", "Solidariedade (77)", "Avante (70)", "PMN (33)", "PV (43)", "PUN (42)", "MPD (37)", "PDM (26)", "MTB (63)", "PTD (46)", "PDSD (88)", "MSS (14)", "PC (85)"],
+        Esquerda: ["PT (13)", "PSOL (50)", "PCdoB (65)", "Rede (18)", "PDT (12)", "UP (80)", "PCO (29)", "PCB (21)", "PSTU (16)", "PPL (54)", "PSB (40)", "PFS (60)", "PS (56)", "PSTN (31)"]
+    };
 
     const ESTADOS = {
       "Brookhaven": ["Cidade Eleitoral", "Liberty City"],
@@ -507,69 +494,78 @@
       "Florêmix": ["Florápolis"]
     };
 
-    // Variáveis Globais
     let currentMode = "Federal"; 
     let currentUser = null; 
     let candidatesData = {};
 
-    // --- INTERFACE (UI) ---
+    // --- UI FUNCTIONS ---
     window.switchTab = (tabId, element) => {
-      // Ocultar todas as seções
+      // Ocultar tabs
       ['dashboard', 'candidatos', 'registro', 'admin'].forEach(id => {
-        document.getElementById(id).classList.add('hidden');
+        const el = document.getElementById(id);
+        el.classList.add('hidden');
+        el.classList.remove('animate-slide-up');
       });
       
-      // Mostrar alvo com animação
+      // Mostrar Tab Alvo
       const target = document.getElementById(tabId);
       target.classList.remove('hidden');
-      
-      // Reiniciar animação CSS
-      target.classList.remove('animate-fade-in');
-      void target.offsetWidth; // trigger reflow
-      target.classList.add('animate-fade-in');
+      void target.offsetWidth; // Force reflow for animation reset
+      target.classList.add('animate-slide-up');
 
-      // Atualizar Menu
+      // Atualizar Menu e Título
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       if(element) element.classList.add('active');
+
+      const titles = {
+        'dashboard': 'Visão Geral do Sistema',
+        'candidatos': 'Candidaturas Deferidas',
+        'registro': 'Protocolo de Intenção',
+        'admin': 'Magistratura Eleitoral'
+      };
+      document.getElementById('pageTitle').innerText = titles[tabId] || 'Painel';
     };
 
     const showToast = (msg, type = 'info') => {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       
-      const colors = {
-        success: 'border-green-500 text-green-400 bg-green-900/80',
-        error: 'border-red-500 text-red-400 bg-red-900/80',
-        info: 'border-blue-500 text-blue-400 bg-blue-900/80'
+      const styles = {
+        success: 'border-l-green-500 bg-dark-800 text-green-400',
+        error: 'border-l-red-500 bg-dark-800 text-red-400',
+        info: 'border-l-blue-500 bg-dark-800 text-blue-400'
       };
       
       const icons = {
-        success: 'fa-circle-check',
-        error: 'fa-circle-xmark',
-        info: 'fa-circle-info'
+        success: 'fa-check', error: 'fa-times', info: 'fa-info'
       };
 
-      toast.className = `toast-enter backdrop-blur-md p-4 rounded-lg border-l-4 shadow-xl flex items-center gap-3 min-w-[300px] ${colors[type]}`;
-      toast.innerHTML = `<i class="fa ${icons[type]}"></i> <span class="font-medium text-sm text-white">${msg}</span>`;
+      toast.className = `toast-enter pointer-events-auto flex items-center gap-3 p-4 rounded-r-lg border-l-4 shadow-2xl border-white/5 backdrop-blur-md min-w-[320px] ${styles[type]}`;
+      toast.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"><i class="fa ${icons[type]}"></i></div>
+        <div class="text-sm font-medium text-white">${msg}</div>
+      `;
       
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        toast.style.transition = 'all 0.5s';
-        setTimeout(() => toast.remove(), 500);
+        toast.style.transform = 'translateY(-10px)';
+        toast.style.transition = 'all 0.3s';
+        setTimeout(() => toast.remove(), 300);
       }, 4000);
     };
 
-    // Relógio
+    // Relógio e Data
     setInterval(() => {
       const now = new Date();
       document.getElementById('clock').innerText = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-      const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('dateDisplay').innerText = now.toLocaleDateString('pt-BR', opts);
+      const options = { weekday: 'long', day: 'numeric', month: 'long' };
+      document.getElementById('serverDate').innerText = now.toLocaleDateString('pt-BR', options).toUpperCase();
     }, 1000);
 
-    // --- LÓGICA DE FORMULÁRIO ---
+    // --- LOGIC ---
+    
+    // Atualiza opções de partido ao mudar lado
     document.getElementById('regLado').addEventListener('change', (e) => {
       const select = document.getElementById('regPartido');
       select.innerHTML = '<option value="">Selecione...</option>';
@@ -596,10 +592,11 @@
       }
     };
 
+    // Submit Form
     document.getElementById('formCandidato').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnSubmit');
-      const originalText = btn.innerHTML;
+      const originalContent = btn.innerHTML;
       
       const num = document.getElementById('regNumero').value;
       const cargo = document.getElementById('regCargo').value;
@@ -612,13 +609,13 @@
       }
       if(cargo === 'Presidente') estado = 'Brookasil';
 
-      // Validação Duplicidade
+      // Validação
       const duplicado = Object.values(candidatesData).some(c => 
         c.numero === num && c.cargo === cargo && c.estado === estado && c.status !== 'rejeitado'
       );
 
       if(duplicado) {
-        showToast('Número eleitoral já em uso nesta jurisdição.', 'error');
+        showToast('Número eleitoral indisponível nesta jurisdição.', 'error');
         return;
       }
 
@@ -639,20 +636,20 @@
 
       try {
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> Processando...';
+        btn.innerHTML = '<span class="loader border-black"></span>';
         await push(ref(db, 'candidatos'), novoCandidato);
-        showToast('Registro protocolado com sucesso!', 'success');
+        showToast('Registro enviado para análise do TRE.', 'success');
         document.getElementById('formCandidato').reset();
       } catch (err) {
-        showToast('Falha na comunicação com o servidor.', 'error');
+        showToast('Erro de conexão.', 'error');
         console.error(err);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = originalText;
+        btn.innerHTML = originalContent;
       }
     });
 
-    // --- SISTEMA ADMIN ---
+    // --- ADMIN SYSTEM ---
     document.getElementById('btnLogin').addEventListener('click', () => {
       const est = document.getElementById('loginEstado').value;
       const pass = document.getElementById('loginSenha').value;
@@ -661,7 +658,7 @@
         currentUser = est;
         document.getElementById('adminLogin').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
-        document.getElementById('adminUserDisplay').innerText = `TRE ${est}`;
+        document.getElementById('adminUserDisplay').innerText = est.toUpperCase();
         
         if(est === 'Brookhaven') {
           document.getElementById('adminControls').classList.remove('hidden');
@@ -670,9 +667,9 @@
         }
         
         renderAdminList();
-        showToast(`Bem-vindo(a), Magistrado(a).`, 'success');
+        showToast(`Sessão iniciada: TRE ${est}`, 'success');
       } else {
-        showToast('Credenciais inválidas.', 'error');
+        showToast('Acesso negado.', 'error');
       }
     });
 
@@ -692,7 +689,7 @@
       if(!currentUser) return;
       const status = veredict ? 'aprovado' : 'rejeitado';
       await update(ref(db, `candidatos/${id}`), { status: status, juiz: currentUser });
-      showToast(veredict ? 'Candidatura DEFERIDA.' : 'Candidatura INDEFERIDA.', veredict ? 'success' : 'error');
+      showToast(veredict ? 'Deferido.' : 'Indeferido.', veredict ? 'success' : 'info');
     };
 
     const renderAdminList = () => {
@@ -709,8 +706,8 @@
 
       if(pendentes.length === 0) {
         list.innerHTML = `
-          <div class="flex flex-col items-center justify-center py-10 opacity-50">
-            <i class="fa fa-folder-open text-4xl mb-3 text-slate-500"></i>
+          <div class="flex flex-col items-center justify-center py-12 opacity-40">
+            <i class="fa fa-clipboard-check text-5xl mb-4"></i>
             <p>Nenhum processo pendente.</p>
           </div>`;
         return;
@@ -718,26 +715,26 @@
 
       pendentes.forEach(([key, c]) => {
         const item = document.createElement('div');
-        item.className = 'glass-card p-4 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 border-l-4 border-l-amber-500';
+        item.className = 'card-glass p-5 flex flex-col md:flex-row justify-between items-center gap-4 border-l-4 border-l-amber-500 animate-slide-up';
         item.innerHTML = `
           <div class="w-full">
-            <div class="flex items-center gap-2 mb-1">
+            <div class="flex items-center gap-3 mb-2">
               <span class="font-bold text-white text-lg">${c.nome}</span>
-              <span class="text-xs bg-slate-800 px-2 py-0.5 rounded text-amber-500 border border-amber-500/20">${c.numero}</span>
+              <span class="bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded">${c.numero}</span>
             </div>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-400">
-              <p><span class="text-slate-500">Cargo:</span> ${c.cargo}</p>
-              <p><span class="text-slate-500">Partido:</span> ${c.partido}</p>
-              <p><span class="text-slate-500">Local:</span> ${c.cidade ? c.cidade + '/' : ''}${c.estado}</p>
-              <p><span class="text-slate-500">CPF:</span> ${c.cpf}</p>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-1 text-xs text-gray-400 font-mono">
+              <p>CARGO: <span class="text-white">${c.cargo}</span></p>
+              <p>PARTIDO: <span class="text-white">${c.partido}</span></p>
+              <p>LOCAL: <span class="text-white">${c.cidade ? c.cidade + ' / ' : ''}${c.estado}</span></p>
+              <p>CPF: <span class="text-white">${c.cpf}</span></p>
             </div>
           </div>
-          <div class="flex gap-3 w-full md:w-auto">
-            <button onclick="judgeCandidate('${key}', true)" class="flex-1 md:flex-none bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-2 rounded-lg transition">
-              <i class="fa fa-check mr-1"></i> Aprovar
+          <div class="flex gap-2 w-full md:w-auto">
+            <button onclick="judgeCandidate('${key}', true)" class="flex-1 md:flex-none bg-green-500/10 hover:bg-green-500 hover:text-black text-green-500 border border-green-500/30 px-6 py-2 rounded-lg transition font-bold text-sm">
+              DEFERIR
             </button>
-            <button onclick="judgeCandidate('${key}', false)" class="flex-1 md:flex-none bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg transition">
-              <i class="fa fa-times mr-1"></i> Rejeitar
+            <button onclick="judgeCandidate('${key}', false)" class="flex-1 md:flex-none bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 border border-red-500/30 px-6 py-2 rounded-lg transition font-bold text-sm">
+              INDEFERIR
             </button>
           </div>
         `;
@@ -745,9 +742,9 @@
       });
     };
 
-    // --- OBSERVERS FIREBASE (REALTIME) ---
-    
-    // Config Mode Observer
+    // --- REALTIME LISTENERS ---
+
+    // Config Mode
     onValue(ref(db, 'config'), (snap) => {
       const data = snap.val();
       currentMode = (data && data.mode) ? data.mode : 'Federal';
@@ -755,7 +752,7 @@
       updateFormOptions();
     });
 
-    // Candidates Data Observer
+    // Candidates Data
     let chartIdeologiaInstance = null;
     let chartCargosInstance = null;
 
@@ -763,55 +760,51 @@
       candidatesData = snap.val() || {};
       const arr = Object.values(candidatesData);
       
-      // Atualizar KPIs
+      // Update KPIs
       document.getElementById('statTotal').innerText = arr.length;
       document.getElementById('statPending').innerText = arr.filter(c => c.status === 'pendente').length;
       document.getElementById('statApproved').innerText = arr.filter(c => c.status === 'aprovado').length;
 
-      // Render Admin View
       renderAdminList();
 
-      // Render Public View
+      // Render Public Grid
       const publicGrid = document.getElementById('publicGrid');
       const filterLado = document.getElementById('filterPublicLado').value;
-      
       publicGrid.innerHTML = '';
       
       const aprovados = arr.filter(c => c.status === 'aprovado' && (filterLado === '' || c.lado === filterLado));
       
       aprovados.forEach(c => {
-        const colorClass = c.lado === 'Esquerda' ? 'border-red-500 shadow-red-500/10' : 
-                           c.lado === 'Direita' ? 'border-blue-500 shadow-blue-500/10' : 
-                           'border-amber-500 shadow-amber-500/10';
+        const color = c.lado === 'Esquerda' ? 'red' : c.lado === 'Direita' ? 'blue' : 'yellow';
+        const colorHex = c.lado === 'Esquerda' ? '#EF4444' : c.lado === 'Direita' ? '#3B82F6' : '#EAB308';
         
-        const badgeColor = c.lado === 'Esquerda' ? 'text-red-400 bg-red-900/30' :
-                           c.lado === 'Direita' ? 'text-blue-400 bg-blue-900/30' :
-                           'text-amber-400 bg-amber-900/30';
-
         const card = document.createElement('div');
-        card.className = `glass-card p-5 rounded-xl border-t-4 ${colorClass} hover:-translate-y-1 transition duration-300 relative overflow-hidden group`;
+        card.className = `card-glass p-0 overflow-hidden group hover:scale-[1.02] transition duration-300`;
         card.innerHTML = `
-          <div class="absolute -right-4 -top-4 w-20 h-20 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-xl group-hover:bg-white/10 transition"></div>
-          
-          <div class="flex justify-between items-start mb-3">
-            <div>
-               <h3 class="font-display font-bold text-white text-lg leading-tight">${c.nome}</h3>
-               <span class="text-[10px] font-bold uppercase tracking-widest ${badgeColor} px-2 py-0.5 rounded mt-1 inline-block">${c.partido}</span>
+          <div class="h-2 w-full" style="background: ${colorHex}"></div>
+          <div class="p-6 relative">
+            <div class="absolute right-4 top-4 text-xs font-bold text-gray-500 border border-gray-700 px-2 py-1 rounded uppercase tracking-wider">
+              ${c.partido.split(' ')[0]}
             </div>
-            <div class="bg-slate-800 text-white font-mono font-bold text-xl px-3 py-1 rounded border border-white/10 shadow-inner">
-              ${c.numero}
+            
+            <div class="mb-4">
+              <h3 class="font-bold text-white text-xl leading-tight">${c.nome}</h3>
+              <p class="text-sm text-gray-400 mt-1">${c.cargo}</p>
+            </div>
+            
+            <div class="flex items-center justify-between mt-6">
+              <div class="text-3xl font-mono font-bold text-white tracking-tighter" style="text-shadow: 0 0 20px ${colorHex}66">
+                ${c.numero}
+              </div>
+              ${c.tiktok ? `
+                <a href="https://tiktok.com/@${c.tiktok.replace('@','')}" target="_blank" class="w-8 h-8 rounded-full bg-dark-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-black transition">
+                  <i class="fab fa-tiktok"></i>
+                </a>` : ''}
+            </div>
+            <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-gray-500 uppercase tracking-widest flex items-center gap-1">
+              <i class="fa fa-map-pin"></i> ${c.estado}
             </div>
           </div>
-          
-          <div class="space-y-1 text-sm text-slate-400 mb-4">
-            <p class="flex items-center gap-2"><i class="fa fa-briefcase text-slate-600 text-xs"></i> ${c.cargo}</p>
-            <p class="flex items-center gap-2"><i class="fa fa-map-marker-alt text-slate-600 text-xs"></i> ${c.estado}</p>
-          </div>
-          
-          ${c.tiktok ? `
-            <a href="https://tiktok.com/@${c.tiktok.replace('@','')}" target="_blank" class="block w-full text-center bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-white text-xs py-2 rounded transition border border-white/5">
-              <i class="fab fa-tiktok text-pink-500 mr-1"></i> Ver Campanha
-            </a>` : ''}
         `;
         publicGrid.appendChild(card);
       });
@@ -819,29 +812,21 @@
       updateCharts(arr);
     });
 
-    // Filtro Lado Listener
     document.getElementById('filterPublicLado').addEventListener('change', () => {
-        // Trigger manual update (re-use logic from onValue would be cleaner but this works for demo)
-        const event = new Event('value');
-        // Simple way: just force re-render by reading current data again isn't easy without the snap. 
-        // Let's just create a quick refresh function or rely on the next DB update.
-        // For simplicity in this single-file, we just rely on the user knowing it updates live, 
-        // but let's force a reload of the grid visually:
-        const snap = { val: () => candidatesData };
-        // We re-run the logic inside the onValue callback essentially (mocking the trigger)
-        // Ideally this code should be refactored into a 'renderPublic()' function.
-        location.reload(); // Simplest fix for this structure without refactoring everything.
-        // Better fix: Move the render logic to a function `renderPublicGrid(list)` and call it.
+        // Force refresh trigger simply by reloading data (mock)
+        const dummy = { val: () => candidatesData };
+        // Ideally refactor render logic to separate function, but this is quick fix
+        location.reload(); 
     });
 
     function updateCharts(data) {
         const aprovados = data.filter(c => c.status === 'aprovado');
         
-        // Config Global ChartJS
-        Chart.defaults.color = '#64748b';
-        Chart.defaults.font.family = 'Outfit';
+        // Chart Config
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = 'Space Grotesk';
         
-        // 1. Ideologia
+        // Ideologia
         const counts = { Direita: 0, Centro: 0, Esquerda: 0 };
         aprovados.forEach(c => { if(counts[c.lado] !== undefined) counts[c.lado]++ });
 
@@ -854,36 +839,30 @@
                 labels: ['Esquerda', 'Centro', 'Direita'],
                 datasets: [{
                     data: [counts.Esquerda, counts.Centro, counts.Direita],
-                    backgroundColor: ['#ef4444', '#eab308', '#3b82f6'],
-                    borderColor: '#0f172a',
-                    borderWidth: 4,
-                    hoverOffset: 10
+                    backgroundColor: ['#EF4444', '#EAB308', '#3B82F6'],
+                    borderWidth: 0,
+                    hoverOffset: 15
                 }]
             },
             options: { 
               responsive: true,
               maintainAspectRatio: false,
-              plugins: { 
-                legend: { position: 'right', labels: { color: '#e2e8f0', font: {size: 11} } } 
-              },
-              cutout: '70%'
+              cutout: '85%',
+              plugins: { legend: { position: 'right', labels: { boxWidth: 10, usePointStyle: true } } } 
             }
         });
         
-        // 2. Cargos
+        // Cargos
         const cargosCount = {};
         aprovados.forEach(c => { cargosCount[c.cargo] = (cargosCount[c.cargo] || 0) + 1 });
-        
-        // Ordenar
         const sortedCargos = Object.entries(cargosCount).sort((a,b) => b[1] - a[1]).slice(0, 5);
         
         const ctx2 = document.getElementById('chartCargos');
         if(chartCargosInstance) chartCargosInstance.destroy();
         
-        // Criar gradiente
-        const gradient = ctx2.getContext('2d').createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, '#a855f7');
-        gradient.addColorStop(1, '#6366f1');
+        const grad = ctx2.getContext('2d').createLinearGradient(0,0,0,300);
+        grad.addColorStop(0, '#3B82F6');
+        grad.addColorStop(1, '#1E3A8A');
 
         chartCargosInstance = new Chart(ctx2, {
             type: 'bar',
@@ -892,16 +871,16 @@
                 datasets: [{
                     label: 'Candidatos',
                     data: sortedCargos.map(x => x[1]),
-                    backgroundColor: gradient,
-                    borderRadius: 4,
-                    barThickness: 20
+                    backgroundColor: grad,
+                    borderRadius: 6,
+                    barThickness: 30
                 }]
             },
             options: { 
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: { 
-                    y: { beginAtZero: true, grid: { color: '#334155', drawBorder: false } }, 
+                    y: { beginAtZero: true, grid: { color: '#1E293B' } }, 
                     x: { grid: { display: false } } 
                 },
                 plugins: { legend: { display: false } }
