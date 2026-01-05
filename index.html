@@ -8,10 +8,10 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CDN (prototipagem) -->
+  <!-- Tailwind (CDN para protótipo) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Font Awesome (use seu kit ou CDN) -->
+  <!-- Font Awesome (substitua pelo seu kit se quiser) -->
   <script src="https://kit.fontawesome.com/your_kit_here.js" crossorigin="anonymous"></script>
 
   <!-- Chart.js -->
@@ -19,17 +19,15 @@
 
   <style>
     :root{
-      --azul-institucional: #0b3b66;
+      --azul-institucional: #07294a;
       --dourado: #FFD700;
       --glass-bg: rgba(255,255,255,0.04);
       --glass-border: rgba(255,255,255,0.08);
-      --muted: #e6eef6;
     }
     html,body { height:100%; }
     body {
       font-family: 'Inter', sans-serif;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(13,37,66,0.6), transparent 10%),
-                  linear-gradient(180deg,#071428 0%, #0b3b66 100%);
+      background: linear-gradient(180deg,#041226 0%, #07294a 100%);
       color: #eaf2ff;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
@@ -44,9 +42,8 @@
     h1,h2,h3,h4 { font-family: 'Rajdhani', sans-serif; color: #fff; }
     .badge-gold { background: linear-gradient(90deg,var(--dourado), #e6c200); color:#0b2b44; padding:6px 10px; border-radius:10px; font-weight:700; }
     .sidebar-btn { display:block; padding:12px 14px; border-radius:8px; color:#dbeafe; text-align:left; font-weight:600; }
-    .sidebar-btn:hover { background: rgba(255,255,255,0.03); transform: translateX(4px); transition: all .18s ease; }
-    .glass-input { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px; color: #eaf2ff; }
-    .glass-select { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px; color: #eaf2ff; }
+    .sidebar-btn:hover { background: rgba(255,255,255,0.03); transform: translateX(6px); transition: all .18s ease; }
+    .glass-input, .glass-select { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px; color: #eaf2ff; }
     .toast { position: fixed; right: 24px; top: 24px; z-index: 60; min-width: 260px; }
     .toast .inner { padding:12px 16px; border-radius:10px; box-shadow: 0 6px 18px rgba(2,6,23,0.6); }
     .toast-success { background: linear-gradient(90deg,#0ea5a4,#06b6d4); color:#042027; }
@@ -56,10 +53,10 @@
     ::-webkit-scrollbar { width:10px; height:10px; }
     ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,var(--azul-institucional), #08304f); border-radius:10px; }
     a.tiktok-link { color:#fff; text-decoration:underline; }
-    .small-muted { color: rgba(255,255,255,0.7); font-size:0.9rem; }
+    .small-muted { color: rgba(255,255,255,0.75); font-size:0.9rem; }
     .btn-primary { background: linear-gradient(90deg,var(--azul-institucional), #08304f); color:#fff; padding:10px 14px; border-radius:10px; font-weight:700; }
     .btn-ghost { background: transparent; border:1px solid rgba(255,255,255,0.06); padding:8px 12px; border-radius:8px; color:#fff; }
-    .fade-in { animation: fadeIn .5s ease both; }
+    .fade-in { animation: fadeIn .45s ease both; }
     @keyframes fadeIn { from { opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;} }
     .status-pill { padding:6px 10px; border-radius:999px; font-weight:700; font-size:0.85rem; }
     .status-pendente { background: rgba(255,255,255,0.06); color:#fff; }
@@ -78,7 +75,7 @@
       <div class="mb-6">
         <h2 class="text-2xl">🏛️ TSE — Brookasil</h2>
         <div class="badge-gold inline-block mt-3">Eleições 2026</div>
-        <div class="small-muted mt-2">Portal institucional — Roleplay</div>
+        <div class="small-muted mt-2">Portal institucional • Roleplay</div>
       </div>
 
       <nav class="mt-8 space-y-3">
@@ -90,10 +87,8 @@
 
       <div class="mt-6">
         <div class="text-sm small-muted">Modo de eleição</div>
-        <select id="globalMode" class="glass-select mt-2 w-full">
-          <option value="Federal">Federal</option>
-          <option value="Municipal">Municipal</option>
-        </select>
+        <div id="modePublic" class="mt-2 badge-gold">Federal</div>
+        <div class="small-muted mt-2 text-xs">Modo visível ao público. Alteração apenas por TSE Central.</div>
       </div>
 
       <div class="mt-6 small-muted text-xs">
@@ -141,21 +136,6 @@
             <canvas id="ideoChart" height="80"></canvas>
           </div>
         </div>
-
-        <div class="mt-6 grid grid-cols-3 gap-4">
-          <div class="glass p-4">
-            <h4 class="text-lg">Últimas candidaturas</h4>
-            <div id="recentList" class="mt-3 space-y-3 small-muted"></div>
-          </div>
-          <div class="glass p-4">
-            <h4 class="text-lg">Validações</h4>
-            <div class="mt-3 small-muted">Duplicidade de número por cargo + território é verificada automaticamente no registro.</div>
-          </div>
-          <div class="glass p-4">
-            <h4 class="text-lg">Relógio oficial</h4>
-            <div class="mt-3 text-2xl font-bold" id="officialClock">--:--:--</div>
-          </div>
-        </div>
       </section>
 
       <!-- Registrar Candidatura -->
@@ -183,7 +163,7 @@
           </div>
 
           <div class="grid grid-cols-3 gap-3">
-            <select id="eleicaoMode" class="glass-select w-full">
+            <select id="eleicaoMode" class="glass-select w-full" disabled>
               <option value="Federal">Federal</option>
               <option value="Municipal">Municipal</option>
             </select>
@@ -213,7 +193,7 @@
         <div class="mt-4 grid grid-cols-3 gap-4" id="approvedGrid"></div>
       </section>
 
-      <!-- Área Administrativa (simples, front-end) -->
+      <!-- Área Administrativa -->
       <section id="adminArea" class="glass p-6 fade-in hidden">
         <div class="flex justify-between items-center">
           <h3 class="text-lg">Área Administrativa (TRE)</h3>
@@ -241,31 +221,48 @@
               <div class="text-sm small-muted">Logado como</div>
               <div id="adminBadge" class="badge-gold mt-2">—</div>
             </div>
-            <div>
+            <div class="flex items-center gap-3">
               <button id="adminLogout" class="btn-ghost">Sair</button>
             </div>
           </div>
 
-          <div class="mt-4">
-            <h4 class="text-lg">Candidaturas Pendentes</h4>
-            <div id="pendingList" class="mt-3 space-y-3"></div>
-          </div>
+          <div class="mt-4 grid grid-cols-2 gap-4">
+            <div class="glass p-4">
+              <h4 class="text-lg">Candidaturas Pendentes</h4>
+              <div id="pendingList" class="mt-3 space-y-3"></div>
+            </div>
 
-          <div class="mt-6">
-            <h4 class="text-lg">Filtros</h4>
-            <div class="mt-3 flex gap-3">
-              <select id="filterCargo" class="glass-select">
-                <option value="">Todos os cargos</option>
-              </select>
-              <select id="filterLado" class="glass-select">
-                <option value="">Todos os lados</option>
-                <option value="Esquerda">Esquerda</option>
-                <option value="Centro">Centro</option>
-                <option value="Direita">Direita</option>
-              </select>
-              <button id="applyFilters" class="btn-primary">Aplicar</button>
+            <div class="glass p-4">
+              <h4 class="text-lg">Controles do TRE</h4>
+              <div class="mt-3 small-muted">
+                <div class="mb-3">
+                  <label class="small-muted">Modo de eleição (apenas TSE Central pode alterar)</label>
+                  <div class="mt-2 flex gap-2">
+                    <button id="setFederal" class="btn-ghost">Federal</button>
+                    <button id="setMunicipal" class="btn-ghost">Municipal</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="small-muted">Filtros</label>
+                  <div class="mt-2">
+                    <select id="filterCargo" class="glass-select w-full mb-2">
+                      <option value="">Todos os cargos</option>
+                    </select>
+                    <select id="filterLado" class="glass-select w-full">
+                      <option value="">Todos os lados</option>
+                      <option value="Esquerda">Esquerda</option>
+                      <option value="Centro">Centro</option>
+                      <option value="Direita">Direita</option>
+                    </select>
+                    <div class="mt-3">
+                      <button id="applyFilters" class="btn-primary w-full">Aplicar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </section>
     </main>
@@ -274,17 +271,17 @@
   <!-- Toast container -->
   <div id="toastContainer" class="toast"></div>
 
-  <!-- Firebase + App logic -->
+  <!-- SCRIPT PRINCIPAL (module) -->
   <script type="module">
     /**
-     * index.html — TSE Brookasil 2026 (completo)
-     * - Usa Firebase Realtime Database (compat) via SDK compat
-     * - Regras estritas: NUNCA usar set() em /candidatos; usar push() para criar; update() apenas para status/metadados
-     * - Código comentado e organizado
+     * index.html melhorado — TSE Brookasil 2026
+     * - Design refinado, botões funcionais, modo protegido, painel admin funcional
+     * - Regras: push() para criar; update() apenas para status/config
+     * - Substitua firebaseConfig com credenciais de teste
      */
 
     // ---------------------------
-    // PARTIDOS (fornecido pelo usuário)
+    // PARTIDOS (fornecido)
     // ---------------------------
     const partidosMap = {
       Direita: [
@@ -305,15 +302,14 @@
     };
 
     // ---------------------------
-    // Estados e cidades (Brookasil)
+    // STATES atualizado (conforme pedido)
     // ---------------------------
     const STATES = {
-  "Brookhaven": ["Cidade Eleitoral", "Liberty City"],
-  "Novacore": ["Nexaville"],
-  "Casteríber": ["Castelo Verde"],
-  "Fortemega": ["Marinha City"],
-  "Florêmix": ["Florápolis"]
-};
+      "Brookhaven": ["Cidade Eleitoral", "Liberty City"],
+      "Novacore": ["Nexaville"],
+      "Casteríber": ["Castelo Verde"],
+      "Fortemega": ["Marinha City"],
+      "Florêmix": ["Florápolis"]
     };
 
     // ---------------------------
@@ -323,7 +319,7 @@
     const MUNICIPAL_CARGOS = ["Prefeito","Vereador"];
 
     // ---------------------------
-    // TRE passwords (front-end only; for roleplay)
+    // TRE passwords (front-end roleplay)
     // ---------------------------
     const TRE_PASSWORDS = {
       "Brookhaven": "Brookasil1234",
@@ -336,7 +332,6 @@
     // ---------------------------
     // Firebase compat initialization
     // ---------------------------
-    // IMPORTS: compat SDKs (browser module)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js";
     import {
       getDatabase,
@@ -344,25 +339,20 @@
       push,
       update,
       onValue,
-      get,
-      child,
-      query,
-      orderByChild
+      get
     } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js";
 
-    // Substitua as credenciais abaixo pelas do seu projeto de teste.
     const firebaseConfig = {
   apiKey: "AIzaSyAwFLV5X9ICB3mvU4WU1ihxGUeG9UsrbtQ",
   authDomain: "candidatura-cde.firebaseapp.com",
   databaseURL: "https://candidatura-cde-default-rtdb.firebaseio.com",
   projectId: "candidatura-cde"
-      // Em produção, mantenha essas credenciais seguras e use regras de DB apropriadas.
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Referências principais (não altere nomes)
+    // Referências
     const candidatosRef = ref(db, 'candidatos');
     const configRef = ref(db, 'config');
 
@@ -383,6 +373,7 @@
     }
 
     function setLoading(el, state = true) {
+      if(!el) return;
       if(state) {
         el.dataset.orig = el.innerHTML;
         el.innerHTML = '<div class="loader"></div>';
@@ -396,7 +387,7 @@
     function nowTimestamp(){ return Date.now(); }
 
     // ---------------------------
-    // UI: navegação lateral
+    // Navegação sidebar (funcional)
     // ---------------------------
     $$('.sidebar-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -405,11 +396,13 @@
           const el = document.getElementById(id);
           if(el) el.classList.toggle('hidden', id !== target);
         });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
 
     // ---------------------------
-    // Preencher cargos e territórios
+    // Preencher cargos e territórios (modo público é lido do config)
+    // - eleicaoMode no formulário é DISABLED (público não altera)
     // ---------------------------
     function populateCargoAndTerritory(mode) {
       const cargoEl = $('#cargo');
@@ -429,7 +422,7 @@
         });
       }
 
-      // Atualiza filtros admin cargo
+      // Atualiza filtro admin cargo
       const filterCargo = $('#filterCargo');
       if(filterCargo){
         filterCargo.innerHTML = '<option value="">Todos os cargos</option>';
@@ -437,27 +430,8 @@
       }
     }
 
-    // Inicializa com modo global
-    const globalModeEl = $('#globalMode');
-    const eleicaoModeEl = $('#eleicaoMode');
-    globalModeEl.value = 'Federal';
-    eleicaoModeEl.value = 'Federal';
-    populateCargoAndTerritory('Federal');
-    $('#modeBadge').textContent = 'Federal';
-
-    globalModeEl.addEventListener('change', (e) => {
-      const mode = e.target.value;
-      $('#modeBadge').textContent = mode;
-      eleicaoModeEl.value = mode;
-      populateCargoAndTerritory(mode);
-    });
-
-    eleicaoModeEl.addEventListener('change', (e) => {
-      populateCargoAndTerritory(e.target.value);
-    });
-
     // ---------------------------
-    // Preencher partidos dinamicamente conforme lado
+    // Preencher partidos conforme lado
     // ---------------------------
     const partidoSelect = $('#partido');
     const ladoSelect = $('#lado');
@@ -473,13 +447,11 @@
     }
 
     ladoSelect.addEventListener('change', (e) => populatePartidosForLado(e.target.value));
-    // inicial
     populatePartidosForLado('');
 
     // ---------------------------
     // Validação de duplicidade (número + cargo + território)
-    // - Percorre todos os candidatos no snapshot (pode ser otimizado com índices)
-    // - Retorna true se duplicado encontrado
+    // - Em caso de erro ao checar, bloqueia por segurança
     // ---------------------------
     async function isDuplicateNumber(numero, cargo, territorio) {
       if(!numero) return false;
@@ -489,7 +461,6 @@
         const data = snap.val();
         for(const id in data){
           const c = data[id];
-          // comparar como strings para evitar problemas com zeros à esquerda
           if(String(c.numero) === String(numero) && c.cargo === cargo && c.estado === territorio){
             return true;
           }
@@ -497,15 +468,12 @@
         return false;
       } catch(err){
         console.error('Erro ao verificar duplicidade', err);
-        // Em caso de dúvida, bloquear para preservar integridade
         return true;
       }
     }
 
     // ---------------------------
     // Registro de candidatura (sempre push)
-    // - NUNCA usar set() em /candidatos
-    // - status inicial: 'pendente'
     // ---------------------------
     $('#candidateForm').addEventListener('submit', async (ev) => {
       ev.preventDefault();
@@ -517,14 +485,13 @@
       const lado = $('#lado').value;
       const partido = $('#partido').value.trim();
       const numero = $('#numero').value.trim();
-      const eleicao = $('#eleicaoMode').value;
+      const eleicao = $('#eleicaoMode').value; // público apenas lê
       const cargo = $('#cargo').value;
       const territorioRaw = $('#territorio').value;
       const estado = eleicao === 'Federal' ? (territorioRaw === 'Brookasil' ? 'Brookasil' : territorioRaw) : (territorioRaw.split('|')[1] || territorioRaw);
       const cidade = eleicao === 'Municipal' ? territorioRaw.split('|')[0] : null;
       const territorio = eleicao === 'Federal' && cargo === 'Presidente' ? 'Brookasil' : (cidade || estado);
 
-      // Validações básicas
       if(!nome || !cpfRaw || !lado || !cargo || !territorio || !numero){
         $('#formToast').textContent = 'Preencha todos os campos obrigatórios.';
         return;
@@ -553,11 +520,10 @@
         timestamp: nowTimestamp()
       };
 
-      // Inserção via push() — preserva histórico
       try {
         const btn = $('#submitCandidate');
         setLoading(btn, true);
-        await push(candidatosRef, candidato);
+        await push(candidatosRef, candidato); // push() preserva histórico
         setLoading(btn, false);
         $('#candidateForm').reset();
         $('#formToast').textContent = '';
@@ -570,7 +536,7 @@
     });
 
     // ---------------------------
-    // Realtime: escuta de candidatos e atualização do dashboard
+    // Realtime: escuta candidatos e config
     // ---------------------------
     let ideologiaChart;
     onValue(candidatosRef, (snap) => {
@@ -589,38 +555,47 @@
         recent.push({ id, ...c });
       }
 
-      // Atualiza contadores
       $('#totalCandidates').textContent = total;
       $('#pendingCount').textContent = pendentes;
       $('#approvedCount').textContent = aprovados;
 
-      // Atualiza gráfico
       updateIdeoChart(ideologia);
 
-      // Render últimos 6
       recent.sort((a,b) => b.timestamp - a.timestamp);
       const recentList = $('#recentList');
-      recentList.innerHTML = '';
-      recent.slice(0,6).forEach(r => {
-        const el = document.createElement('div');
-        el.className = 'flex justify-between items-center';
-        el.innerHTML = `
-          <div>
-            <div class="font-semibold">${r.nome}</div>
-            <div class="small-muted text-sm">${r.cargo} • ${r.estado || r.cidade || '—'}</div>
-          </div>
-          <div class="text-right small-muted">
-            <div class="${r.status === 'pendente' ? 'status-pendente status-pill' : r.status === 'aprovado' ? 'status-aprovado status-pill' : 'status-rejeitado status-pill'}">${r.status}</div>
-          </div>
-        `;
-        recentList.appendChild(el);
-      });
+      if(recentList){
+        recentList.innerHTML = '';
+        recent.slice(0,6).forEach(r => {
+          const el = document.createElement('div');
+          el.className = 'flex justify-between items-center';
+          el.innerHTML = `
+            <div>
+              <div class="font-semibold">${r.nome}</div>
+              <div class="small-muted text-sm">${r.cargo} • ${r.estado || r.cidade || '—'}</div>
+            </div>
+            <div class="text-right small-muted">
+              <div class="${r.status === 'pendente' ? 'status-pendente status-pill' : r.status === 'aprovado' ? 'status-aprovado status-pill' : 'status-rejeitado status-pill'}">${r.status}</div>
+            </div>
+          `;
+          recentList.appendChild(el);
+        });
+      }
 
-      // Render aprovados públicos
       renderApprovedGrid(aprovadosList);
-
-      // Render pendentes para admin (se logado)
       renderPendingForAdmin(data);
+    });
+
+    // ---------------------------
+    // Escuta config (modo) — atualiza UI pública
+    // ---------------------------
+    onValue(configRef, (snap) => {
+      const cfg = snap.exists() ? snap.val() : { mode: 'Federal' };
+      const mode = cfg.mode || 'Federal';
+      $('#modeBadge').textContent = mode;
+      $('#modePublic').textContent = mode;
+      // Atualiza formulário público (eleicaoMode disabled but shows current)
+      $('#eleicaoMode').value = mode;
+      populateCargoAndTerritory(mode);
     });
 
     // ---------------------------
@@ -675,8 +650,7 @@
     }
 
     // ---------------------------
-    // Admin: login front-end (roleplay)
-    // - Em produção, usar Firebase Auth + regras de DB
+    // Admin login (front-end roleplay)
     // ---------------------------
     let adminState = null;
 
@@ -691,6 +665,8 @@
         $('#adminPanel').classList.remove('hidden');
         $('#adminBadge').textContent = `${state}`;
         showToast(`Autenticado como ${state}`, 'success');
+        // Preencher filtros e pendentes imediatamente
+        populateCargoAndTerritory($('#eleicaoMode').value);
       } else {
         showToast('Senha inválida.', 'error');
       }
@@ -707,14 +683,12 @@
 
     // ---------------------------
     // Render pendentes para admin
-    // - Brookhaven vê todos; outros veem apenas candidatos do seu estado
     // ---------------------------
     function renderPendingForAdmin(allData){
       const container = $('#pendingList');
       if(!container) return;
       container.innerHTML = '';
 
-      // If not logged, nothing to show
       if(!adminState) {
         container.innerHTML = '<div class="small-muted">Faça login para ver candidaturas pendentes.</div>';
         return;
@@ -724,7 +698,8 @@
       for(const id in allData){
         const c = allData[id];
         if(c.status === 'pendente'){
-          if(adminState === 'Brookhaven' || c.estado === adminState || c.cidade && c.cidade.includes(adminState)){
+          // Brookhaven (TSE Central) vê todos
+          if(adminState === 'Brookhaven' || c.estado === adminState || (c.cidade && c.cidade.includes(adminState))){
             items.push({ id, ...c });
           }
         }
@@ -767,9 +742,7 @@
     }
 
     // ---------------------------
-    // Approve / Reject functions (use update() only)
-    // - update() altera apenas status/metadados
-    // - NÃO remover ou sobrescrever dados do candidato
+    // Approve / Reject (update() only)
     // ---------------------------
     async function approveCandidate(id){
       if(!adminState) { showToast('Autenticação necessária.', 'error'); return; }
@@ -805,11 +778,36 @@
     }
 
     // ---------------------------
+    // Controles de modo (apenas Brookhaven pode alterar)
+    // - Atualiza config/mode via update() (não sobrescreve candidatos)
+    // ---------------------------
+    $('#setFederal').addEventListener('click', async () => {
+      if(adminState !== 'Brookhaven'){ showToast('Apenas TSE Central pode alterar o modo.', 'error'); return; }
+      try {
+        await update(configRef, { mode: 'Federal' });
+        showToast('Modo alterado para Federal.', 'success');
+      } catch(err){
+        console.error(err);
+        showToast('Erro ao alterar modo.', 'error');
+      }
+    });
+
+    $('#setMunicipal').addEventListener('click', async () => {
+      if(adminState !== 'Brookhaven'){ showToast('Apenas TSE Central pode alterar o modo.', 'error'); return; }
+      try {
+        await update(configRef, { mode: 'Municipal' });
+        showToast('Modo alterado para Municipal.', 'success');
+      } catch(err){
+        console.error(err);
+        showToast('Erro ao alterar modo.', 'error');
+      }
+    });
+
+    // ---------------------------
     // Filtros admin (aplicar localmente)
     // ---------------------------
     $('#applyFilters').addEventListener('click', () => {
-      // Re-render pending list using current adminState and filters
-      // The onValue listener will call renderPendingForAdmin with latest data
+      // Re-render pendentes com filtros aplicados (renderPendingForAdmin usa adminState)
       showToast('Filtros aplicados (visual).', 'success');
     });
 
@@ -817,12 +815,10 @@
     // Clock oficial
     // ---------------------------
     function startClock(){
-      const el = $('#officialClock');
-      const el2 = $('#clock');
+      const el = $('#clock');
       setInterval(()=> {
         const d = new Date();
-        el.textContent = d.toLocaleTimeString('pt-BR');
-        el2.textContent = d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+        el.textContent = d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
       }, 1000);
     }
     startClock();
@@ -830,7 +826,7 @@
     // ---------------------------
     // Inicializações finais
     // ---------------------------
-    // Preencher cargos/territórios e partidos iniciais
+    // Preencher cargos/territórios com modo padrão (será atualizado pelo configRef listener)
     populateCargoAndTerritory('Federal');
     populatePartidosForLado('');
 
@@ -840,11 +836,10 @@
       if(el) el.classList.toggle('hidden', id !== 'dashboard');
     });
 
-    // Segurança: nunca usar set() em /candidatos no front-end (regra absoluta)
-    // Todas as escritas aqui usam push() para criação e update() para status/metadados.
+    // Segurança: **NUNCA** usar set() em /candidatos no front-end.
+    // Criação: push(); Atualização de status/config: update().
 
-    // Comentário final: este index.html é um frontend completo para roleplay.
-    // Em produção, implemente Firebase Auth, regras de DB e criptografia de dados sensíveis.
+    // Código comentado e modular para facilitar manutenção.
   </script>
 </body>
 </html>
