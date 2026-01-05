@@ -22,23 +22,23 @@
         extend: {
           fontFamily: {
             sans: ['Outfit', 'sans-serif'],
-            mono: ['Space Grotesk', 'monospace'], // Usado para números e títulos
+            mono: ['Space Grotesk', 'monospace'],
           },
           colors: {
             dark: {
-              900: '#0B0C15', // Fundo quase preto
-              800: '#151725', // Cards
-              700: '#1E2130', // Bordas
+              900: '#05050A', // Ultra dark background
+              800: '#0F111A', // Secondary dark
+              glass: 'rgba(15, 17, 26, 0.65)',
             },
             brand: {
               gold: '#FFD700',
-              blue: '#3B82F6',
-              accent: '#6366F1'
+              glow: 'rgba(255, 215, 0, 0.5)'
             }
           },
           animation: {
             'float': 'float 6s ease-in-out infinite',
-            'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+            'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           },
           keyframes: {
             float: {
@@ -46,7 +46,7 @@
               '50%': { transform: 'translateY(-10px)' },
             },
             slideUp: {
-              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '0%': { transform: 'translateY(30px)', opacity: '0' },
               '100%': { transform: 'translateY(0)', opacity: '1' },
             }
           }
@@ -56,89 +56,79 @@
   </script>
 
   <style>
-    /* Reset & Base */
+    /* Estilos Globais e Efeitos de Vidro */
     body {
-      background-color: #0B0C15;
+      background-color: #05050A;
       background-image: 
-        radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%),
-        radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.08), transparent 25%);
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08), transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.05), transparent 40%);
       color: #E2E8F0;
-      overflow: hidden; /* App feel */
+      overflow: hidden;
     }
 
-    /* Scrollbar Minimalista */
-    ::-webkit-scrollbar { width: 6px; }
+    /* Scrollbar Futurista */
+    ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 20px; }
 
-    /* Glass Cards Premium */
+    /* Glass Cards */
     .card-glass {
-      background: rgba(21, 23, 37, 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: var(--tw-colors-dark-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 24px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
     }
     
     .card-glass:hover {
-      border-color: rgba(255, 255, 255, 0.1);
-      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px -10px rgba(0,0,0,0.6);
     }
 
-    /* Inputs Futuristas */
+    /* Inputs High-Tech */
     .input-tech {
-      background: #0B0C15;
-      border: 1px solid #1E2130;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
       color: white;
-      transition: all 0.3s;
       font-family: 'Space Grotesk', monospace;
+      transition: all 0.3s;
     }
     .input-tech:focus {
       border-color: #3B82F6;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
       outline: none;
+      background: rgba(0,0,0,0.5);
     }
 
-    /* Botão Dourado Premium */
-    .btn-primary {
+    /* Botão Dourado */
+    .btn-gold {
       background: linear-gradient(135deg, #F59E0B 0%, #FFD700 100%);
       color: #000;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
       position: relative;
       overflow: hidden;
-      z-index: 1;
       border: none;
+      transition: all 0.3s;
     }
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; w: 100%; h: 100%;
-      background: linear-gradient(135deg, #FFD700 0%, #F59E0B 100%);
-      opacity: 0;
-      z-index: -1;
-      transition: opacity 0.3s;
-    }
-    .btn-primary:hover::before { opacity: 1; }
-    .btn-primary:hover {
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-      transform: translateY(-2px);
+    .btn-gold:hover {
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+      transform: scale(1.02);
     }
 
-    /* Sidebar Navigation Active State */
+    /* Navegação Lateral */
+    .nav-item { position: relative; overflow: hidden; }
     .nav-item.active {
-      background: rgba(59, 130, 246, 0.1);
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent);
       color: #60A5FA;
-      border-right: 3px solid #60A5FA;
+      border-left: 3px solid #60A5FA;
     }
-    .nav-item:hover:not(.active) {
-      background: rgba(255,255,255,0.03);
-      color: white;
-    }
+    .nav-item:hover:not(.active) { color: white; background: rgba(255,255,255,0.03); }
 
-    /* Custom Loader */
+    /* Loader */
     .loader {
       width: 18px; height: 18px;
       border: 2px solid #000;
@@ -148,151 +138,144 @@
       animation: rotation 1s linear infinite;
     }
     @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    /* Toast Notification */
-    #toast-container { z-index: 9999; }
-    .toast-enter { animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    @keyframes slideIn { from { transform: translateX(100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
   </style>
 </head>
-<body class="flex h-screen selection:bg-brand-gold selection:text-black">
+<body class="flex h-screen selection:bg-brand-gold selection:text-black font-sans">
 
-  <aside class="w-20 lg:w-72 bg-dark-900 border-r border-dark-700 flex flex-col justify-between flex-shrink-0 z-20 transition-all duration-300">
+  <div class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+    <div class="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] animate-pulse-slow"></div>
+    <div class="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-[100px] animate-pulse-slow" style="animation-delay: 1s;"></div>
+  </div>
+
+  <aside class="w-20 lg:w-72 bg-dark-800/80 backdrop-blur-xl border-r border-white/5 flex flex-col justify-between flex-shrink-0 z-20">
     <div>
-      <div class="h-20 flex items-center justify-center lg:justify-start lg:px-6 border-b border-dark-700">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+      <div class="h-24 flex items-center justify-center lg:justify-start lg:px-8 border-b border-white/5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
           <i class="fa fa-scale-balanced text-white"></i>
         </div>
-        <div class="hidden lg:block ml-3">
-          <h1 class="text-xl font-bold tracking-tight text-white font-mono">TSE <span class="text-blue-500">2026</span></h1>
-          <p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Sistema Oficial</p>
+        <div class="hidden lg:block ml-4">
+          <h1 class="text-2xl font-bold tracking-tight text-white font-mono">TSE <span class="text-blue-500">2026</span></h1>
+          <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Oficial</p>
         </div>
       </div>
 
-      <nav class="mt-8 space-y-2 px-2">
-        <button onclick="switchTab('dashboard', this)" class="nav-item active w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 transition-all group">
-          <i class="fa fa-chart-pie text-lg w-6 text-center group-hover:scale-110 transition-transform"></i>
-          <span class="hidden lg:block font-medium">Visão Geral</span>
+      <nav class="mt-10 space-y-2 px-3">
+        <button onclick="switchTab('dashboard', this)" class="nav-item active w-full flex items-center gap-4 px-4 py-4 rounded-xl text-gray-400 transition-all group">
+          <i class="fa fa-chart-pie text-xl w-6 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="hidden lg:block font-medium tracking-wide">Dashboard</span>
         </button>
 
-        <button onclick="switchTab('candidatos', this)" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 transition-all group">
-          <i class="fa fa-users-viewfinder text-lg w-6 text-center group-hover:scale-110 transition-transform"></i>
-          <span class="hidden lg:block font-medium">Candidaturas</span>
+        <button onclick="switchTab('candidatos', this)" class="nav-item w-full flex items-center gap-4 px-4 py-4 rounded-xl text-gray-400 transition-all group">
+          <i class="fa fa-users-viewfinder text-xl w-6 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="hidden lg:block font-medium tracking-wide">Candidaturas</span>
         </button>
 
-        <button onclick="switchTab('registro', this)" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 transition-all group">
-          <i class="fa fa-file-pen text-lg w-6 text-center group-hover:scale-110 transition-transform"></i>
-          <span class="hidden lg:block font-medium">Novo Registro</span>
+        <button onclick="switchTab('registro', this)" class="nav-item w-full flex items-center gap-4 px-4 py-4 rounded-xl text-gray-400 transition-all group">
+          <i class="fa fa-file-signature text-xl w-6 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="hidden lg:block font-medium tracking-wide">Registrar</span>
         </button>
       </nav>
     </div>
 
-    <div class="p-4 border-t border-dark-700">
-      <button onclick="switchTab('admin', this)" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-amber-500/70 hover:text-amber-400 transition-all mb-4">
-        <i class="fa fa-shield-halved text-lg w-6 text-center"></i>
+    <div class="p-6 border-t border-white/5">
+      <button onclick="switchTab('admin', this)" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-amber-500/70 hover:text-amber-400 transition-all mb-4 border border-dashed border-amber-900/50 hover:border-amber-500/50">
+        <i class="fa fa-gavel text-lg w-6 text-center"></i>
         <span class="hidden lg:block font-medium">Área Restrita</span>
       </button>
       
-      <div class="hidden lg:block bg-dark-800 rounded-xl p-4 border border-dark-700 relative overflow-hidden">
-        <div class="absolute -right-4 -top-4 w-12 h-12 bg-blue-500 blur-xl opacity-20"></div>
-        <p class="text-xs text-gray-500 uppercase font-bold mb-1">Modo Atual</p>
+      <div class="hidden lg:block bg-black/40 rounded-xl p-4 border border-white/5 relative overflow-hidden group">
+        <div class="absolute -right-4 -top-4 w-12 h-12 bg-blue-500 blur-xl opacity-20 group-hover:opacity-40 transition"></div>
+        <p class="text-[10px] text-gray-500 uppercase font-bold mb-1 tracking-wider">Modo Eleitoral</p>
         <div class="flex items-center gap-2">
-          <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          <span id="displayMode" class="text-sm font-mono font-bold text-white">CARREGANDO...</span>
+          <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+          <span id="displayMode" class="text-sm font-mono font-bold text-white tracking-widest">CARREGANDO...</span>
         </div>
       </div>
     </div>
   </aside>
 
-  <main class="flex-1 flex flex-col relative h-screen overflow-hidden">
+  <main class="flex-1 flex flex-col relative h-screen overflow-hidden z-10">
     
-    <header class="h-20 bg-dark-900/50 backdrop-blur-md border-b border-dark-700 flex items-center justify-between px-8 z-10">
-      <div class="flex flex-col">
-        <span class="text-xs text-gray-500 font-mono" id="serverDate">...</span>
-        <h2 class="text-lg font-bold text-white" id="pageTitle">Painel de Controle</h2>
+    <header class="h-24 bg-dark-900/30 backdrop-blur-sm border-b border-white/5 flex items-center justify-between px-8 lg:px-12 z-10">
+      <div class="flex flex-col animate-slide-up">
+        <span class="text-xs text-blue-400 font-mono tracking-widest mb-1" id="serverDate">...</span>
+        <h2 class="text-2xl font-bold text-white tracking-tight" id="pageTitle">Visão Geral</h2>
       </div>
-      <div class="flex items-center gap-6">
-        <div class="text-right">
-          <div id="clock" class="text-2xl font-mono font-bold text-white leading-none">00:00</div>
-          <span class="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Horário de Brasília</span>
+      <div class="flex items-center gap-8">
+        <div class="text-right hidden md:block">
+          <div id="clock" class="text-3xl font-mono font-bold text-white leading-none tracking-wider">00:00</div>
+          <span class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Horário Oficial de Brasília</span>
         </div>
-        <div class="w-10 h-10 rounded-full bg-dark-700 border border-dark-700 flex items-center justify-center text-gray-400">
-          <i class="fa fa-user"></i>
+        <div class="w-12 h-12 rounded-full bg-gradient-to-b from-gray-800 to-black border border-white/10 flex items-center justify-center text-gray-400 shadow-lg">
+          <i class="fa fa-user-shield"></i>
         </div>
       </div>
     </header>
 
     <div class="flex-1 overflow-y-auto p-4 lg:p-10 relative scroll-smooth">
       
-      <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
-
       <section id="dashboard" class="space-y-8 animate-slide-up max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="card-glass p-6 relative overflow-hidden group">
-            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition group-hover:scale-110 duration-500">
-              <i class="fa fa-globe text-6xl text-white"></i>
+          <div class="card-glass p-8 relative overflow-hidden group">
+            <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-all duration-500 transform group-hover:scale-125">
+              <i class="fa fa-globe text-8xl text-white"></i>
             </div>
-            <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">Total de Registros</p>
-            <h3 id="statTotal" class="text-5xl font-mono font-bold text-white mt-2">0</h3>
-            <div class="mt-4 inline-flex items-center text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
-              <i class="fa fa-arrow-up mr-1"></i> Atualizado agora
-            </div>
-          </div>
-
-          <div class="card-glass p-6 relative overflow-hidden group border-l-4 border-l-amber-500">
-            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-              <i class="fa fa-gavel text-6xl text-amber-500"></i>
-            </div>
-            <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">Aguardando TRE</p>
-            <h3 id="statPending" class="text-5xl font-mono font-bold text-amber-500 mt-2">0</h3>
-            <div class="mt-4 text-xs text-gray-500">
-              Requer aprovação judicial
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Total de Registros</p>
+            <h3 id="statTotal" class="text-6xl font-mono font-bold text-white tracking-tighter">0</h3>
+            <div class="mt-4 inline-flex items-center text-xs text-blue-400 font-mono">
+              <span class="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span> Sistema Online
             </div>
           </div>
 
-          <div class="card-glass p-6 relative overflow-hidden group border-l-4 border-l-green-500">
-            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-              <i class="fa fa-check-circle text-6xl text-green-500"></i>
+          <div class="card-glass p-8 relative overflow-hidden group border-l-2 border-l-amber-500">
+            <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-all">
+              <i class="fa fa-scale-unbalanced text-8xl text-amber-500"></i>
             </div>
-            <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">Candidatos Aptos</p>
-            <h3 id="statApproved" class="text-5xl font-mono font-bold text-green-500 mt-2">0</h3>
-            <div class="mt-4 text-xs text-gray-500">
-              Visíveis na urna eletrônica
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Em Julgamento</p>
+            <h3 id="statPending" class="text-6xl font-mono font-bold text-amber-500 tracking-tighter">0</h3>
+            <div class="mt-4 text-xs text-gray-500 font-mono">Aguardando deferimento</div>
+          </div>
+
+          <div class="card-glass p-8 relative overflow-hidden group border-l-2 border-l-green-500">
+            <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-all">
+              <i class="fa fa-check-double text-8xl text-green-500"></i>
             </div>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Candidatos Aptos</p>
+            <h3 id="statApproved" class="text-6xl font-mono font-bold text-green-500 tracking-tighter">0</h3>
+            <div class="mt-4 text-xs text-gray-500 font-mono">Homologados no sistema</div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="card-glass p-6 lg:col-span-2">
-            <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-              <i class="fa fa-chart-bar text-blue-500"></i> Disputa por Cargo
+          <div class="card-glass p-8 lg:col-span-2">
+            <h3 class="text-xl font-bold text-white mb-8 flex items-center gap-3">
+              <span class="w-1 h-6 bg-blue-500 rounded-full"></span>
+              Distribuição por Cargo
             </h3>
-            <div class="h-64 w-full">
+            <div class="h-72 w-full">
               <canvas id="chartCargos"></canvas>
             </div>
           </div>
-          <div class="card-glass p-6 flex flex-col items-center justify-center">
-            <h3 class="text-lg font-bold text-white mb-6 w-full text-left flex items-center gap-2">
-              <i class="fa fa-chart-pie text-purple-500"></i> Espectro
+          <div class="card-glass p-8 flex flex-col">
+            <h3 class="text-xl font-bold text-white mb-8 flex items-center gap-3">
+              <span class="w-1 h-6 bg-purple-500 rounded-full"></span>
+              Ideologia
             </h3>
-            <div class="h-48 w-full relative">
+            <div class="h-56 w-full relative flex-1">
               <canvas id="chartIdeologia"></canvas>
-            </div>
-            <div class="mt-4 text-center text-xs text-gray-500 w-full border-t border-white/5 pt-4">
-              Baseado em candidaturas aprovadas
             </div>
           </div>
         </div>
       </section>
 
-      <section id="candidatos" class="hidden animate-slide-up max-w-7xl mx-auto pb-20">
-        <div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
+      <section id="candidatos" class="hidden animate-slide-up max-w-[1600px] mx-auto pb-20">
+        <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-10 border-b border-white/5 pb-6">
           <div>
-            <h2 class="text-3xl font-mono font-bold text-white">Candidaturas Oficiais</h2>
-            <p class="text-gray-400 text-sm mt-1">Lista pública de registros deferidos.</p>
+            <h2 class="text-4xl font-mono font-bold text-white tracking-tight">Candidaturas Oficiais</h2>
+            <p class="text-gray-400 text-sm mt-2 max-w-xl">Relação pública de cidadãos com registro deferido pela justiça eleitoral vigente.</p>
           </div>
-          <div class="bg-dark-800 p-1 rounded-lg border border-dark-700 flex">
-            <select id="filterPublicLado" class="bg-transparent text-white text-sm outline-none px-4 py-2 cursor-pointer">
+          <div class="bg-black/40 p-1.5 rounded-xl border border-white/10 flex backdrop-blur-md">
+            <select id="filterPublicLado" class="bg-transparent text-white text-sm outline-none px-4 py-2 cursor-pointer font-mono min-w-[200px]">
               <option value="">Todas as Ideologias</option>
               <option value="Direita">Direita</option>
               <option value="Centro">Centro</option>
@@ -301,52 +284,54 @@
           </div>
         </div>
         
-        <div id="publicGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div id="publicGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           </div>
       </section>
 
-      <section id="registro" class="hidden animate-slide-up max-w-3xl mx-auto pb-20">
-        <div class="text-center mb-10">
-          <div class="w-16 h-16 mx-auto bg-gradient-to-br from-amber-400 to-yellow-600 rounded-2xl flex items-center justify-center text-black text-2xl shadow-lg shadow-amber-500/20 mb-4">
+      <section id="registro" class="hidden animate-slide-up max-w-4xl mx-auto pb-20">
+        <div class="text-center mb-12">
+          <div class="w-20 h-20 mx-auto bg-gradient-to-br from-amber-400/20 to-yellow-600/20 rounded-full flex items-center justify-center text-amber-500 text-3xl shadow-[0_0_30px_rgba(245,158,11,0.2)] mb-6 border border-amber-500/30">
             <i class="fa fa-signature"></i>
           </div>
-          <h2 class="text-3xl font-mono font-bold text-white">Ficha de Candidatura</h2>
-          <p class="text-gray-400 mt-2">Preencha os dados oficiais. Falsidade ideológica é crime inafiançável.</p>
+          <h2 class="text-4xl font-mono font-bold text-white">Ficha de Candidatura</h2>
+          <p class="text-gray-400 mt-3 font-mono text-sm uppercase tracking-wide">Preencha os dados com exatidão.</p>
         </div>
 
-        <div class="card-glass p-8 border-t-4 border-t-amber-500">
-          <form id="formCandidato" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="card-glass p-8 md:p-12 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+          <form id="formCandidato" class="space-y-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-blue-400 uppercase tracking-widest">Nome Completo</label>
-                <input id="regNome" required type="text" class="input-tech w-full rounded-lg px-4 py-3" placeholder="Ex: Roberto da Silva">
+                <label class="text-[10px] font-bold text-blue-400 uppercase tracking-widest font-mono">Nome Completo</label>
+                <input id="regNome" required type="text" class="input-tech w-full rounded-xl px-5 py-4 text-lg" placeholder="Nome Civil">
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-bold text-blue-400 uppercase tracking-widest">Nascimento</label>
-                <input id="regNasc" required type="date" class="input-tech w-full rounded-lg px-4 py-3">
+                <label class="text-[10px] font-bold text-blue-400 uppercase tracking-widest font-mono">Data de Nascimento</label>
+                <input id="regNasc" required type="date" class="input-tech w-full rounded-xl px-5 py-4 text-gray-300">
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">CPF</label>
-                <input id="regCPF" required type="text" class="input-tech w-full rounded-lg px-4 py-3" placeholder="000.000.000-00">
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">CPF</label>
+                <input id="regCPF" required type="text" class="input-tech w-full rounded-xl px-5 py-4" placeholder="000.000.000-00">
               </div>
               <div class="space-y-2 md:col-span-2">
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Social (TikTok)</label>
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Rede Social (ID)</label>
                 <div class="relative">
-                  <span class="absolute left-4 top-3.5 text-gray-500"><i class="fab fa-tiktok"></i></span>
-                  <input id="regTikTok" type="text" class="input-tech w-full rounded-lg pl-10 pr-4 py-3" placeholder="@usuario">
+                  <span class="absolute left-5 top-4 text-gray-500"><i class="fab fa-tiktok"></i></span>
+                  <input id="regTikTok" type="text" class="input-tech w-full rounded-xl pl-12 pr-5 py-4" placeholder="@usuario">
                 </div>
               </div>
             </div>
 
-            <div class="h-px bg-white/5 my-4"></div>
+            <div class="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4"></div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-purple-400 uppercase tracking-widest">Espectro</label>
-                <select id="regLado" required class="input-tech w-full rounded-lg px-4 py-3">
+                <label class="text-[10px] font-bold text-purple-400 uppercase tracking-widest font-mono">Espectro</label>
+                <select id="regLado" required class="input-tech w-full rounded-xl px-5 py-4 cursor-pointer">
                   <option value="">Selecione...</option>
                   <option value="Direita">Direita</option>
                   <option value="Centro">Centro</option>
@@ -354,52 +339,52 @@
                 </select>
               </div>
               <div class="space-y-2 md:col-span-2">
-                <label class="text-xs font-bold text-purple-400 uppercase tracking-widest">Partido</label>
-                <select id="regPartido" required class="input-tech w-full rounded-lg px-4 py-3 text-gray-300">
+                <label class="text-[10px] font-bold text-purple-400 uppercase tracking-widest font-mono">Partido Político</label>
+                <select id="regPartido" required class="input-tech w-full rounded-xl px-5 py-4 text-gray-300 cursor-pointer">
                   <option value="">Selecione o espectro primeiro</option>
                 </select>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-amber-500 uppercase tracking-widest">Número</label>
-                <input id="regNumero" required type="number" class="input-tech w-full rounded-lg px-4 py-3 font-mono text-xl text-amber-400 placeholder-gray-700" placeholder="00">
+                <label class="text-[10px] font-bold text-amber-500 uppercase tracking-widest font-mono">Número Eleitoral</label>
+                <input id="regNumero" required type="number" class="input-tech w-full rounded-xl px-5 py-4 font-mono text-2xl text-amber-400 placeholder-gray-700 tracking-wider" placeholder="00">
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Cargo Almejado</label>
-                <select id="regCargo" required class="input-tech w-full rounded-lg px-4 py-3"></select>
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Cargo</label>
+                <select id="regCargo" required class="input-tech w-full rounded-xl px-5 py-4 cursor-pointer"></select>
               </div>
               <div class="space-y-2">
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Jurisdição</label>
-                <select id="regTerritorio" required class="input-tech w-full rounded-lg px-4 py-3"></select>
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Jurisdição</label>
+                <select id="regTerritorio" required class="input-tech w-full rounded-xl px-5 py-4 cursor-pointer"></select>
               </div>
             </div>
 
-            <div class="pt-6">
-              <button type="submit" id="btnSubmit" class="btn-primary w-full py-4 rounded-xl text-lg shadow-lg flex justify-center items-center gap-3 transition-transform active:scale-95">
+            <div class="pt-8">
+              <button type="submit" id="btnSubmit" class="btn-gold w-full py-5 rounded-xl text-lg shadow-xl flex justify-center items-center gap-3 active:scale-95 group">
                 <span>PROTOCOLAR REGISTRO</span>
-                <i class="fa fa-arrow-right"></i>
+                <i class="fa fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
               </button>
             </div>
           </form>
         </div>
       </section>
 
-      <section id="admin" class="hidden animate-slide-up max-w-5xl mx-auto pb-20">
+      <section id="admin" class="hidden animate-slide-up max-w-6xl mx-auto pb-20">
         
-        <div id="adminLogin" class="card-glass rounded-2xl max-w-md mx-auto p-10 mt-10 text-center border border-red-500/20 relative overflow-hidden">
-          <div class="absolute -top-10 -left-10 w-32 h-32 bg-red-600/20 blur-3xl rounded-full"></div>
+        <div id="adminLogin" class="card-glass rounded-2xl max-w-md mx-auto p-12 mt-12 text-center border border-red-500/20 relative overflow-hidden">
+          <div class="absolute -top-20 -left-20 w-64 h-64 bg-red-600/10 blur-[80px] rounded-full"></div>
           
-          <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500 text-2xl border border-red-500/20">
+          <div class="w-20 h-20 bg-gradient-to-br from-red-500/10 to-red-900/10 rounded-2xl flex items-center justify-center mx-auto mb-8 text-red-500 text-3xl border border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.1)]">
             <i class="fa fa-lock"></i>
           </div>
           
-          <h2 class="text-2xl font-bold text-white mb-2">Acesso Magistrado</h2>
-          <p class="text-gray-400 text-sm mb-8">Login restrito aos juízes dos TREs.</p>
+          <h2 class="text-3xl font-bold text-white mb-2">Acesso Magistrado</h2>
+          <p class="text-gray-400 text-sm mb-10">Área restrita aos juízes dos TREs.</p>
           
-          <div class="space-y-4">
-            <select id="loginEstado" class="input-tech w-full rounded-lg px-4 py-3">
+          <div class="space-y-5 relative z-10">
+            <select id="loginEstado" class="input-tech w-full rounded-xl px-5 py-4 cursor-pointer">
               <option value="">Selecione a Jurisdição...</option>
               <option value="Brookhaven">Brookhaven (TSE Central)</option>
               <option value="Novacore">Novacore</option>
@@ -407,36 +392,36 @@
               <option value="Fortemega">Fortemega</option>
               <option value="Florêmix">Florêmix</option>
             </select>
-            <input id="loginSenha" type="password" placeholder="Chave de Acesso" class="input-tech w-full rounded-lg px-4 py-3">
-            <button id="btnLogin" class="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition">ENTRAR</button>
+            <input id="loginSenha" type="password" placeholder="Chave de Segurança" class="input-tech w-full rounded-xl px-5 py-4">
+            <button id="btnLogin" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition tracking-wide text-sm uppercase">Autenticar</button>
           </div>
         </div>
 
-        <div id="adminPanel" class="hidden space-y-6">
-          <div class="card-glass p-6 flex flex-col md:flex-row justify-between items-center bg-amber-900/10 border-amber-500/20">
-            <div class="flex items-center gap-4 mb-4 md:mb-0">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-black font-bold shadow-lg shadow-orange-500/20">
+        <div id="adminPanel" class="hidden space-y-8">
+          <div class="card-glass p-8 flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-amber-900/10 to-transparent border-l-4 border-l-amber-500">
+            <div class="flex items-center gap-6 mb-6 md:mb-0">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-black text-2xl font-bold shadow-lg shadow-orange-500/20">
                 <i class="fa fa-gavel"></i>
               </div>
               <div>
-                <div class="text-[10px] text-amber-500 font-bold uppercase tracking-widest">Juiz Eleitoral</div>
-                <div id="adminUserDisplay" class="text-2xl font-mono font-bold text-white">---</div>
+                <div class="text-[10px] text-amber-500 font-bold uppercase tracking-[0.2em] mb-1">Juiz Eleitoral Logado</div>
+                <div id="adminUserDisplay" class="text-3xl font-mono font-bold text-white tracking-tight">---</div>
               </div>
             </div>
             
-            <div class="flex items-center gap-3">
-              <div id="adminControls" class="hidden flex gap-2 mr-4 border-r border-white/10 pr-4">
-                <button onclick="setElectionMode('Federal')" class="px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold hover:bg-blue-500/20 transition">FEDERAL</button>
-                <button onclick="setElectionMode('Municipal')" class="px-3 py-1.5 rounded bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-bold hover:bg-green-500/20 transition">MUNICIPAL</button>
+            <div class="flex items-center gap-4">
+              <div id="adminControls" class="hidden flex gap-3 mr-6 border-r border-white/10 pr-6">
+                <button onclick="setElectionMode('Federal')" class="px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold hover:bg-blue-500 hover:text-white transition uppercase tracking-wider">Federal</button>
+                <button onclick="setElectionMode('Municipal')" class="px-4 py-2 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-bold hover:bg-green-500 hover:text-black transition uppercase tracking-wider">Municipal</button>
               </div>
-              <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-bold flex items-center gap-2 px-4 py-2 rounded bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 transition">
+              <button onclick="logout()" class="text-red-400 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 px-6 py-3 rounded-lg bg-red-500/5 hover:bg-red-600 border border-red-500/20 transition">
                 <i class="fa fa-power-off"></i> Sair
               </button>
             </div>
           </div>
 
-          <div class="card-glass p-6 min-h-[400px]">
-            <h3 class="font-bold text-lg text-white mb-6 flex items-center gap-2 pb-4 border-b border-white/5">
+          <div class="card-glass p-8 min-h-[500px]">
+            <h3 class="font-bold text-xl text-white mb-8 flex items-center gap-3 pb-6 border-b border-white/5">
               <i class="fa fa-list-check text-blue-500"></i>
               Fila de Julgamento
             </h3>
@@ -449,16 +434,15 @@
     </div>
   </main>
 
-  <div id="toast-container" class="fixed top-6 right-6 flex flex-col gap-3 pointer-events-none"></div>
+  <div id="toast-container" class="fixed top-6 right-6 flex flex-col gap-3 pointer-events-none z-50"></div>
 
   <script type="module">
-    // --- FIREBASE SETUP ---
-    // IMPORTANTE: Preencha com suas credenciais reais
+    // --- FIREBASE CONFIG ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, push, update, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyAwFLV5X9ICB3mvU4WU1ihxGUeG9UsrbtQ", // Coloque sua chave aqui
+      apiKey: "AIzaSyAwFLV5X9ICB3mvU4WU1ihxGUeG9UsrbtQ",
       authDomain: "candidatura-cde.firebaseapp.com",
       databaseURL: "https://candidatura-cde-default-rtdb.firebaseio.com",
       projectId: "candidatura-cde",
@@ -467,10 +451,11 @@
       appId: "1:958958180950:web:51427276d0a83978fdb9f7"
     };
 
+    // Inicialização segura
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- DADOS ---
+    // --- DADOS DO SISTEMA ---
     const TRE_PASSWORDS = {
       "Brookhaven": "Brookasil1234", 
       "Novacore": "williamNC",
@@ -479,7 +464,6 @@
       "Florêmix": "popoFX"
     };
 
-    // Erro de sintaxe corrigido aqui
     const PARTIDOS = {
         Direita: ["PL (22)", "PP (11)", "Republicanos (10)", "PRTN (75)", "Patriota (51)", "PRTB (28)", "NOVO (30)", "PMB (35)", "DC (27)", "UDB (38)", "Agir (36)", "POL (81)", "ACN (84)", "PRONA (57)", "PDC (17)", "PESP (48)", "PMNL (86)"],
         Centro: ["MDB (15)", "UNIÃO (44)", "PSD (55)", "Podemos (20)", "PSDB (45)", "CDN (23)", "Solidariedade (77)", "Avante (70)", "PMN (33)", "PV (43)", "PUN (42)", "MPD (37)", "PDM (26)", "MTB (63)", "PTD (46)", "PDSD (88)", "MSS (14)", "PC (85)"],
@@ -497,23 +481,25 @@
     let currentMode = "Federal"; 
     let currentUser = null; 
     let candidatesData = {};
+    let chartIdeologiaInstance = null;
+    let chartCargosInstance = null;
 
-    // --- UI FUNCTIONS ---
+    // --- FUNÇÕES DE INTERFACE (UI) ---
     window.switchTab = (tabId, element) => {
-      // Ocultar tabs
+      // Ocultar todas as seções
       ['dashboard', 'candidatos', 'registro', 'admin'].forEach(id => {
         const el = document.getElementById(id);
         el.classList.add('hidden');
         el.classList.remove('animate-slide-up');
       });
       
-      // Mostrar Tab Alvo
+      // Mostrar seção alvo
       const target = document.getElementById(tabId);
       target.classList.remove('hidden');
-      void target.offsetWidth; // Force reflow for animation reset
+      void target.offsetWidth; // Force reflow
       target.classList.add('animate-slide-up');
 
-      // Atualizar Menu e Título
+      // Atualizar Menu
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       if(element) element.classList.add('active');
 
@@ -531,31 +517,34 @@
       const toast = document.createElement('div');
       
       const styles = {
-        success: 'border-l-green-500 bg-dark-800 text-green-400',
-        error: 'border-l-red-500 bg-dark-800 text-red-400',
-        info: 'border-l-blue-500 bg-dark-800 text-blue-400'
+        success: 'border-green-500 bg-dark-800 text-white shadow-green-900/20',
+        error: 'border-red-500 bg-dark-800 text-white shadow-red-900/20',
+        info: 'border-blue-500 bg-dark-800 text-white shadow-blue-900/20'
       };
       
-      const icons = {
-        success: 'fa-check', error: 'fa-times', info: 'fa-info'
-      };
+      const icons = { success: 'fa-check', error: 'fa-times', info: 'fa-info' };
 
-      toast.className = `toast-enter pointer-events-auto flex items-center gap-3 p-4 rounded-r-lg border-l-4 shadow-2xl border-white/5 backdrop-blur-md min-w-[320px] ${styles[type]}`;
+      toast.className = `pointer-events-auto flex items-center gap-4 p-4 rounded-xl border-l-4 shadow-2xl backdrop-blur-md min-w-[350px] transform transition-all duration-300 translate-x-full opacity-0 ${styles[type]}`;
       toast.innerHTML = `
-        <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"><i class="fa ${icons[type]}"></i></div>
-        <div class="text-sm font-medium text-white">${msg}</div>
+        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0"><i class="fa ${icons[type]}"></i></div>
+        <div class="text-sm font-medium font-sans">${msg}</div>
       `;
       
       container.appendChild(toast);
+      
+      // Animação de entrada
       setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(-10px)';
-        toast.style.transition = 'all 0.3s';
+        toast.classList.remove('translate-x-full', 'opacity-0');
+      }, 100);
+
+      // Remover
+      setTimeout(() => {
+        toast.classList.add('translate-x-full', 'opacity-0');
         setTimeout(() => toast.remove(), 300);
       }, 4000);
     };
 
-    // Relógio e Data
+    // Relógio
     setInterval(() => {
       const now = new Date();
       document.getElementById('clock').innerText = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -563,9 +552,9 @@
       document.getElementById('serverDate').innerText = now.toLocaleDateString('pt-BR', options).toUpperCase();
     }, 1000);
 
-    // --- LOGIC ---
+    // --- LÓGICA DO SISTEMA ---
     
-    // Atualiza opções de partido ao mudar lado
+    // 1. Atualizar Selects do Formulário
     document.getElementById('regLado').addEventListener('change', (e) => {
       const select = document.getElementById('regPartido');
       select.innerHTML = '<option value="">Selecione...</option>';
@@ -592,7 +581,7 @@
       }
     };
 
-    // Submit Form
+    // 2. Enviar Registro (Push to Firebase)
     document.getElementById('formCandidato').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnSubmit');
@@ -609,13 +598,13 @@
       }
       if(cargo === 'Presidente') estado = 'Brookasil';
 
-      // Validação
+      // Validação de Duplicidade (Client Side simples)
       const duplicado = Object.values(candidatesData).some(c => 
         c.numero === num && c.cargo === cargo && c.estado === estado && c.status !== 'rejeitado'
       );
 
       if(duplicado) {
-        showToast('Número eleitoral indisponível nesta jurisdição.', 'error');
+        showToast('Este número já está em uso para este cargo/jurisdição.', 'error');
         return;
       }
 
@@ -638,10 +627,10 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="loader border-black"></span>';
         await push(ref(db, 'candidatos'), novoCandidato);
-        showToast('Registro enviado para análise do TRE.', 'success');
+        showToast('Registro enviado com sucesso ao TRE.', 'success');
         document.getElementById('formCandidato').reset();
       } catch (err) {
-        showToast('Erro de conexão.', 'error');
+        showToast('Erro de conexão com o banco de dados.', 'error');
         console.error(err);
       } finally {
         btn.disabled = false;
@@ -649,7 +638,7 @@
       }
     });
 
-    // --- ADMIN SYSTEM ---
+    // 3. Sistema Admin/Juiz
     document.getElementById('btnLogin').addEventListener('click', () => {
       const est = document.getElementById('loginEstado').value;
       const pass = document.getElementById('loginSenha').value;
@@ -669,7 +658,7 @@
         renderAdminList();
         showToast(`Sessão iniciada: TRE ${est}`, 'success');
       } else {
-        showToast('Acesso negado.', 'error');
+        showToast('Credenciais inválidas.', 'error');
       }
     });
 
@@ -689,7 +678,7 @@
       if(!currentUser) return;
       const status = veredict ? 'aprovado' : 'rejeitado';
       await update(ref(db, `candidatos/${id}`), { status: status, juiz: currentUser });
-      showToast(veredict ? 'Deferido.' : 'Indeferido.', veredict ? 'success' : 'info');
+      showToast(veredict ? 'Candidatura Deferida.' : 'Candidatura Indeferida.', veredict ? 'success' : 'info');
     };
 
     const renderAdminList = () => {
@@ -706,35 +695,35 @@
 
       if(pendentes.length === 0) {
         list.innerHTML = `
-          <div class="flex flex-col items-center justify-center py-12 opacity-40">
-            <i class="fa fa-clipboard-check text-5xl mb-4"></i>
-            <p>Nenhum processo pendente.</p>
+          <div class="flex flex-col items-center justify-center py-20 opacity-30">
+            <i class="fa fa-clipboard-check text-6xl mb-4"></i>
+            <p class="font-mono text-lg">Nenhum processo aguardando julgamento.</p>
           </div>`;
         return;
       }
 
       pendentes.forEach(([key, c]) => {
         const item = document.createElement('div');
-        item.className = 'card-glass p-5 flex flex-col md:flex-row justify-between items-center gap-4 border-l-4 border-l-amber-500 animate-slide-up';
+        item.className = 'card-glass p-6 flex flex-col md:flex-row justify-between items-center gap-6 border-l-4 border-l-amber-500 animate-slide-up';
         item.innerHTML = `
           <div class="w-full">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="font-bold text-white text-lg">${c.nome}</span>
-              <span class="bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded">${c.numero}</span>
+            <div class="flex items-center gap-3 mb-3">
+              <span class="font-bold text-white text-xl">${c.nome}</span>
+              <span class="bg-amber-500 text-black font-mono font-bold px-2 py-0.5 rounded text-sm">${c.numero}</span>
             </div>
-            <div class="grid grid-cols-2 gap-x-8 gap-y-1 text-xs text-gray-400 font-mono">
-              <p>CARGO: <span class="text-white">${c.cargo}</span></p>
-              <p>PARTIDO: <span class="text-white">${c.partido}</span></p>
-              <p>LOCAL: <span class="text-white">${c.cidade ? c.cidade + ' / ' : ''}${c.estado}</span></p>
+            <div class="grid grid-cols-2 gap-x-12 gap-y-2 text-xs text-gray-400 font-mono uppercase tracking-wide">
+              <p>Cargo: <span class="text-white">${c.cargo}</span></p>
+              <p>Partido: <span class="text-white">${c.partido}</span></p>
+              <p>Local: <span class="text-white">${c.cidade ? c.cidade + ' / ' : ''}${c.estado}</span></p>
               <p>CPF: <span class="text-white">${c.cpf}</span></p>
             </div>
           </div>
-          <div class="flex gap-2 w-full md:w-auto">
-            <button onclick="judgeCandidate('${key}', true)" class="flex-1 md:flex-none bg-green-500/10 hover:bg-green-500 hover:text-black text-green-500 border border-green-500/30 px-6 py-2 rounded-lg transition font-bold text-sm">
-              DEFERIR
+          <div class="flex gap-3 w-full md:w-auto min-w-[200px]">
+            <button onclick="judgeCandidate('${key}', true)" class="flex-1 bg-green-500/10 hover:bg-green-500 hover:text-black text-green-500 border border-green-500/30 px-4 py-3 rounded-lg transition font-bold text-xs uppercase tracking-widest">
+              Deferir
             </button>
-            <button onclick="judgeCandidate('${key}', false)" class="flex-1 md:flex-none bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 border border-red-500/30 px-6 py-2 rounded-lg transition font-bold text-sm">
-              INDEFERIR
+            <button onclick="judgeCandidate('${key}', false)" class="flex-1 bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 border border-red-500/30 px-4 py-3 rounded-lg transition font-bold text-xs uppercase tracking-widest">
+              Indeferir
             </button>
           </div>
         `;
@@ -742,9 +731,9 @@
       });
     };
 
-    // --- REALTIME LISTENERS ---
+    // --- ESCUTA EM TEMPO REAL (REALTIME DATABASE) ---
 
-    // Config Mode
+    // 1. Config Mode
     onValue(ref(db, 'config'), (snap) => {
       const data = snap.val();
       currentMode = (data && data.mode) ? data.mode : 'Federal';
@@ -752,10 +741,7 @@
       updateFormOptions();
     });
 
-    // Candidates Data
-    let chartIdeologiaInstance = null;
-    let chartCargosInstance = null;
-
+    // 2. Dados dos Candidatos
     onValue(ref(db, 'candidatos'), (snap) => {
       candidatesData = snap.val() || {};
       const arr = Object.values(candidatesData);
@@ -765,9 +751,10 @@
       document.getElementById('statPending').innerText = arr.filter(c => c.status === 'pendente').length;
       document.getElementById('statApproved').innerText = arr.filter(c => c.status === 'aprovado').length;
 
+      // Se admin estiver aberto, atualiza lista
       renderAdminList();
 
-      // Render Public Grid
+      // Renderiza Grid Pública
       const publicGrid = document.getElementById('publicGrid');
       const filterLado = document.getElementById('filterPublicLado').value;
       publicGrid.innerHTML = '';
@@ -775,34 +762,37 @@
       const aprovados = arr.filter(c => c.status === 'aprovado' && (filterLado === '' || c.lado === filterLado));
       
       aprovados.forEach(c => {
+        // Cores baseadas na ideologia
         const color = c.lado === 'Esquerda' ? 'red' : c.lado === 'Direita' ? 'blue' : 'yellow';
         const colorHex = c.lado === 'Esquerda' ? '#EF4444' : c.lado === 'Direita' ? '#3B82F6' : '#EAB308';
         
         const card = document.createElement('div');
-        card.className = `card-glass p-0 overflow-hidden group hover:scale-[1.02] transition duration-300`;
+        card.className = `card-glass p-0 overflow-hidden group hover:scale-[1.02] transition duration-300 flex flex-col`;
         card.innerHTML = `
-          <div class="h-2 w-full" style="background: ${colorHex}"></div>
-          <div class="p-6 relative">
-            <div class="absolute right-4 top-4 text-xs font-bold text-gray-500 border border-gray-700 px-2 py-1 rounded uppercase tracking-wider">
-              ${c.partido.split(' ')[0]}
-            </div>
-            
-            <div class="mb-4">
-              <h3 class="font-bold text-white text-xl leading-tight">${c.nome}</h3>
-              <p class="text-sm text-gray-400 mt-1">${c.cargo}</p>
-            </div>
-            
-            <div class="flex items-center justify-between mt-6">
-              <div class="text-3xl font-mono font-bold text-white tracking-tighter" style="text-shadow: 0 0 20px ${colorHex}66">
-                ${c.numero}
+          <div class="h-1.5 w-full shadow-[0_0_15px_${colorHex}]" style="background: ${colorHex}"></div>
+          <div class="p-6 relative flex-1 flex flex-col">
+            <div class="flex justify-between items-start mb-4">
+               <div class="text-[10px] font-bold text-gray-500 border border-white/10 px-2 py-1 rounded uppercase tracking-wider bg-white/5">
+                ${c.partido.split(' ')[0]}
               </div>
               ${c.tiktok ? `
-                <a href="https://tiktok.com/@${c.tiktok.replace('@','')}" target="_blank" class="w-8 h-8 rounded-full bg-dark-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-black transition">
-                  <i class="fab fa-tiktok"></i>
+                <a href="https://tiktok.com/@${c.tiktok.replace('@','')}" target="_blank" class="text-gray-500 hover:text-white transition transform hover:scale-110">
+                  <i class="fab fa-tiktok text-lg"></i>
                 </a>` : ''}
             </div>
-            <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-gray-500 uppercase tracking-widest flex items-center gap-1">
-              <i class="fa fa-map-pin"></i> ${c.estado}
+            
+            <div class="mb-6 flex-1">
+              <h3 class="font-bold text-white text-2xl leading-tight font-sans">${c.nome}</h3>
+              <p class="text-xs text-gray-400 mt-1 uppercase tracking-wide font-mono">${c.cargo}</p>
+            </div>
+            
+            <div class="flex items-end justify-between mt-auto">
+              <div class="text-4xl font-mono font-bold text-white tracking-tighter drop-shadow-[0_0_10px_${colorHex}88]">
+                ${c.numero}
+              </div>
+              <div class="text-[9px] text-gray-600 uppercase tracking-widest flex items-center gap-1 font-bold">
+                <i class="fa fa-map-pin"></i> ${c.estado}
+              </div>
             </div>
           </div>
         `;
@@ -812,10 +802,12 @@
       updateCharts(arr);
     });
 
+    // Filtro Dropdown
     document.getElementById('filterPublicLado').addEventListener('change', () => {
-        // Force refresh trigger simply by reloading data (mock)
-        const dummy = { val: () => candidatesData };
-        // Ideally refactor render logic to separate function, but this is quick fix
+        // Trigger manual refresh simulating data update
+        const dummyEvent = new Event('value');
+        // Na prática, basta chamar a lógica de renderização novamente, 
+        // mas aqui vamos apenas recarregar visualmente via refresh simples pois o onValue já cuida dos dados
         location.reload(); 
     });
 
@@ -823,10 +815,11 @@
         const aprovados = data.filter(c => c.status === 'aprovado');
         
         // Chart Config
-        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.color = '#64748b';
         Chart.defaults.font.family = 'Space Grotesk';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
         
-        // Ideologia
+        // --- Grafico Ideologia (Doughnut) ---
         const counts = { Direita: 0, Centro: 0, Esquerda: 0 };
         aprovados.forEach(c => { if(counts[c.lado] !== undefined) counts[c.lado]++ });
 
@@ -841,18 +834,18 @@
                     data: [counts.Esquerda, counts.Centro, counts.Direita],
                     backgroundColor: ['#EF4444', '#EAB308', '#3B82F6'],
                     borderWidth: 0,
-                    hoverOffset: 15
+                    hoverOffset: 10
                 }]
             },
             options: { 
               responsive: true,
               maintainAspectRatio: false,
-              cutout: '85%',
-              plugins: { legend: { position: 'right', labels: { boxWidth: 10, usePointStyle: true } } } 
+              cutout: '80%',
+              plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10 } } } } 
             }
         });
         
-        // Cargos
+        // --- Grafico Cargos (Bar) ---
         const cargosCount = {};
         aprovados.forEach(c => { cargosCount[c.cargo] = (cargosCount[c.cargo] || 0) + 1 });
         const sortedCargos = Object.entries(cargosCount).sort((a,b) => b[1] - a[1]).slice(0, 5);
@@ -860,9 +853,10 @@
         const ctx2 = document.getElementById('chartCargos');
         if(chartCargosInstance) chartCargosInstance.destroy();
         
+        // Gradient Bar
         const grad = ctx2.getContext('2d').createLinearGradient(0,0,0,300);
         grad.addColorStop(0, '#3B82F6');
-        grad.addColorStop(1, '#1E3A8A');
+        grad.addColorStop(1, '#1e1b4b');
 
         chartCargosInstance = new Chart(ctx2, {
             type: 'bar',
@@ -872,15 +866,15 @@
                     label: 'Candidatos',
                     data: sortedCargos.map(x => x[1]),
                     backgroundColor: grad,
-                    borderRadius: 6,
-                    barThickness: 30
+                    borderRadius: 4,
+                    barThickness: 40
                 }]
             },
             options: { 
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: { 
-                    y: { beginAtZero: true, grid: { color: '#1E293B' } }, 
+                    y: { beginAtZero: true }, 
                     x: { grid: { display: false } } 
                 },
                 plugins: { legend: { display: false } }
