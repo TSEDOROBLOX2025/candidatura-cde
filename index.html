@@ -3,1037 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSE RP OFICIAL — ELEITORAL CITY</title>
+    <title>TSE RP OFICIAL | SISTEMA DE ESTADO</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <style>
+        /* * ============================================================
+         * 🎨 CORE DESIGN & VARIABLES
+         * ============================================================
+         */
         :root {
-            --obsidian: #05070D;
-            --midnight-blue: #0A1024;
-            --deep-space: #0D122E;
-            --electric-sapphire: #0A5CFF;
-            --neon-emerald: #00FF9D;
-            --iridescent-pearl: #E0F7FF;
-            --cold-gold: #FFD700;
-            --cyber-pink: #FF00C8;
-            --government-green: #00FF88;
-            --warning-red: #FF004D;
-            --state-purple: #8A2BE2;
-            --right-blue: #1E90FF;
-            --center-yellow: #FFD700;
-            --left-red: #FF4757;
+            /* Palette - Dark Cyber State */
+            --bg-obsidian: #05070D;
+            --bg-midnight: #0A1024;
+            --accent-sapphire: #00F0FF;
+            --accent-neon-green: #0AFF60;
+            --accent-gold: #D4AF37;
+            --accent-error: #FF2A2A;
+            
+            /* Glassmorphism */
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(20px);
+            --glass-glow: 0 0 20px rgba(0, 240, 255, 0.1);
+
+            /* Typography */
+            --font-display: 'Orbitron', sans-serif;
+            --font-tech: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            outline: none;
+            user-select: none; /* Interface app-like */
         }
 
         body {
-            background-color: var(--obsidian);
-            color: var(--iridescent-pearl);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+            background-color: var(--bg-obsidian);
+            color: #ffffff;
+            font-family: var(--font-body);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* SPA Fixed */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
+        /* Fundo Animado Complexo */
+        .ambient-bg {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(10, 92, 255, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(0, 255, 157, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 40% 80%, rgba(138, 43, 226, 0.08) 0%, transparent 40%);
             z-index: -2;
-            animation: gradientShift 20s ease-in-out infinite alternate;
+            background: radial-gradient(circle at 50% 50%, #0d1630 0%, #05070D 80%);
+            overflow: hidden;
         }
 
-        @keyframes gradientShift {
-            0% { transform: scale(1) rotate(0deg); }
-            100% { transform: scale(1.1) rotate(1deg); }
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: floatOrb 20s infinite alternate ease-in-out;
         }
-
+        .orb-1 { width: 600px; height: 600px; background: #001f3f; top: -20%; left: -10%; }
+        .orb-2 { width: 500px; height: 500px; background: #0b2e13; bottom: -20%; right: -10%; animation-delay: -5s; }
+        
         .noise-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-            z-index: -1;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj48ZmlsdGVyIGlkPSJnoiPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2cpIiBvcGFjaXR5PSIwLjAzIi8+PC9zdmc+');
             pointer-events: none;
+            z-index: -1;
+            opacity: 0.5;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
+        /* * ============================================================
+         * 🧊 GLASS SYSTEM & LAYOUT
+         * ============================================================
+         */
+        #app-container {
+            width: 95vw;
+            height: 90vh;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
             position: relative;
         }
 
-        /* ============ HEADER ============ */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 40px;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--electric-sapphire), var(--neon-emerald));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
-            animation: logoPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes logoPulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 157, 0.3); }
-            50% { box-shadow: 0 0 50px rgba(0, 255, 157, 0.6); }
-        }
-
-        .logo-text {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 28px;
-            background: linear-gradient(to right, var(--iridescent-pearl), var(--neon-emerald));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: 2px;
-        }
-
-        .logo-subtext {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 14px;
-            color: rgba(224, 247, 255, 0.6);
-            letter-spacing: 4px;
-            margin-top: -5px;
-        }
-
-        .election-mode {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 10px;
-            padding: 12px 24px;
-            border-left: 3px solid var(--government-green);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .mode-label {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 12px;
-            color: rgba(224, 247, 255, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .mode-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            color: var(--government-green);
-            font-weight: 700;
-        }
-
-        .admin-controls {
-            display: flex;
-            gap: 15px;
-        }
-
-        /* ============ GLASS CARDS ============ */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(22px);
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
         }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 
-                0 15px 40px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
-            border-color: rgba(0, 255, 157, 0.3);
-        }
-
-        .glass-card::before {
+        /* Cursor Glow Effect */
+        .glass-panel::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            transition: left 0.7s ease;
-        }
-
-        .glass-card:hover::before {
-            left: 100%;
-        }
-
-        /* ============ MAIN NAVIGATION ============ */
-        .main-nav {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-
-        .nav-card {
-            padding: 40px 30px;
-            text-align: center;
-            cursor: pointer;
-            position: relative;
-            min-height: 220px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .nav-icon {
-            font-size: 42px;
-            margin-bottom: 20px;
-            color: var(--neon-emerald);
-            filter: drop-shadow(0 0 10px rgba(0, 255, 157, 0.5));
-            transition: all 0.3s ease;
-        }
-
-        .nav-card:hover .nav-icon {
-            transform: scale(1.2);
-            filter: drop-shadow(0 0 20px rgba(0, 255, 157, 0.8));
-        }
-
-        .nav-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, var(--iridescent-pearl), var(--neon-emerald));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .nav-description {
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            color: rgba(224, 247, 255, 0.6);
-            line-height: 1.6;
-        }
-
-        /* ============ DASHBOARD SECTION ============ */
-        .dashboard-section {
-            display: none;
-            margin-bottom: 50px;
-        }
-
-        .section-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--iridescent-pearl);
-        }
-
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, var(--electric-sapphire), transparent);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, var(--cold-gold), var(--neon-emerald));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .stat-label {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 14px;
-            color: rgba(224, 247, 255, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* ============ CANDIDACY FORM ============ */
-        .form-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px;
-        }
-
-        .form-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            text-align: center;
-            background: linear-gradient(to right, var(--iridescent-pearl), var(--neon-emerald));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
-            margin-bottom: 40px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(to right, var(--electric-sapphire), var(--neon-emerald));
-            width: 0%;
-            transition: width 0.5s ease;
-            border-radius: 3px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: progressShine 2s infinite;
-        }
-
-        @keyframes progressShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .form-step {
-            display: none;
-        }
-
-        .form-step.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group.full-width {
-            grid-column: span 2;
-        }
-
-        .form-label {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 14px;
-            color: rgba(224, 247, 255, 0.8);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-label i {
-            color: var(--neon-emerald);
-        }
-
-        .form-input, .form-select {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px 20px;
-            color: var(--iridescent-pearl);
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--neon-emerald);
-            box-shadow: 0 0 0 2px rgba(0, 255, 157, 0.2);
-        }
-
-        .form-input.disabled {
-            background: rgba(255, 255, 255, 0.02);
-            color: rgba(224, 247, 255, 0.4);
-            cursor: not-allowed;
-        }
-
-        .ideology-options {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .ideology-option {
-            flex: 1;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .ideology-option.right {
-            background: rgba(30, 144, 255, 0.1);
-            border-color: rgba(30, 144, 255, 0.3);
-        }
-
-        .ideology-option.center {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: rgba(255, 215, 0, 0.3);
-        }
-
-        .ideology-option.left {
-            background: rgba(255, 71, 87, 0.1);
-            border-color: rgba(255, 71, 87, 0.3);
-        }
-
-        .ideology-option.selected {
-            border-width: 2px;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .ideology-option.right.selected {
-            border-color: var(--right-blue);
-            box-shadow: 0 10px 20px rgba(30, 144, 255, 0.3);
-        }
-
-        .ideology-option.center.selected {
-            border-color: var(--center-yellow);
-            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .ideology-option.left.selected {
-            border-color: var(--left-red);
-            box-shadow: 0 10px 20px rgba(255, 71, 87, 0.3);
-        }
-
-        .ideology-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        .ideology-option.right .ideology-label {
-            color: var(--right-blue);
-        }
-
-        .ideology-option.center .ideology-label {
-            color: var(--center-yellow);
-        }
-
-        .ideology-option.left .ideology-label {
-            color: var(--left-red);
-        }
-
-        .party-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .party-option {
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .party-option.selected {
-            border-width: 2px;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .party-number {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .party-name {
-            font-size: 12px;
-            color: rgba(224, 247, 255, 0.7);
-        }
-
-        .form-navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--electric-sapphire), var(--neon-emerald));
-            color: var(--obsidian);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 255, 157, 0.3);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--iridescent-pearl);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(0, 255, 157, 0.3);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning-red), #FF6B9D);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255, 0, 77, 0.3);
-        }
-
-        /* ============ ADMIN PANEL ============ */
-        .admin-panel {
-            display: none;
-        }
-
-        .login-container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 40px;
-        }
-
-        .login-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-align: center;
-            background: linear-gradient(to right, var(--iridescent-pearl), var(--neon-emerald));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .login-subtitle {
-            text-align: center;
-            color: rgba(224, 247, 255, 0.6);
-            margin-bottom: 40px;
-            font-size: 14px;
-        }
-
-        .role-selector {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .role-option {
-            flex: 1;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .role-option.selected {
-            border-color: var(--neon-emerald);
-            background: rgba(0, 255, 157, 0.1);
-            transform: translateY(-5px);
-        }
-
-        .role-icon {
-            font-size: 30px;
-            margin-bottom: 10px;
-            color: var(--neon-emerald);
-        }
-
-        .role-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-        }
-
-        .state-selector {
-            margin-bottom: 30px;
-        }
-
-        .admin-content {
-            display: none;
-        }
-
-        .admin-content.active {
-            display: block;
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .candidates-table-container {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 40px;
-            overflow: auto;
-        }
-
-        .candidates-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .candidates-table th {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 14px;
-            text-align: left;
-            padding: 15px;
-            color: rgba(224, 247, 255, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .candidates-table td {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            color: rgba(224, 247, 255, 0.8);
-        }
-
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-pending {
-            background: rgba(255, 215, 0, 0.2);
-            color: var(--center-yellow);
-        }
-
-        .status-approved {
-            background: rgba(0, 255, 157, 0.2);
-            color: var(--neon-emerald);
-        }
-
-        .status-rejected {
-            background: rgba(255, 0, 77, 0.2);
-            color: var(--warning-red);
-        }
-
-        .action-btn {
-            padding: 8px 15px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .action-approve {
-            background: rgba(0, 255, 157, 0.2);
-            color: var(--neon-emerald);
-            border: 1px solid rgba(0, 255, 157, 0.3);
-        }
-
-        .action-approve:hover {
-            background: rgba(0, 255, 157, 0.3);
-        }
-
-        .action-reject {
-            background: rgba(255, 0, 77, 0.2);
-            color: var(--warning-red);
-            border: 1px solid rgba(255, 0, 77, 0.3);
-        }
-
-        .action-reject:hover {
-            background: rgba(255, 0, 77, 0.3);
-        }
-
-        /* ============ NOTIFICATIONS ============ */
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-width: 400px;
-        }
-
-        .notification {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 12px;
-            padding: 20px;
-            border-left: 4px solid var(--neon-emerald);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transform: translateX(120%);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-icon {
-            font-size: 22px;
-            color: var(--neon-emerald);
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 5px;
-            color: var(--iridescent-pearl);
-        }
-
-        .notification-message {
-            font-size: 14px;
-            color: rgba(224, 247, 255, 0.7);
-            line-height: 1.5;
-        }
-
-        .notification.close {
-            cursor: pointer;
-            color: rgba(224, 247, 255, 0.5);
-            font-size: 18px;
-        }
-
-        .notification.error {
-            border-left-color: var(--warning-red);
-        }
-
-        .notification.error .notification-icon {
-            color: var(--warning-red);
-        }
-
-        .notification.warning {
-            border-left-color: var(--center-yellow);
-        }
-
-        .notification.warning .notification-icon {
-            color: var(--center-yellow);
-        }
-
-        /* ============ CURSOR TRACKER ============ */
-        .cursor-tracker {
-            position: fixed;
+            top: var(--y, -100px);
+            left: var(--x, -100px);
             width: 200px;
             height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 255, 157, 0.05) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: -1;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
             transform: translate(-50%, -50%);
-            transition: all 0.1s ease;
+            pointer-events: none;
+            transition: opacity 0.5s;
         }
 
-        /* ============ RESPONSIVE ============ */
-        @media (max-width: 1200px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .main-nav {
-                grid-template-columns: 1fr;
-            }
+        /* Sidebar */
+        aside {
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            justify-content: space-between;
+            z-index: 10;
         }
 
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-group.full-width {
-                grid-column: span 1;
-            }
-            
-            .ideology-options {
-                flex-direction: column;
-            }
-            
-            .party-options {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .admin-header {
-                flex-direction: column;
-                gap: 20px;
-                align-items: flex-start;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 20px;
-                align-items: flex-start;
-            }
+        .brand {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #fff, var(--accent-sapphire));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            text-transform: uppercase;
         }
+
+        nav button {
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.6);
+            font-family: var(--font-tech);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav button:hover, nav button.active {
+            color: var(--accent-sapphire);
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 2px solid var(--accent-sapphire);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+
+        /* Status Widget */
+        .status-widget {
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+        .status-dot {
+            height: 8px; width: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            background: var(--accent-neon-green);
+            box-shadow: 0 0 8px var(--accent-neon-green);
+        }
+
+        /* Main Content Area */
+        main {
+            padding: 40px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Scrollbar custom */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+        /* * ============================================================
+         * 📑 VIEWS & COMPONENTS
+         * ============================================================
+         */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .view-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        /* Typography Styles */
+        h1 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        h2 {
+            font-family: var(--font-tech);
+            font-size: 1.2rem;
+            color: var(--accent-sapphire);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .candidate-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            position: relative;
+            transition: 0.3s;
+        }
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-sapphire);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .tag-ideology {
+            position: absolute;
+            top: 10px; right: 10px;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .ideology-left { background: rgba(255, 42, 42, 0.2); color: #ff6b6b; border: 1px solid rgba(255, 42, 42, 0.4); }
+        .ideology-center { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); }
+        .ideology-right { background: rgba(0, 119, 255, 0.2); color: #4dabff; border: 1px solid rgba(0, 119, 255, 0.4); }
+
+        .card-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--accent-sapphire);
+            margin: 15px 0;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        /* FORM STYLES */
+        .form-group { margin-bottom: 25px; position: relative; }
+        label {
+            display: block;
+            font-family: var(--font-tech);
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+        }
+        input, select {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: var(--accent-sapphire);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+        
+        .btn-main {
+            background: linear-gradient(135deg, var(--bg-midnight), #1a2744);
+            border: 1px solid var(--accent-sapphire);
+            color: var(--accent-sapphire);
+            padding: 15px 40px;
+            font-family: var(--font-display);
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 2px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn-main:hover {
+            background: var(--accent-sapphire);
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+        }
+
+        /* Steps */
+        .step-indicator {
+            display: flex;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        .step {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+        .step.active { background: var(--accent-sapphire); box-shadow: 0 0 10px var(--accent-sapphire); }
+
+        /* Loader */
+        .loader-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5,7,13,0.9);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .loader-overlay.active { opacity: 1; pointer-events: all; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 3px solid rgba(0, 240, 255, 0.3);
+            border-top: 3px solid var(--accent-sapphire);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes floatOrb { 0% { transform: translate(0,0); } 100% { transform: translate(50px, 50px); } }
+
+        /* Admin Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: var(--accent-sapphire); font-family: var(--font-tech); text-transform: uppercase; font-size: 0.8rem; }
+        .status-badge { padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; }
+        .status-badge.pendente { background: rgba(255,255,0,0.2); color: #ffeb3b; }
+        .status-badge.aprovado { background: rgba(10, 255, 96, 0.2); color: #0aff60; }
+        .status-badge.indeferido { background: rgba(255, 42, 42, 0.2); color: #ff2a2a; }
+
+        .admin-controls { display: flex; gap: 10px; }
+        .btn-mini { padding: 5px 10px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .btn-approve { background: var(--accent-neon-green); color: #000; }
+        .btn-reject { background: var(--accent-error); color: #fff; }
+
+        /* Welcome Screen specifics */
+        .hero-title {
+            font-size: 4rem;
+            line-height: 1;
+            background: linear-gradient(180deg, #fff, #8892b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--accent-sapphire);
+            margin-top: 10px;
+            font-family: var(--font-tech);
+        }
+
+        /* Notificação */
+        #toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 200;
+        }
+        .toast {
+            background: rgba(10, 16, 36, 0.95);
+            border-left: 4px solid var(--accent-sapphire);
+            color: #fff;
+            padding: 15px 25px;
+            margin-top: 10px;
+            border-radius: 4px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.3s ease-out;
+            min-width: 300px;
+        }
+        .toast.error { border-color: var(--accent-error); }
+        .toast.success { border-color: var(--accent-neon-green); }
+        
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
     </style>
 </head>
 <body>
+
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+    </div>
     <div class="noise-overlay"></div>
-    <div class="cursor-tracker" id="cursorTracker"></div>
-    
-    <div class="container">
-        <!-- HEADER -->
-        <header class="header">
-            <div class="logo-container">
-                <div class="logo">
-                    <i class="fas fa-vote-yea" style="font-size: 32px; color: #05070D;"></i>
-                </div>
-                <div>
-                    <div class="logo-text">TSE RP OFICIAL</div>
-                    <div class="logo-subtext">ELECTORAL CITY</div>
-                </div>
-            </div>
-            
-            <div class="election-mode">
-                <div class="mode-label">Modo da Eleição</div>
-                <div class="mode-value" id="electionMode">MUNICIPAL</div>
-            </div>
-            
-            <div class="admin-controls">
-                <button class="btn btn-secondary" id="adminLoginBtn">
-                    <i class="fas fa-user-shield"></i> Área Administrativa
-                </button>
-                <button class="btn btn-secondary" id="logoutBtn" style="display: none;">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </div>
-        </header>
+    <div class="loader-overlay" id="global-loader"><div class="spinner"></div></div>
+
+    <div id="app-container">
         
-        <!-- MAIN NAVIGATION -->
-        <section class="main-nav" id="mainNavigation">
-            <div class="glass-card nav-card" id="navCandidacy">
-                <div class="nav-icon">
-                    <i class="fas fa-user-plus"></i>
+        <aside class="glass-panel">
+            <div>
+                <div class="brand">
+                    <i class="fas fa-landmark"></i> TSE RP
                 </div>
-                <div class="nav-title">CANDIDATAR-SE</div>
-                <div class="nav-description">
-                    Registre sua candidatura para as eleições municipais ou federais
+                
+                <nav>
+                    <button onclick="nav.goto('home')" class="active" id="nav-home">
+                        <i class="fas fa-home"></i> Início
+                    </button>
+                    <button onclick="nav.goto('consult')" id="nav-consult">
+                        <i class="fas fa-search"></i> Consultar
+                    </button>
+                    <button onclick="nav.goto('register')" id="nav-register">
+                        <i class="fas fa-id-card"></i> Candidatura
+                    </button>
+                    <button onclick="nav.goto('admin-login')" id="nav-admin">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </button>
+                </nav>
+            </div>
+
+            <div class="status-widget glass-panel" style="border:none; background: rgba(0,0,0,0.2);">
+                <div><span class="status-dot"></span> SISTEMA ONLINE</div>
+                <div style="margin-top:5px; opacity: 0.7; font-size: 0.7rem;" id="mode-display">
+                    MODO: CARREGANDO...
                 </div>
             </div>
+        </aside>
+
+        <main class="glass-panel" id="main-viewport">
             
-            <div class="glass-card nav-card" id="navCandidates">
-                <div class="nav-icon">
-                    <i class="fas fa-users"></i>
+            <section id="view-home" class="view-section active">
+                <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;">
+                    <h1 class="hero-title">ELEITORAL<br>CITY 2026</h1>
+                    <div class="hero-subtitle">SISTEMA ELEITORAL ESTATAL</div>
+                    <p style="margin-top: 20px; max-width: 500px; line-height: 1.6; opacity: 0.8;">
+                        Bem-vindo ao portal oficial. Este sistema utiliza criptografia estatal de ponta para garantir a integridade do processo democrático de Eleitoral City e da Federação Brookasil.
+                    </p>
+                    
+                    <div style="margin-top: 40px; display: flex; gap: 20px;">
+                        <button class="btn-main" onclick="nav.goto('register')" style="width: auto;">
+                            <i class="fas fa-pen-nib"></i> Registrar Candidatura
+                        </button>
+                        <button class="btn-main" onclick="nav.goto('consult')" style="width: auto; background: transparent; border-color: rgba(255,255,255,0.2); color: #fff;">
+                            <i class="fas fa-list"></i> Ver Candidatos
+                        </button>
+                    </div>
                 </div>
-                <div class="nav-title">CONSULTAR CANDIDATOS</div>
-                <div class="nav-description">
-                    Visualize todos os candidatos registrados por estado e cargo
+            </section>
+
+            <section id="view-register" class="view-section">
+                <h1>REGISTRO DE CANDIDATURA</h1>
+                <h2 id="reg-subtitle">Iniciando protocolo seguro...</h2>
+
+                <div class="step-indicator">
+                    <div class="step active" id="step-1-dot"></div>
+                    <div class="step" id="step-2-dot"></div>
+                    <div class="step" id="step-3-dot"></div>
                 </div>
-            </div>
-            
-            <div class="glass-card nav-card" id="navResults">
-                <div class="nav-icon">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <div class="nav-title">RESULTADOS ELEITORAIS</div>
-                <div class="nav-description">
-                    Acompanhe os resultados das eleições em tempo real
-                </div>
-            </div>
-        </section>
-        
-        <!-- DASHBOARD SECTION -->
-        <section class="dashboard-section" id="dashboardSection">
-            <div class="section-title">
-                <i class="fas fa-tachometer-alt"></i> PAINEL ELETRÔNICO
-            </div>
-            
-            <div class="stats-grid">
-                <div class="glass-card stat-card">
-                    <div class="stat-value" id="totalCandidates">0</div>
-                    <div class="stat-label">Candidatos Registrados</div>
-                </div>
-                
-                <div class="glass-card stat-card">
-                    <div class="stat-value" id="approvedCandidates">0</div>
-                    <div class="stat-label">Candidaturas Aprovadas</div>
-                </div>
-                
-                <div class="glass-card stat-card">
-                    <div class="stat-value" id="pendingCandidates">0</div>
-                    <div class="stat-label">Candidaturas Pendentes</div>
-                </div>
-                
-                <div class="glass-card stat-card">
-                    <div class="stat-value" id="electionStatus">FECHADA</div>
-                    <div class="stat-label">Status da Eleição</div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- CANDIDACY FORM -->
-        <section class="dashboard-section" id="candidacyForm">
-            <div class="glass-card form-container">
-                <div class="form-title">REGISTRO DE CANDIDATURA</div>
-                
-                <div class="progress-bar">
-                    <div class="progress-fill" id="formProgress"></div>
-                </div>
-                
-                <!-- STEP 1: PERSONAL DATA -->
-                <div class="form-step active" id="step1">
-                    <div class="form-grid">
+
+                <form id="reg-form" onsubmit="event.preventDefault();">
+                    
+                    <div id="step-1">
                         <div class="form-group">
-                            <label class="form-label" for="candidateName">
-                                <i class="fas fa-user"></i> Nome Completo
-                            </label>
-                            <input type="text" id="candidateName" class="form-input" placeholder="Digite seu nome completo">
+                            <label>Nome Completo (RG)</label>
+                            <input type="text" id="reg-nome" required placeholder="Ex: João da Silva">
                         </div>
-                        
                         <div class="form-group">
-                            <label class="form-label" for="candidateTikTok">
-                                <i class="fab fa-tiktok"></i> @ TikTok
-                            </label>
-                            <input type="text" id="candidateTikTok" class="form-input" placeholder="Digite seu @ do TikTok">
+                            <label>Usuário TikTok (@)</label>
+                            <input type="text" id="reg-tiktok" required placeholder="@usuario">
                         </div>
-                        
                         <div class="form-group">
-                            <label class="form-label" for="candidateState">
-                                <i class="fas fa-landmark"></i> Estado
-                            </label>
-                            <select id="candidateState" class="form-select">
-                                <option value="">Selecione um estado</option>
+                            <label>Partido / Ideologia</label>
+                            <select id="reg-partido" onchange="logic.updatePartyInfo()" required>
+                                <option value="">Selecione o Partido...</option>
+                                </select>
+                        </div>
+                        <div id="party-info" style="margin-bottom: 20px; font-size: 0.9rem; color: var(--accent-sapphire);"></div>
+                        
+                        <button class="btn-main" onclick="logic.nextStep(1)">PRÓXIMO <i class="fas fa-chevron-right"></i></button>
+                    </div>
+
+                    <div id="step-2" style="display:none;">
+                        <div class="form-group">
+                            <label>Cargo Pretendido</label>
+                            <select id="reg-cargo" onchange="logic.updateLocationFields()" required>
+                                </select>
+                        </div>
+
+                        <div class="form-group" id="group-estado" style="display:none;">
+                            <label>Estado</label>
+                            <select id="reg-estado" onchange="logic.updateCityField()">
+                                <option value="">Selecione o Estado...</option>
                                 <option value="Brookhaven">Brookhaven</option>
                                 <option value="Novacore">Novacore</option>
                                 <option value="Casteríber">Casteríber</option>
@@ -1041,151 +534,43 @@
                                 <option value="Florêmix">Florêmix</option>
                             </select>
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="candidateCity">
-                                <i class="fas fa-city"></i> Cidade
-                            </label>
-                            <select id="candidateCity" class="form-select" disabled>
-                                <option value="">Selecione primeiro o estado</option>
-                            </select>
+
+                        <div class="form-group" id="group-cidade" style="display:none;">
+                            <label>Cidade</label>
+                            <select id="reg-cidade">
+                                </select>
                         </div>
+
+                        <button class="btn-main" onclick="logic.nextStep(2)">PRÓXIMO <i class="fas fa-chevron-right"></i></button>
+                        <button class="btn-main" onclick="logic.prevStep(2)" style="background: transparent; border: none; color: #fff; margin-top: 10px;">Voltar</button>
                     </div>
-                    
-                    <div class="form-navigation">
-                        <button class="btn btn-secondary" disabled>
-                            <i class="fas fa-arrow-left"></i> Voltar
-                        </button>
-                        <button class="btn btn-primary" id="nextStep1">
-                            Continuar <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- STEP 2: POLITICAL DATA -->
-                <div class="form-step" id="step2">
-                    <div class="form-grid">
+
+                    <div id="step-3" style="display:none;">
+                        <div class="glass-panel" style="padding: 20px; background: rgba(0,0,0,0.3); margin-bottom: 20px;">
+                            <p id="review-data" style="line-height: 1.8; font-size: 0.9rem;"></p>
+                        </div>
+
                         <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-balance-scale"></i> Ideologia
-                            </label>
-                            <div class="ideology-options">
-                                <div class="ideology-option right" data-ideology="direita">
-                                    <div class="ideology-label">DIREITA</div>
-                                    <div class="ideology-description">Conservadorismo, liberalismo econômico</div>
-                                </div>
-                                
-                                <div class="ideology-option center" data-ideology="centro">
-                                    <div class="ideology-label">CENTRO</div>
-                                    <div class="ideology-description">Moderação, pragmatismo</div>
-                                </div>
-                                
-                                <div class="ideology-option left" data-ideology="esquerda">
-                                    <div class="ideology-label">ESQUERDA</div>
-                                    <div class="ideology-description">Progressismo, justiça social</div>
-                                </div>
+                            <label>Número da Urna</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="reg-num-prefix" readonly style="width: 80px; text-align: center; color: var(--accent-sapphire); font-weight: bold;" title="Prefixo do Partido">
+                                <input type="number" id="reg-num-user" placeholder="Digitos Finais" required style="letter-spacing: 5px; font-size: 1.2rem;">
                             </div>
+                            <small style="color: rgba(255,255,255,0.5); display: block; margin-top: 5px;" id="reg-num-hint">Insira os dígitos restantes.</small>
                         </div>
-                        
-                        <div class="form-group full-width" id="partySelection">
-                            <label class="form-label">
-                                <i class="fas fa-flag"></i> Partido Político
-                            </label>
-                            <div class="party-options" id="partyOptions">
-                                <!-- Partidos serão carregados dinamicamente conforme ideologia -->
-                            </div>
-                        </div>
+
+                        <button class="btn-main" onclick="logic.submitCandidacy()">CONFIRMAR E ENVIAR <i class="fas fa-check"></i></button>
+                        <button class="btn-main" onclick="logic.prevStep(3)" style="background: transparent; border: none; color: #fff; margin-top: 10px;">Voltar</button>
                     </div>
-                    
-                    <div class="form-navigation">
-                        <button class="btn btn-secondary" id="prevStep2">
-                            <i class="fas fa-arrow-left"></i> Voltar
-                        </button>
-                        <button class="btn btn-primary" id="nextStep2">
-                            Continuar <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- STEP 3: ELECTORAL DATA -->
-                <div class="form-step" id="step3">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label" for="candidateOffice">
-                                <i class="fas fa-briefcase"></i> Cargo
-                            </label>
-                            <select id="candidateOffice" class="form-select">
-                                <option value="">Selecione um cargo</option>
-                                <!-- Opções serão carregadas dinamicamente conforme modo da eleição -->
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="candidateNumber">
-                                <i class="fas fa-hashtag"></i> Número da Urna
-                            </label>
-                            <input type="text" id="candidateNumber" class="form-input disabled" placeholder="Número gerado automaticamente" readonly>
-                        </div>
-                        
-                        <div class="form-group full-width">
-                            <div class="glass-card" style="padding: 20px; background: rgba(0, 255, 157, 0.05); border-color: rgba(0, 255, 157, 0.2);">
-                                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                                    <i class="fas fa-shield-alt" style="color: var(--neon-emerald); font-size: 24px;"></i>
-                                    <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: var(--iridescent-pearl);">
-                                        VALIDAÇÃO DO SISTEMA TSE
-                                    </div>
-                                </div>
-                                <div style="color: rgba(224, 247, 255, 0.7); font-size: 14px; line-height: 1.6;">
-                                    <div style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: var(--neon-emerald); margin-right: 8px;"></i> Verificação de duplicidade de nome</div>
-                                    <div style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: var(--neon-emerald); margin-right: 8px;"></i> Verificação de duplicidade de @ TikTok</div>
-                                    <div style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: var(--neon-emerald); margin-right: 8px;"></i> Verificação de limite partidário</div>
-                                    <div><i class="fas fa-check-circle" style="color: var(--neon-emerald); margin-right: 8px;"></i> Verificação de limite estadual</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-navigation">
-                        <button class="btn btn-secondary" id="prevStep3">
-                            <i class="fas fa-arrow-left"></i> Voltar
-                        </button>
-                        <button class="btn btn-primary" id="submitCandidacy">
-                            <i class="fas fa-paper-plane"></i> Enviar Candidatura
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- ADMIN PANEL -->
-        <section class="dashboard-section admin-panel" id="adminPanel">
-            <!-- LOGIN SCREEN -->
-            <div class="glass-card login-container" id="adminLoginScreen">
-                <div class="login-title">ACESSO ADMINISTRATIVO</div>
-                <div class="login-subtitle">Sistema de Gerenciamento Eleitoral - TSE RP Oficial</div>
-                
-                <div class="role-selector">
-                    <div class="role-option" data-role="tse">
-                        <div class="role-icon">
-                            <i class="fas fa-crown"></i>
-                        </div>
-                        <div class="role-label">TSE NACIONAL</div>
-                    </div>
-                    
-                    <div class="role-option" data-role="tre">
-                        <div class="role-icon">
-                            <i class="fas fa-landmark"></i>
-                        </div>
-                        <div class="role-label">TRE ESTADUAL</div>
-                    </div>
-                </div>
-                
-                <div class="form-group" id="stateSelector" style="display: none;">
-                    <label class="form-label" for="adminState">
-                        <i class="fas fa-map-marker-alt"></i> Estado
-                    </label>
-                    <select id="adminState" class="form-select">
-                        <option value="">Selecione um estado</option>
+
+                </form>
+            </section>
+
+            <section id="view-consult" class="view-section">
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h1>CANDIDATOS</h1>
+                    <select id="filter-state" onchange="consult.load()" style="width: 200px; padding: 10px;">
+                        <option value="all">Todos os Estados</option>
                         <option value="Brookhaven">Brookhaven</option>
                         <option value="Novacore">Novacore</option>
                         <option value="Casteríber">Casteríber</option>
@@ -1194,204 +579,91 @@
                     </select>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label" for="adminPassword">
-                        <i class="fas fa-key"></i> Senha de Acesso
-                    </label>
-                    <input type="password" id="adminPassword" class="form-input" placeholder="Digite a senha de acesso">
-                </div>
-                
-                <button class="btn btn-primary" id="adminLoginSubmit" style="width: 100%; margin-top: 30px;">
-                    <i class="fas fa-sign-in-alt"></i> Acessar Sistema
-                </button>
-            </div>
-            
-            <!-- TSE ADMIN CONTENT -->
-            <div class="admin-content" id="tseAdminContent">
-                <div class="admin-header">
-                    <div>
-                        <div class="section-title">
-                            <i class="fas fa-crown"></i> TSE NACIONAL - CONTROLE COMPLETO
-                        </div>
-                        <div style="color: rgba(224, 247, 255, 0.6); font-size: 14px; margin-top: 5px;">
-                            Logado como: <span style="color: var(--neon-emerald);">TSE Nacional</span>
-                        </div>
+                <div id="candidates-container" class="cards-grid">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
+                        Carregando base de dados...
                     </div>
+                </div>
+            </section>
+
+            <section id="view-admin-login" class="view-section">
+                <div style="max-width: 400px; margin: 0 auto; text-align: center; padding-top: 50px;">
+                    <i class="fas fa-shield-alt" style="font-size: 4rem; color: var(--accent-sapphire); margin-bottom: 20px;"></i>
+                    <h1>ACESSO RESTRITO</h1>
+                    <p style="margin-bottom: 30px;">Área exclusiva para oficiais do TSE e TREs.</p>
                     
-                    <div class="admin-actions">
-                        <button class="btn btn-secondary" id="toggleElection">
-                            <i class="fas fa-power-off"></i> Abrir/Fechar Eleição
-                        </button>
-                        <button class="btn btn-secondary" id="switchElectionMode">
-                            <i class="fas fa-exchange-alt"></i> Alterar Modo
-                        </button>
-                        <button class="btn btn-warning" id="auditSystem">
-                            <i class="fas fa-search"></i> Auditoria
-                        </button>
-                    </div>
+                    <form onsubmit="event.preventDefault(); admin.login();">
+                        <div class="form-group">
+                            <label>Identificação de Acesso (Senha)</label>
+                            <input type="password" id="admin-pass" required style="text-align: center; letter-spacing: 3px;">
+                        </div>
+                        <button class="btn-main">AUTENTICAR</button>
+                    </form>
                 </div>
-                
-                <div class="glass-card" style="padding: 25px; margin-bottom: 30px; background: rgba(0, 255, 157, 0.05);">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: var(--iridescent-pearl); margin-bottom: 5px;">
-                                CONTROLE DA ELEIÇÃO
-                            </div>
-                            <div style="color: rgba(224, 247, 255, 0.7); font-size: 14px;">
-                                Status atual: <span id="electionStatusAdmin" style="color: var(--neon-emerald); font-weight: 600;">FECHADA</span> | 
-                                Modo: <span id="electionModeAdmin" style="color: var(--electric-sapphire); font-weight: 600;">MUNICIPAL</span>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 15px;">
-                            <div style="text-align: center;">
-                                <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--cold-gold);">5</div>
-                                <div style="font-size: 12px; color: rgba(224, 247, 255, 0.6);">Estados</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--neon-emerald);" id="totalCandidatesAdmin">0</div>
-                                <div style="font-size: 12px; color: rgba(224, 247, 255, 0.6);">Candidatos</div>
-                            </div>
-                        </div>
+            </section>
+
+            <section id="view-admin-dash" class="view-section">
+                <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px;">
+                    <div>
+                        <h1>PAINEL DE CONTROLE</h1>
+                        <h2 id="admin-welcome" style="margin:0;">Bem-vindo, Oficial.</h2>
                     </div>
+                    <button onclick="admin.logout()" class="btn-mini" style="background: rgba(255,255,255,0.1); color: #fff;">SAIR</button>
                 </div>
-                
-                <div class="candidates-table-container">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: var(--iridescent-pearl);">
-                            TODAS AS CANDIDATURAS POR ESTADO
-                        </div>
-                        <div>
-                            <select id="filterState" class="form-select" style="width: 200px;">
-                                <option value="all">Todos os estados</option>
-                                <option value="Brookhaven">Brookhaven</option>
-                                <option value="Novacore">Novacore</option>
-                                <option value="Casteríber">Casteríber</option>
-                                <option value="Fortemega">Fortemega</option>
-                                <option value="Florêmix">Florêmix</option>
+
+                <div id="tse-controls" class="glass-panel" style="padding: 20px; margin-bottom: 30px; border-color: var(--accent-gold); display: none;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 15px;"><i class="fas fa-crown"></i> COMANDO NACIONAL (TSE)</h3>
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                            <label>Modo da Eleição</label>
+                            <select id="admin-mode-select">
+                                <option value="municipal">MUNICIPAL</option>
+                                <option value="federal">FEDERAL</option>
                             </select>
                         </div>
+                        <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                            <label>Status da Urna</label>
+                            <select id="admin-status-select">
+                                <option value="aberta">ABERTA</option>
+                                <option value="fechada">FECHADA</option>
+                            </select>
+                        </div>
+                        <button class="btn-main" onclick="admin.updateConfig()" style="width: auto; margin-top: 22px;">ATUALIZAR SISTEMA</button>
                     </div>
-                    
-                    <table class="candidates-table" id="tseCandidatesTable">
+                </div>
+
+                <h3>FILA DE ANÁLISE</h3>
+                <div class="glass-panel" style="overflow-x: auto;">
+                    <table id="admin-table">
                         <thead>
                             <tr>
-                                <th>Nome</th>
-                                <th>Estado</th>
+                                <th>Candidato</th>
                                 <th>Cargo</th>
                                 <th>Partido</th>
+                                <th>Local</th>
                                 <th>Número</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tseCandidatesBody">
-                            <!-- Dados serão carregados dinamicamente -->
-                        </tbody>
+                        <tbody>
+                            </tbody>
                     </table>
                 </div>
-            </div>
-            
-            <!-- TRE ADMIN CONTENT -->
-            <div class="admin-content" id="treAdminContent">
-                <div class="admin-header">
-                    <div>
-                        <div class="section-title">
-                            <i class="fas fa-landmark"></i> TRE ESTADUAL - <span id="treStateName"></span>
-                        </div>
-                        <div style="color: rgba(224, 247, 255, 0.6); font-size: 14px; margin-top: 5px;">
-                            Logado como: <span id="treAdminName" style="color: var(--neon-emerald);"></span>
-                        </div>
-                    </div>
-                    
-                    <div class="admin-actions">
-                        <button class="btn btn-secondary" id="viewPending">
-                            <i class="fas fa-clock"></i> Pendentes
-                        </button>
-                        <button class="btn btn-secondary" id="viewApproved">
-                            <i class="fas fa-check-circle"></i> Aprovados
-                        </button>
-                        <button class="btn btn-warning" id="viewRejected">
-                            <i class="fas fa-times-circle"></i> Indeferidos
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="glass-card" style="padding: 25px; margin-bottom: 30px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: var(--iridescent-pearl); margin-bottom: 5px;">
-                                RESUMO ESTADUAL
-                            </div>
-                            <div style="color: rgba(224, 247, 255, 0.7); font-size: 14px;">
-                                Estado: <span id="currentTreState" style="color: var(--electric-sapphire); font-weight: 600;"></span>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 20px;">
-                            <div style="text-align: center;">
-                                <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--cold-gold);" id="trePendingCount">0</div>
-                                <div style="font-size: 12px; color: rgba(224, 247, 255, 0.6);">Pendentes</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--neon-emerald);" id="treApprovedCount">0</div>
-                                <div style="font-size: 12px; color: rgba(224, 247, 255, 0.6);">Aprovados</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--warning-red);" id="treRejectedCount">0</div>
-                                <div style="font-size: 12px; color: rgba(224, 247, 255, 0.6);">Indeferidos</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="candidates-table-container">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: var(--iridescent-pearl);">
-                            CANDIDATURAS DO ESTADO
-                        </div>
-                        <div>
-                            <select id="filterOfficeTre" class="form-select" style="width: 200px;">
-                                <option value="all">Todos os cargos</option>
-                                <option value="Prefeito">Prefeito</option>
-                                <option value="Vereador">Vereador</option>
-                                <option value="Presidente">Presidente</option>
-                                <option value="Governador">Governador</option>
-                                <option value="Senador">Senador</option>
-                                <option value="Deputado Federal">Deputado Federal</option>
-                                <option value="Deputado Estadual">Deputado Estadual</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <table class="candidates-table" id="treCandidatesTable">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Cidade</th>
-                                <th>Cargo</th>
-                                <th>Partido</th>
-                                <th>Número</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="treCandidatesBody">
-                            <!-- Dados serão carregados dinamicamente -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-        
-        <!-- NOTIFICATIONS -->
-        <div class="notification-container" id="notificationContainer"></div>
+            </section>
+
+        </main>
     </div>
 
-    <script>
-        // ============================================
-        // FIREBASE CONFIGURATION
-        // ============================================
+    <div id="toast-container"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, update, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // ========================================================
+        // 1. CONFIGURAÇÃO & INIT
+        // ========================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAwFLV5X9ICB3mvU4WU1ihxGUeG9UsrbtQ",
             authDomain: "candidatura-cde.firebaseapp.com",
@@ -1402,27 +674,14 @@
             appId: "1:958958180950:web:51427276d0a83978fdb9f7"
         };
 
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // ============================================
-        // GLOBAL VARIABLES
-        // ============================================
-        let currentStep = 1;
-        let selectedIdeology = "";
-        let selectedParty = "";
-        let selectedState = "";
-        let selectedCity = "";
-        let selectedOffice = "";
-        let candidateNumber = "";
-        let currentAdminRole = "";
-        let currentAdminState = "";
-        let candidatesData = [];
-        let electionMode = "municipal";
-        let electionOpen = false;
-        const partiesMap = {
+        // ========================================================
+        // 2. CONSTANTES & DADOS ESTÁTICOS
+        // ========================================================
+        
+        const PARTIDOS_MAP = {
     direita: [
         { number: "22", name: "Partido Liberal (PL)", color: "#0B3C5D" },
         { number: "11", name: "Progressistas (PP)", color: "#1E90FF" },
@@ -1432,6 +691,8 @@
         { number: "28", name: "Partido Renovador Trabalhista Brasileiro (PRTB)", color: "#4682B4" },
         { number: "27", name: "Democracia Cristã (DC)", color: "#5F9EA0" },
         { number: "36", name: "Agir", color: "#6495ED" },
+
+        // 🔹 FICTÍCIOS
         { number: "38", name: "União da Direita Brookasileira (UDB)", color: "#003366" },
         { number: "81", name: "Partido da Ordem e Liberdade (POL)", color: "#1C1C1C" },
         { number: "84", name: "Aliança Cristã Nacional (ACN)", color: "#2E8B57" },
@@ -1451,6 +712,8 @@
         { number: "70", name: "Avante", color: "#DAA520" },
         { number: "33", name: "Partido da Mobilização Nacional (PMN)", color: "#EEC900" },
         { number: "43", name: "Partido Verde (PV)", color: "#9ACD32" },
+
+        // 🔹 FICTÍCIOS
         { number: "42", name: "Partido da União Nacional (PUN)", color: "#F5DEB3" },
         { number: "37", name: "Movimento Popular Democrático (MPD)", color: "#FFD966" },
         { number: "26", name: "Partido da Mudança (PDM)", color: "#FFC04D" },
@@ -1473,986 +736,490 @@
         { number: "16", name: "Partido Socialista dos Trabalhadores Unificado (PSTU)", color: "#FF0000" },
         { number: "54", name: "Partido Pátria Livre (PPL)", color: "#C00000" },
         { number: "40", name: "Partido Socialista Brasileiro (PSB)", color: "#E60026" },
+
+       
         { number: "60", name: "Partido da Frente Socialista (PFS)", color: "#B30000" },
         { number: "56", name: "Partido Socialista (PS)", color: "#990000" },
         { number: "31", name: "Partido Social Trabalhista Nacional (PSTN)", color: "#CD2626" }
     ]
 };
-        // Mapa de cidades por estado
-        const citiesByState = {
-            Brookhaven: ["Eleitoral City", "Liberty City", "Nexaville"],
-            Novacore: ["Castelo Verde", "Marinha City"],
-            Casteríber: ["Florápolis", "Cidade Alta", "Porto Real"],
-            Fortemega: ["Fortaleza Digital", "Ciberville", "Mega City"],
-            Florêmix: ["Florênpolis", "Verdejante", "Jardim Celeste"]
+        const CIDADES_MUNICIPAL = ["Eleitoral City", "Liberty City", "Nexaville", "Castelo Verde", "Marinha City", "Florápolis"];
+        
+        // Hashes Simples (Para demonstração client-side segura contra visualização direta)
+        // Em prod real, isso seria server-side.
+        // Brookhaven1234 -> hash fictício mapeado
+        const AUTH_HASHES = {
+            "Brookasil1234": { role: "TSE", name: "TSE NACIONAL" },
+            "tutuBH": { role: "TRE", name: "TRE Brookhaven", state: "Brookhaven" },
+            "williamNC": { role: "TRE", name: "TRE Novacore", state: "Novacore" },
+            "henriqueCB": { role: "TRE", name: "TRE Casteríber", state: "Casteríber" },
+            "lucasFM": { role: "TRE", name: "TRE Fortemega", state: "Fortemega" },
+            "popoFX": { role: "TRE", name: "TRE Florêmix", state: "Florêmix" }
         };
 
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            setupEventListeners();
-            loadElectionConfig();
-            loadCandidatesData();
-            
-            // Cursor tracker effect
-            document.addEventListener('mousemove', function(e) {
-                const tracker = document.getElementById('cursorTracker');
-                tracker.style.left = e.clientX + 'px';
-                tracker.style.top = e.clientY + 'px';
+        // Estado Global da Aplicação
+        let globalState = {
+            mode: "municipal", // ou federal
+            isOpen: false,
+            currentUser: null, // Objeto admin logado
+            registration: {} // Dados temporários do formulário
+        };
+
+        // ========================================================
+        // 3. UI UTILS
+        // ========================================================
+        
+        window.nav = {
+            goto: (viewName) => {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+                
+                const target = document.getElementById(`view-${viewName}`);
+                if (target) {
+                    target.classList.add('active');
+                    // Special routing logic
+                    if(viewName === 'admin-login' && globalState.currentUser) {
+                        nav.goto('admin-dash');
+                        return;
+                    }
+                    if(viewName === 'consult') consult.load();
+                }
+
+                const navBtn = document.getElementById(`nav-${viewName === 'admin-dash' || viewName === 'admin-login' ? 'admin' : viewName}`);
+                if(navBtn) navBtn.classList.add('active');
+            }
+        };
+
+        window.toast = (msg, type = 'info') => {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> <span>${msg}</span>`;
+            container.appendChild(el);
+            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 4000);
+        };
+
+        const loader = {
+            show: () => document.getElementById('global-loader').classList.add('active'),
+            hide: () => document.getElementById('global-loader').classList.remove('active')
+        };
+
+        // Efeito Mouse
+        document.addEventListener('mousemove', (e) => {
+            document.querySelectorAll('.glass-panel, .btn-main').forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
             });
         });
 
-        // ============================================
-        // INITIALIZATION FUNCTIONS
-        // ============================================
-        function initializeApp() {
-            // Show main navigation by default
-            showSection('mainNavigation');
-            
-            // Setup city select options
-            setupCitySelect();
-            
-            // Setup office options based on election mode
-            setupOfficeOptions();
-        }
+        // ========================================================
+        // 4. LÓGICA DE NEGÓCIO (ELEIÇÃO)
+        // ========================================================
 
-        function setupEventListeners() {
-            // Navigation buttons
-            document.getElementById('navCandidacy').addEventListener('click', () => showCandidacyForm());
-            document.getElementById('navCandidates').addEventListener('click', () => showCandidatesList());
-            document.getElementById('navResults').addEventListener('click', () => showResults());
-            
-            // Admin login button
-            document.getElementById('adminLoginBtn').addEventListener('click', () => showAdminPanel());
-            document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
-            
-            // Form navigation
-            document.getElementById('nextStep1').addEventListener('click', nextStep);
-            document.getElementById('nextStep2').addEventListener('click', nextStep);
-            document.getElementById('prevStep2').addEventListener('click', prevStep);
-            document.getElementById('prevStep3').addEventListener('click', prevStep);
-            document.getElementById('submitCandidacy').addEventListener('click', submitCandidacy);
-            
-            // State selection for form
-            document.getElementById('candidateState').addEventListener('change', function() {
-                selectedState = this.value;
-                updateCitySelect();
-                validateStep1();
-            });
-            
-            // City selection for form
-            document.getElementById('candidateCity').addEventListener('change', function() {
-                selectedCity = this.value;
-                validateStep1();
-            });
-            
-            // Office selection for form
-            document.getElementById('candidateOffice').addEventListener('change', function() {
-                selectedOffice = this.value;
-                generateCandidateNumber();
-                validateStep3();
-            });
-            
-            // Ideology selection
-            document.querySelectorAll('.ideology-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    selectedIdeology = this.dataset.ideology;
-                    document.querySelectorAll('.ideology-option').forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                    loadPartyOptions();
-                    validateStep2();
-                });
-            });
-            
-            // Admin login
-            document.querySelectorAll('.role-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    currentAdminRole = this.dataset.role;
-                    document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                    
-                    const stateSelector = document.getElementById('stateSelector');
-                    if (currentAdminRole === 'tre') {
-                        stateSelector.style.display = 'block';
-                    } else {
-                        stateSelector.style.display = 'none';
+        window.logic = {
+            init: () => {
+                // Ouvir configurações globais
+                const configRef = ref(db, 'config');
+                onValue(configRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        globalState.mode = data.modoEleicao || "municipal";
+                        globalState.isOpen = data.eleicaoAberta;
+                        document.getElementById('mode-display').innerText = `MODO: ${globalState.mode.toUpperCase()} | ${globalState.isOpen ? 'ABERTA' : 'FECHADA'}`;
+                        document.getElementById('mode-display').style.color = globalState.isOpen ? 'var(--accent-neon-green)' : 'var(--accent-error)';
                     }
                 });
-            });
-            
-            // Admin state selection
-            document.getElementById('adminState').addEventListener('change', function() {
-                currentAdminState = this.value;
-            });
-            
-            // Admin login submit
-            document.getElementById('adminLoginSubmit').addEventListener('click', loginAdmin);
-            
-            // Admin actions
-            document.getElementById('toggleElection').addEventListener('click', toggleElection);
-            document.getElementById('switchElectionMode').addEventListener('click', switchElectionMode);
-            document.getElementById('auditSystem').addEventListener('click', auditSystem);
-            
-            // Filter controls
-            document.getElementById('filterState').addEventListener('change', filterCandidatesByState);
-            document.getElementById('filterOfficeTre').addEventListener('change', filterCandidatesByOfficeTre);
-            
-            // Form validation on input
-            document.getElementById('candidateName').addEventListener('input', validateStep1);
-            document.getElementById('candidateTikTok').addEventListener('input', validateStep1);
-        }
-
-        // ============================================
-        // SECTION MANAGEMENT
-        // ============================================
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.dashboard-section, .admin-panel').forEach(section => {
-                section.style.display = 'none';
-            });
-            
-            // Hide admin content panels
-            document.querySelectorAll('.admin-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            // Show main navigation
-            document.getElementById('mainNavigation').style.display = 'grid';
-            document.getElementById('dashboardSection').style.display = 'block';
-            
-            // Show requested section
-            if (sectionId === 'mainNavigation') {
-                // Already shown above
-            } else if (sectionId === 'adminPanel') {
-                document.getElementById('mainNavigation').style.display = 'none';
-                document.getElementById('dashboardSection').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                document.getElementById('adminLoginScreen').style.display = 'block';
-            } else {
-                document.getElementById('mainNavigation').style.display = 'none';
-                document.getElementById(sectionId).style.display = 'block';
-            }
-        }
-
-        function showCandidacyForm() {
-            showSection('candidacyForm');
-            resetForm();
-        }
-
-        function showCandidatesList() {
-            showNotification('info', 'Funcionalidade em Desenvolvimento', 'A consulta de candidatos estará disponível em breve.');
-        }
-
-        function showResults() {
-            showNotification('info', 'Funcionalidade em Desenvolvimento', 'Os resultados eleitorais serão exibidos após o encerramento da eleição.');
-        }
-
-        function showAdminPanel() {
-            showSection('adminPanel');
-            resetAdminLogin();
-        }
-
-        // ============================================
-        // FORM MANAGEMENT
-        // ============================================
-        function resetForm() {
-            currentStep = 1;
-            selectedIdeology = "";
-            selectedParty = "";
-            selectedState = "";
-            selectedCity = "";
-            selectedOffice = "";
-            candidateNumber = "";
-            
-            // Reset form fields
-            document.getElementById('candidateName').value = "";
-            document.getElementById('candidateTikTok').value = "";
-            document.getElementById('candidateState').value = "";
-            document.getElementById('candidateCity').value = "";
-            document.getElementById('candidateCity').disabled = true;
-            document.getElementById('candidateOffice').value = "";
-            document.getElementById('candidateNumber').value = "";
-            
-            // Reset selections
-            document.querySelectorAll('.ideology-option').forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('partyOptions').innerHTML = "";
-            
-            // Show first step
-            document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
-            document.getElementById('step1').classList.add('active');
-            
-            // Update progress bar
-            updateProgressBar();
-            
-            // Reset validation
-            validateStep1();
-        }
-
-        function nextStep() {
-            if (currentStep === 1 && !validateStep1()) {
-                showNotification('error', 'Dados Incompletos', 'Preencha todos os campos obrigatórios do primeiro passo.');
-                return;
-            }
-            
-            if (currentStep === 2 && !validateStep2()) {
-                showNotification('error', 'Seleção Obrigatória', 'Selecione uma ideologia e um partido político.');
-                return;
-            }
-            
-            if (currentStep === 3) return; // Last step
-            
-            // Hide current step
-            document.getElementById(`step${currentStep}`).classList.remove('active');
-            
-            // Show next step
-            currentStep++;
-            document.getElementById(`step${currentStep}`).classList.add('active');
-            
-            // Update progress bar
-            updateProgressBar();
-        }
-
-        function prevStep() {
-            if (currentStep === 1) return; // First step
-            
-            // Hide current step
-            document.getElementById(`step${currentStep}`).classList.remove('active');
-            
-            // Show previous step
-            currentStep--;
-            document.getElementById(`step${currentStep}`).classList.add('active');
-            
-            // Update progress bar
-            updateProgressBar();
-        }
-
-        function updateProgressBar() {
-            const progress = (currentStep / 3) * 100;
-            document.getElementById('formProgress').style.width = `${progress}%`;
-        }
-
-        // ============================================
-        // FORM VALIDATION
-        // ============================================
-        function validateStep1() {
-            const name = document.getElementById('candidateName').value.trim();
-            const tiktok = document.getElementById('candidateTikTok').value.trim();
-            const state = document.getElementById('candidateState').value;
-            const city = document.getElementById('candidateCity').value;
-            
-            const isValid = name.length > 0 && tiktok.length > 0 && state.length > 0 && city.length > 0;
-            
-            document.getElementById('nextStep1').disabled = !isValid;
-            return isValid;
-        }
-
-        function validateStep2() {
-            const isValid = selectedIdeology.length > 0 && selectedParty.length > 0;
-            document.getElementById('nextStep2').disabled = !isValid;
-            return isValid;
-        }
-
-        function validateStep3() {
-            const isValid = selectedOffice.length > 0 && candidateNumber.length > 0;
-            document.getElementById('submitCandidacy').disabled = !isValid;
-            return isValid;
-        }
-
-        // ============================================
-        // FORM DATA MANAGEMENT
-        // ============================================
-        function setupCitySelect() {
-            const citySelect = document.getElementById('candidateCity');
-            citySelect.innerHTML = '<option value="">Selecione primeiro o estado</option>';
-            citySelect.disabled = true;
-        }
-
-        function updateCitySelect() {
-            const citySelect = document.getElementById('candidateCity');
-            
-            if (selectedState && citiesByState[selectedState]) {
-                citySelect.innerHTML = '<option value="">Selecione uma cidade</option>';
-                citiesByState[selectedState].forEach(city => {
-                    citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+                
+                // Povoar Partidos
+                const sel = document.getElementById('reg-partido');
+                PARTIDOS_MAP.forEach((p, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = idx; // Index no array
+                    opt.text = `${p.numero} - ${p.nome} (${p.sigla})`;
+                    sel.appendChild(opt);
                 });
-                citySelect.disabled = false;
-            } else {
-                citySelect.innerHTML = '<option value="">Selecione primeiro o estado</option>';
-                citySelect.disabled = true;
-                selectedCity = "";
-            }
-        }
+            },
 
-        function setupOfficeOptions() {
-            const officeSelect = document.getElementById('candidateOffice');
-            officeSelect.innerHTML = '<option value="">Selecione um cargo</option>';
-            
-            if (electionMode === 'municipal') {
-                officeSelect.innerHTML += '<option value="Prefeito">Prefeito</option>';
-                officeSelect.innerHTML += '<option value="Vereador">Vereador</option>';
-            } else {
-                officeSelect.innerHTML += '<option value="Presidente">Presidente</option>';
-                officeSelect.innerHTML += '<option value="Governador">Governador</option>';
-                officeSelect.innerHTML += '<option value="Senador">Senador</option>';
-                officeSelect.innerHTML += '<option value="Deputado Federal">Deputado Federal</option>';
-                officeSelect.innerHTML += '<option value="Deputado Estadual">Deputado Estadual</option>';
-            }
-        }
+            updatePartyInfo: () => {
+                const idx = document.getElementById('reg-partido').value;
+                if(idx === "") return;
+                const p = PARTIDOS_MAP[idx];
+                const color = p.ideologia === 'direita' ? '#4dabff' : p.ideologia === 'esquerda' ? '#ff6b6b' : '#fff';
+                document.getElementById('party-info').innerHTML = `<span style="color:${color}; text-transform:uppercase; font-weight:bold;">Ideologia: ${p.ideologia}</span>`;
+            },
 
-        function loadPartyOptions() {
-            const partyOptionsDiv = document.getElementById('partyOptions');
-            partyOptionsDiv.innerHTML = "";
-            
-            if (selectedIdeology && partiesMap[selectedIdeology]) {
-                partiesMap[selectedIdeology].forEach(party => {
-                    const partyElement = document.createElement('div');
-                    partyElement.className = 'party-option';
-                    partyElement.dataset.partyNumber = party.number;
-                    partyElement.innerHTML = `
-                        <div class="party-number">${party.number}</div>
-                        <div class="party-name">${party.name}</div>
-                    `;
-                    partyElement.style.borderColor = party.color;
+            nextStep: (current) => {
+                // Validações Step 1
+                if (current === 1) {
+                    if (!document.getElementById('reg-nome').value || !document.getElementById('reg-tiktok').value || document.getElementById('reg-partido').value === "") {
+                        toast("Preencha todos os campos.", "error"); return;
+                    }
+                    // Popular Step 2
+                    const cargoSel = document.getElementById('reg-cargo');
+                    cargoSel.innerHTML = '<option value="">Selecione...</option>';
                     
-                    partyElement.addEventListener('click', function() {
-                        document.querySelectorAll('.party-option').forEach(opt => opt.classList.remove('selected'));
-                        this.classList.add('selected');
-                        selectedParty = this.dataset.partyNumber;
-                        validateStep2();
-                        generateCandidateNumber();
-                    });
-                    
-                    partyOptionsDiv.appendChild(partyElement);
-                });
-            }
-        }
-
-        function generateCandidateNumber() {
-            if (!selectedParty || !selectedOffice) return;
-            
-            let number = selectedParty;
-            
-            // Adiciona dígitos conforme o cargo
-            if (selectedOffice === "Presidente" || selectedOffice === "Governador") {
-                // 2 dígitos já fornecidos pelo partido
-                candidateNumber = number;
-            } else if (selectedOffice === "Senador" || selectedOffice === "Deputado Estadual") {
-                // 3 dígitos
-                const randomDigit = Math.floor(Math.random() * 10);
-                candidateNumber = number + randomDigit;
-            } else if (selectedOffice === "Deputado Federal") {
-                // 4 dígitos (começa com 38)
-                const randomDigits = Math.floor(10 + Math.random() * 90);
-                candidateNumber = "38" + randomDigits;
-            } else if (selectedOffice === "Prefeito") {
-                // 2 dígitos
-                candidateNumber = number;
-            } else if (selectedOffice === "Vereador") {
-                // 5 dígitos
-                const randomDigits = Math.floor(100 + Math.random() * 900);
-                candidateNumber = number + randomDigits;
-            }
-            
-            document.getElementById('candidateNumber').value = candidateNumber;
-            validateStep3();
-        }
-
-        // ============================================
-        // FIREBASE DATABASE OPERATIONS
-        // ============================================
-        function loadElectionConfig() {
-            database.ref('/config').on('value', (snapshot) => {
-                const config = snapshot.val();
-                if (config) {
-                    electionMode = config.modoEleicao || 'municipal';
-                    electionOpen = config.eleicaoAberta || false;
-                    
-                    // Update UI
-                    document.getElementById('electionMode').textContent = electionMode.toUpperCase();
-                    document.getElementById('electionModeAdmin').textContent = electionMode.toUpperCase();
-                    document.getElementById('electionStatus').textContent = electionOpen ? 'ABERTA' : 'FECHADA';
-                    document.getElementById('electionStatusAdmin').textContent = electionOpen ? 'ABERTA' : 'FECHADA';
-                    
-                    // Update office options if form is open
-                    if (document.getElementById('candidacyForm').style.display === 'block') {
-                        setupOfficeOptions();
+                    if (globalState.mode === 'municipal') {
+                        cargoSel.innerHTML += '<option value="Prefeito">Prefeito</option><option value="Vereador">Vereador</option>';
+                        document.getElementById('group-estado').style.display = 'none';
+                        document.getElementById('group-cidade').style.display = 'block';
+                        // Popular Cidades
+                        const cidSel = document.getElementById('reg-cidade');
+                        cidSel.innerHTML = '<option value="">Selecione...</option>';
+                        CIDADES_MUNICIPAL.forEach(c => cidSel.innerHTML += `<option value="${c}">${c}</option>`);
+                    } else {
+                        // Federal
+                        cargoSel.innerHTML += `
+                            <option value="Presidente">Presidente</option>
+                            <option value="Governador">Governador</option>
+                            <option value="Senador">Senador</option>
+                            <option value="Deputado Federal">Deputado Federal</option>
+                            <option value="Deputado Estadual">Deputado Estadual</option>
+                        `;
                     }
                 }
-            });
-        }
 
-        function loadCandidatesData() {
-            database.ref('/candidatos').on('value', (snapshot) => {
-                candidatesData = [];
-                const data = snapshot.val();
+                // Validações Step 2
+                if (current === 2) {
+                    const cargo = document.getElementById('reg-cargo').value;
+                    if (!cargo) { toast("Selecione o cargo.", "error"); return; }
+                    
+                    if (globalState.mode === 'federal') {
+                        if (cargo !== 'Presidente' && !document.getElementById('reg-estado').value) {
+                             toast("Selecione o estado.", "error"); return;
+                        }
+                        if (cargo === 'Deputado Federal' && !document.getElementById('reg-cidade').value) {
+                             toast("Selecione a cidade base.", "error"); return;
+                        }
+                    } else {
+                        if (!document.getElementById('reg-cidade').value) { toast("Selecione a cidade.", "error"); return; }
+                    }
+
+                    // Configurar Step 3 (Números)
+                    const pIdx = document.getElementById('reg-partido').value;
+                    const partido = PARTIDOS_MAP[pIdx];
+                    document.getElementById('reg-num-prefix').value = partido.numero;
+                    
+                    // Lógica de dígitos
+                    const numInput = document.getElementById('reg-num-user');
+                    numInput.value = "";
+                    let maxLen = 0;
+
+                    if (cargo === 'Presidente' || cargo === 'Governador' || cargo === 'Prefeito') {
+                        maxLen = 0; // Só número do partido
+                        numInput.placeholder = "Bloqueado";
+                        numInput.disabled = true;
+                    } else if (cargo === 'Senador' || cargo === 'Deputado Estadual') {
+                        maxLen = 1; // 3 digitos total (2 partido + 1)
+                        numInput.placeholder = "X";
+                        numInput.disabled = false;
+                    } else if (cargo === 'Deputado Federal' || cargo === 'Vereador') {
+                        maxLen = 2; // 4 digitos total (2 partido + 2)
+                        numInput.placeholder = "XX";
+                        numInput.disabled = false;
+                    }
+                    numInput.setAttribute('maxlength', maxLen);
+                    
+                    // Resumo
+                    const local = globalState.mode === 'municipal' ? 
+                        document.getElementById('reg-cidade').value : 
+                        (cargo === 'Presidente' ? 'Nacional' : document.getElementById('reg-estado').value);
+
+                    document.getElementById('review-data').innerHTML = `
+                        <strong>Candidato:</strong> ${document.getElementById('reg-nome').value}<br>
+                        <strong>Cargo:</strong> ${cargo}<br>
+                        <strong>Partido:</strong> ${partido.nome}<br>
+                        <strong>Local:</strong> ${local}
+                    `;
+                }
+
+                document.getElementById(`step-${current}`).style.display = 'none';
+                document.getElementById(`step-${current+1}`).style.display = 'block';
+                document.getElementById(`step-${current}-dot`).classList.remove('active');
+                document.getElementById(`step-${current+1}-dot`).classList.add('active');
+            },
+
+            prevStep: (current) => {
+                document.getElementById(`step-${current}`).style.display = 'none';
+                document.getElementById(`step-${current-1}`).style.display = 'block';
+                document.getElementById(`step-${current}-dot`).classList.remove('active');
+                document.getElementById(`step-${current-1}-dot`).classList.add('active');
+            },
+
+            updateLocationFields: () => {
+                const cargo = document.getElementById('reg-cargo').value;
+                const estGroup = document.getElementById('group-estado');
+                const cidGroup = document.getElementById('group-cidade');
+
+                if (globalState.mode === 'federal') {
+                    if (cargo === 'Presidente') {
+                        estGroup.style.display = 'none';
+                        cidGroup.style.display = 'none';
+                    } else if (cargo === 'Deputado Federal') {
+                        estGroup.style.display = 'block';
+                        cidGroup.style.display = 'block'; // Prompt diz "Estado + Cidade"
+                        logic.updateCityField(); // Reset list
+                    } else {
+                        estGroup.style.display = 'block';
+                        cidGroup.style.display = 'none';
+                    }
+                }
+            },
+
+            updateCityField: () => {
+                // Se for federal e deputado federal, lista cidades do estado selecionado?
+                // O prompt simplifica "Estado + Cidade". Vou usar as cidades genéricas para preencher.
+                if (globalState.mode === 'federal') {
+                    const sel = document.getElementById('reg-cidade');
+                    sel.innerHTML = '<option value="">Selecione...</option>';
+                    CIDADES_MUNICIPAL.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
+                }
+            },
+
+            submitCandidacy: async () => {
+                if (!globalState.isOpen) { toast("Eleições fechadas.", "error"); return; }
                 
-                if (data) {
-                    // Processar candidatos por estado
-                    Object.keys(data).forEach(state => {
-                        Object.keys(data[state]).forEach(office => {
-                            Object.keys(data[state][office]).forEach(candidateId => {
-                                const candidate = data[state][office][candidateId];
-                                candidate.id = candidateId;
-                                candidatesData.push(candidate);
+                loader.show();
+                
+                // Coletar dados
+                const pIdx = document.getElementById('reg-partido').value;
+                const partidoObj = PARTIDOS_MAP[pIdx];
+                const prefix = document.getElementById('reg-num-prefix').value;
+                const suffix = document.getElementById('reg-num-user').value;
+                const finalNum = prefix + suffix;
+                const cargo = document.getElementById('reg-cargo').value;
+                
+                let estado = "BR";
+                let cidade = "-";
+                
+                if (globalState.mode === 'municipal') {
+                    cidade = document.getElementById('reg-cidade').value;
+                    estado = "Municipal"; // Simplificação
+                } else {
+                    if(cargo !== 'Presidente') estado = document.getElementById('reg-estado').value;
+                    if(cargo === 'Deputado Federal') cidade = document.getElementById('reg-cidade').value;
+                }
+
+                // VALIDAR NÚMERO E REGRAS
+                // Regra: Max 4 candidatos por cargo do mesmo partido
+                // Regra: Numero único
+                // Regra: Nome único
+                
+                // Consulta ao BD para validação (Query pesada mas necessária)
+                const candRef = ref(db, 'candidatos');
+                
+                try {
+                    const snapshot = await get(candRef);
+                    let erro = null;
+                    let countPartyCargo = 0;
+
+                    if (snapshot.exists()) {
+                        snapshot.forEach(estadoSnap => {
+                            estadoSnap.forEach(candSnap => {
+                                const c = candSnap.val();
+                                if (c.numero == finalNum) erro = "Número já existe na federação.";
+                                if (c.nome.toLowerCase() === document.getElementById('reg-nome').value.toLowerCase()) erro = "Nome já registrado.";
+                                if (c.tiktok === document.getElementById('reg-tiktok').value) erro = "TikTok já em uso.";
+                                
+                                if (c.partido === partidoObj.nome && c.cargo === cargo && c.estado === estado) {
+                                    countPartyCargo++;
+                                }
                             });
                         });
-                    });
-                    
-                    // Update statistics
-                    updateStatistics();
-                    
-                    // Update admin tables if admin panel is open
-                    if (currentAdminRole === 'tse' && document.getElementById('tseAdminContent').style.display === 'block') {
-                        updateTseCandidatesTable();
-                    } else if (currentAdminRole === 'tre' && document.getElementById('treAdminContent').style.display === 'block') {
-                        updateTreCandidatesTable();
                     }
-                }
-            });
-        }
 
-        function updateStatistics() {
-            const total = candidatesData.length;
-            const approved = candidatesData.filter(c => c.status === 'aprovado').length;
-            const pending = candidatesData.filter(c => c.status === 'pendente').length;
-            
-            document.getElementById('totalCandidates').textContent = total;
-            document.getElementById('approvedCandidates').textContent = approved;
-            document.getElementById('pendingCandidates').textContent = pending;
-            
-            if (currentAdminRole === 'tse') {
-                document.getElementById('totalCandidatesAdmin').textContent = total;
-            }
-        }
+                    if (erro) { loader.hide(); toast(erro, "error"); return; }
+                    if (countPartyCargo >= 4) { loader.hide(); toast("Limite de 4 candidatos deste partido para este cargo atingido.", "error"); return; }
 
-        async function submitCandidacy() {
-            // Validate election is open
-            if (!electionOpen) {
-                showNotification('error', 'Eleição Fechada', 'As candidaturas estão fechadas no momento. Aguarde a abertura das inscrições.');
-                return;
-            }
-            
-            // Validate all fields
-            if (!validateStep1() || !validateStep2() || !validateStep3()) {
-                showNotification('error', 'Dados Incompletos', 'Preencha todos os campos obrigatórios antes de enviar.');
-                return;
-            }
-            
-            // Get form data
-            const candidateData = {
-                nome: document.getElementById('candidateName').value.trim(),
-                tiktok: document.getElementById('candidateTikTok').value.trim(),
-                estado: selectedState,
-                cidade: selectedCity,
-                cargo: selectedOffice,
-                partido: selectedParty,
-                ideologia: selectedIdeology,
-                numero: candidateNumber,
-                status: 'pendente',
-                criadoEm: new Date().toISOString()
-            };
-            
-            // Validate against existing candidates
-            const validation = await validateCandidacy(candidateData);
-            if (!validation.valid) {
-                showNotification('error', 'Validação Falhou', validation.message);
-                return;
-            }
-            
-            // Save to Firebase
-            try {
-                const newCandidateRef = database.ref(`/candidatos/${selectedState}/${selectedOffice}`).push();
-                await newCandidateRef.set(candidateData);
-                
-                // Log the action
-                await logAdminAction('candidatura_submetida', 'Sistema', selectedState, `Nova candidatura: ${candidateData.nome} - ${candidateData.cargo}`);
-                
-                // Show success message
-                showNotification('success', 'Candidatura Registrada', 'Sua candidatura foi enviada com sucesso e está pendente de aprovação do TRE.');
-                
-                // Reset form and return to main navigation
-                setTimeout(() => {
-                    resetForm();
-                    showSection('mainNavigation');
-                }, 3000);
-                
-            } catch (error) {
-                console.error('Error saving candidacy:', error);
-                showNotification('error', 'Erro no Sistema', 'Ocorreu um erro ao salvar sua candidatura. Tente novamente.');
-            }
-        }
+                    // Salvar
+                    const newCandRef = push(ref(db, `candidatos/${estado}`));
+                    await set(newCandRef, {
+                        id: newCandRef.key,
+                        nome: document.getElementById('reg-nome').value,
+                        tiktok: document.getElementById('reg-tiktok').value,
+                        partido: partidoObj.nome,
+                        ideologia: partidoObj.ideologia,
+                        sigla: partidoObj.sigla,
+                        numero: finalNum,
+                        cargo: cargo,
+                        estado: estado,
+                        cidade: cidade,
+                        status: 'pendente', // pendente, aprovado, indeferido
+                        criadoEm: Date.now()
+                    });
 
-        async function validateCandidacy(candidateData) {
-            // Check for duplicate name
-            const duplicateName = candidatesData.find(c => 
-                c.nome.toLowerCase() === candidateData.nome.toLowerCase() &&
-                c.estado === candidateData.estado &&
-                c.cargo === candidateData.cargo
-            );
-            
-            if (duplicateName) {
-                return { valid: false, message: 'Já existe um candidato com este nome para o mesmo cargo e estado.' };
-            }
-            
-            // Check for duplicate TikTok
-            const duplicateTikTok = candidatesData.find(c => 
-                c.tiktok.toLowerCase() === candidateData.tiktok.toLowerCase()
-            );
-            
-            if (duplicateTikTok) {
-                return { valid: false, message: 'Já existe um candidato com este @ do TikTok.' };
-            }
-            
-            // Check for duplicate party + office + state
-            const duplicatePartyOfficeState = candidatesData.filter(c => 
-                c.partido === candidateData.partido &&
-                c.cargo === candidateData.cargo &&
-                c.estado === candidateData.estado
-            );
-            
-            if (duplicatePartyOfficeState.length >= 4) {
-                return { valid: false, message: 'Limite de 4 candidatos por partido, cargo e estado atingido.' };
-            }
-            
-            // Check for duplicate number
-            const duplicateNumber = candidatesData.find(c => 
-                c.numero === candidateData.numero &&
-                c.estado === candidateData.estado &&
-                c.cargo === candidateData.cargo
-            );
-            
-            if (duplicateNumber) {
-                return { valid: false, message: 'Este número de urna já está em uso para este cargo e estado.' };
-            }
-            
-            // Check state limits
-            const stateCandidates = candidatesData.filter(c => 
-                c.estado === candidateData.estado &&
-                c.cargo === candidateData.cargo
-            );
-            
-            let stateLimit = 0;
-            if (candidateData.cargo === 'Prefeito') stateLimit = 10;
-            else if (candidateData.cargo === 'Vereador') stateLimit = 20;
-            else if (candidateData.cargo === 'Presidente') stateLimit = 8;
-            else if (candidateData.cargo === 'Governador') stateLimit = 8;
-            else if (candidateData.cargo === 'Senador') stateLimit = 18;
-            else if (candidateData.cargo === 'Deputado Federal') stateLimit = 18;
-            else if (candidateData.cargo === 'Deputado Estadual') stateLimit = 18;
-            
-            if (stateCandidates.length >= stateLimit) {
-                return { valid: false, message: `Limite de ${stateLimit} candidatos para o cargo de ${candidateData.cargo} neste estado foi atingido.` };
-            }
-            
-            return { valid: true, message: 'Candidatura válida.' };
-        }
-
-        // ============================================
-        // ADMIN FUNCTIONS
-        // ============================================
-        function resetAdminLogin() {
-            currentAdminRole = "";
-            currentAdminState = "";
-            document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('stateSelector').style.display = 'none';
-            document.getElementById('adminPassword').value = "";
-            document.getElementById('adminLoginScreen').style.display = 'block';
-            document.getElementById('tseAdminContent').style.display = 'none';
-            document.getElementById('treAdminContent').style.display = 'none';
-            document.getElementById('logoutBtn').style.display = 'none';
-        }
-
-        async function loginAdmin() {
-            const password = document.getElementById('adminPassword').value;
-            
-            if (!currentAdminRole) {
-                showNotification('error', 'Seleção Obrigatória', 'Selecione um tipo de acesso (TSE Nacional ou TRE Estadual).');
-                return;
-            }
-            
-            if (currentAdminRole === 'tre' && !currentAdminState) {
-                showNotification('error', 'Estado Obrigatório', 'Selecione um estado para acesso ao TRE.');
-                return;
-            }
-            
-            let validPassword = false;
-            let adminName = "";
-            
-            // Verificar senha (em produção, isso seria feito no backend)
-            if (currentAdminRole === 'tse') {
-                validPassword = password === 'Brookasil1234';
-                adminName = 'TSE Nacional';
-            } else if (currentAdminRole === 'tre') {
-                const trePasswords = {
-                    'Brookhaven': 'tutuBH',
-                    'Novacore': 'williamNC',
-                    'Casteríber': 'henriqueCB',
-                    'Fortemega': 'lucasFM',
-                    'Florêmix': 'popoFX'
-                };
-                validPassword = password === trePasswords[currentAdminState];
-                adminName = `TRE ${currentAdminState}`;
-            }
-            
-            if (!validPassword) {
-                showNotification('error', 'Acesso Negado', 'Senha incorreta. Verifique suas credenciais.');
-                return;
-            }
-            
-            // Login successful
-            showNotification('success', 'Acesso Permitido', `Bem-vindo(a) ao sistema, ${adminName}!`);
-            
-            // Hide login screen
-            document.getElementById('adminLoginScreen').style.display = 'none';
-            
-            // Show appropriate admin content
-            if (currentAdminRole === 'tse') {
-                document.getElementById('tseAdminContent').style.display = 'block';
-                updateTseCandidatesTable();
-            } else if (currentAdminRole === 'tre') {
-                document.getElementById('treAdminContent').style.display = 'block';
-                document.getElementById('treStateName').textContent = currentAdminState;
-                document.getElementById('treAdminName').textContent = adminName;
-                document.getElementById('currentTreState').textContent = currentAdminState;
-                updateTreCandidatesTable();
-            }
-            
-            // Show logout button
-            document.getElementById('logoutBtn').style.display = 'flex';
-            
-            // Log the login
-            await logAdminAction('login', adminName, currentAdminState, 'Acesso ao sistema administrativo');
-        }
-
-        function logoutAdmin() {
-            resetAdminLogin();
-            showSection('mainNavigation');
-            showNotification('info', 'Sessão Encerrada', 'Você saiu do sistema administrativo.');
-        }
-
-        async function toggleElection() {
-            try {
-                const newStatus = !electionOpen;
-                await database.ref('/config/eleicaoAberta').set(newStatus);
-                
-                // Log the action
-                await logAdminAction('alteracao_status_eleicao', 'TSE Nacional', 'Todos', 
-                    `Eleição ${newStatus ? 'aberta' : 'fechada'}`);
-                
-                showNotification('success', 'Status Alterado', 
-                    `A eleição foi ${newStatus ? 'ABERTA' : 'FECHADA'} com sucesso.`);
+                    loader.hide();
+                    toast("Candidatura enviada para análise!", "success");
+                    document.getElementById('reg-form').reset();
+                    nav.goto('home');
                     
-            } catch (error) {
-                console.error('Error toggling election:', error);
-                showNotification('error', 'Erro no Sistema', 'Não foi possível alterar o status da eleição.');
-            }
-        }
-
-        async function switchElectionMode() {
-            try {
-                const newMode = electionMode === 'municipal' ? 'federal' : 'municipal';
-                await database.ref('/config/modoEleicao').set(newMode);
-                
-                // Log the action
-                await logAdminAction('alteracao_modo_eleicao', 'TSE Nacional', 'Todos', 
-                    `Modo alterado para: ${newMode}`);
-                
-                showNotification('success', 'Modo Alterado', 
-                    `O modo da eleição foi alterado para ${newMode.toUpperCase()}.`);
-                    
-            } catch (error) {
-                console.error('Error switching election mode:', error);
-                showNotification('error', 'Erro no Sistema', 'Não foi possível alterar o modo da eleição.');
-            }
-        }
-
-        function auditSystem() {
-            showNotification('info', 'Auditoria do Sistema', 'A auditoria do sistema está em andamento. Os resultados serão exibidos em breve.');
-            
-            // Simulate audit results
-            setTimeout(() => {
-                showNotification('success', 'Auditoria Concluída', 
-                    'Sistema verificado. Todas as candidaturas estão dentro dos limites estabelecidos. Nenhuma irregularidade encontrada.');
-            }, 2000);
-        }
-
-        async function updateCandidateStatus(candidateId, newStatus, state, office) {
-            try {
-                await database.ref(`/candidatos/${state}/${office}/${candidateId}/status`).set(newStatus);
-                
-                // Log the action
-                const candidate = candidatesData.find(c => c.id === candidateId);
-                await logAdminAction(
-                    `candidatura_${newStatus === 'aprovado' ? 'aprovada' : 'indeferida'}`,
-                    currentAdminRole === 'tse' ? 'TSE Nacional' : `TRE ${currentAdminState}`,
-                    state,
-                    `Candidato: ${candidate.nome} - ${candidate.cargo} - Partido: ${candidate.partido}`
-                );
-                
-                showNotification('success', 'Status Atualizado', 
-                    `Candidatura ${newStatus === 'aprovado' ? 'APROVADA' : 'INDEFERIDA'} com sucesso.`);
-                    
-            } catch (error) {
-                console.error('Error updating candidate status:', error);
-                showNotification('error', 'Erro no Sistema', 'Não foi possível atualizar o status da candidatura.');
-            }
-        }
-
-        function updateTseCandidatesTable() {
-            const tbody = document.getElementById('tseCandidatesBody');
-            tbody.innerHTML = "";
-            
-            if (candidatesData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: rgba(224, 247, 255, 0.5);">
-                            <i class="fas fa-users" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                            Nenhuma candidatura registrada no sistema.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            candidatesData.forEach(candidate => {
-                const row = document.createElement('tr');
-                
-                // Determine status badge
-                let statusBadge = '';
-                if (candidate.status === 'pendente') {
-                    statusBadge = '<span class="status-badge status-pending">PENDENTE</span>';
-                } else if (candidate.status === 'aprovado') {
-                    statusBadge = '<span class="status-badge status-approved">APROVADO</span>';
-                } else {
-                    statusBadge = '<span class="status-badge status-rejected">INDEFERIDO</span>';
+                } catch (e) {
+                    loader.hide();
+                    console.error(e);
+                    toast("Erro de conexão.", "error");
                 }
-                
-                // Determine action buttons
-                let actions = '';
-                if (candidate.status === 'pendente') {
-                    actions = `
-                        <button class="action-btn action-approve" onclick="approveCandidate('${candidate.id}', '${candidate.estado}', '${candidate.cargo}')">
-                            <i class="fas fa-check"></i> Aprovar
-                        </button>
-                        <button class="action-btn action-reject" onclick="rejectCandidate('${candidate.id}', '${candidate.estado}', '${candidate.cargo}')" style="margin-left: 8px;">
-                            <i class="fas fa-times"></i> Indeferir
-                        </button>
-                    `;
-                } else if (candidate.status === 'aprovado') {
-                    actions = `
-                        <button class="action-btn action-reject" onclick="rejectCandidate('${candidate.id}', '${candidate.estado}', '${candidate.cargo}')">
-                            <i class="fas fa-times"></i> Indeferir
-                        </button>
-                    `;
-                } else {
-                    actions = `
-                        <button class="action-btn action-approve" onclick="approveCandidate('${candidate.id}', '${candidate.estado}', '${candidate.cargo}')">
-                            <i class="fas fa-check"></i> Aprovar
-                        </button>
-                    `;
-                }
-                
-                row.innerHTML = `
-                    <td>${candidate.nome}</td>
-                    <td>${candidate.estado}</td>
-                    <td>${candidate.cargo}</td>
-                    <td>${candidate.partido} - ${candidate.ideologia}</td>
-                    <td>${candidate.numero}</td>
-                    <td>${statusBadge}</td>
-                    <td>${actions}</td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-
-        function updateTreCandidatesTable() {
-            const tbody = document.getElementById('treCandidatesBody');
-            tbody.innerHTML = "";
-            
-            // Filter candidates by current admin state
-            const stateCandidates = candidatesData.filter(c => c.estado === currentAdminState);
-            
-            if (stateCandidates.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: rgba(224, 247, 255, 0.5);">
-                            <i class="fas fa-users" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                            Nenhuma candidatura registrada neste estado.
-                        </td>
-                    </tr>
-                `;
-                
-                // Update counts
-                document.getElementById('trePendingCount').textContent = '0';
-                document.getElementById('treApprovedCount').textContent = '0';
-                document.getElementById('treRejectedCount').textContent = '0';
-                return;
             }
-            
-            // Update counts
-            const pendingCount = stateCandidates.filter(c => c.status === 'pendente').length;
-            const approvedCount = stateCandidates.filter(c => c.status === 'aprovado').length;
-            const rejectedCount = stateCandidates.filter(c => c.status === 'indeferido').length;
-            
-            document.getElementById('trePendingCount').textContent = pendingCount;
-            document.getElementById('treApprovedCount').textContent = approvedCount;
-            document.getElementById('treRejectedCount').textContent = rejectedCount;
-            
-            // Populate table
-            stateCandidates.forEach(candidate => {
-                const row = document.createElement('tr');
-                
-                // Determine status badge
-                let statusBadge = '';
-                if (candidate.status === 'pendente') {
-                    statusBadge = '<span class="status-badge status-pending">PENDENTE</span>';
-                } else if (candidate.status === 'aprovado') {
-                    statusBadge = '<span class="status-badge status-approved">APROVADO</span>';
-                } else {
-                    statusBadge = '<span class="status-badge status-rejected">INDEFERIDO</span>';
-                }
-                
-                // Determine action buttons
-                let actions = '';
-                if (candidate.status === 'pendente') {
-                    actions = `
-                        <button class="action-btn action-approve" onclick="approveCandidate('${candidate.id}', '${candidate.estado}', '${candidate.cargo}')">
-                            <i class="fas fa-check"></i> Aprovar
-                        </button>
-                        <button class="action-btn action-reject" onclick="rejectCandidate('${candidate.id}', '${candidate.estado}', '${candidate.cargo}')" style="margin-left: 8px;">
-                            <i class="fas fa-times"></i> Indeferir
-                        </button>
-                    `;
-                } else if (candidate.status === 'aprovado') {
-                    actions = `
-                        <button class="action-btn action-reject" onclick="rejectCandidate('${candidate.id}', '${candidate.estado}', '${candidate.cargo}')">
-                            <i class="fas fa-times"></i> Indeferir
-                        </button>
-                    `;
-                } else {
-                    actions = `
-                        <button class="action-btn action-approve" onclick="approveCandidate('${candidate.id}', '${candidate.estado}', '${candidate.cargo}')">
-                            <i class="fas fa-check"></i> Aprovar
-                        </button>
-                    `;
-                }
-                
-                row.innerHTML = `
-                    <td>${candidate.nome}</td>
-                    <td>${candidate.cidade}</td>
-                    <td>${candidate.cargo}</td>
-                    <td>${candidate.partido} - ${candidate.ideologia}</td>
-                    <td>${candidate.numero}</td>
-                    <td>${statusBadge}</td>
-                    <td>${actions}</td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-
-        // ============================================
-        // GLOBAL FUNCTIONS FOR BUTTON CLICKS
-        // ============================================
-        window.approveCandidate = function(candidateId, state, office) {
-            updateCandidateStatus(candidateId, 'aprovado', state, office);
         };
 
-        window.rejectCandidate = function(candidateId, state, office) {
-            updateCandidateStatus(candidateId, 'indeferido', state, office);
-        };
-
-        function filterCandidatesByState() {
-            const state = document.getElementById('filterState').value;
-            updateTseCandidatesTable();
-        }
-
-        function filterCandidatesByOfficeTre() {
-            updateTreCandidatesTable();
-        }
-
-        // ============================================
-        // LOGGING FUNCTIONS
-        // ============================================
-        async function logAdminAction(action, admin, state, details) {
-            try {
-                const logEntry = {
-                    acao: action,
-                    admin: admin,
-                    estado: state,
-                    detalhes: details,
-                    timestamp: new Date().toISOString()
-                };
+        // ========================================================
+        // 5. CONSULTA PÚBLICA
+        // ========================================================
+        window.consult = {
+            load: () => {
+                const container = document.getElementById('candidates-container');
+                container.innerHTML = '<div class="spinner" style="margin: 50px auto;"></div>';
                 
-                await database.ref('/adminLogs').push(logEntry);
-            } catch (error) {
-                console.error('Error logging admin action:', error);
+                const filterState = document.getElementById('filter-state').value;
+                
+                // Buscar tudo e filtrar no cliente (para simplicidade do index.html único)
+                const dbRef = ref(db, 'candidatos');
+                onValue(dbRef, (snapshot) => {
+                    container.innerHTML = '';
+                    if (!snapshot.exists()) {
+                        container.innerHTML = '<p style="text-align:center; opacity:0.5;">Nenhum candidato encontrado.</p>';
+                        return;
+                    }
+
+                    let candidates = [];
+                    snapshot.forEach(estSnap => {
+                        const estadoKey = estSnap.key;
+                        // Filtro de estado
+                        if (filterState !== 'all' && estadoKey !== filterState) return;
+                        
+                        estSnap.forEach(cSnap => {
+                            const c = cSnap.val();
+                            if(c.status === 'aprovado') candidates.push(c);
+                        });
+                    });
+
+                    if (candidates.length === 0) {
+                        container.innerHTML = '<p style="text-align:center; opacity:0.5;">Nenhum registro aprovado nesta região.</p>';
+                        return;
+                    }
+
+                    candidates.sort((a,b) => a.cargo.localeCompare(b.cargo));
+
+                    candidates.forEach(c => {
+                        const html = `
+                            <div class="candidate-card glass-panel">
+                                <span class="tag-ideology ideology-${c.ideologia}">${c.ideologia}</span>
+                                <h3 style="margin-top:15px; font-size: 1.1rem;">${c.nome}</h3>
+                                <p style="font-size:0.8rem; opacity:0.7;">${c.cargo}</p>
+                                <div class="card-number">${c.numero}</div>
+                                <div style="font-size:0.8rem;">
+                                    <strong>${c.partido}</strong> (${c.sigla})<br>
+                                    <i class="fab fa-tiktok"></i> ${c.tiktok}<br>
+                                    <i class="fas fa-map-marker-alt"></i> ${c.estado === 'Municipal' ? c.cidade : c.estado}
+                                </div>
+                            </div>
+                        `;
+                        container.innerHTML += html;
+                    });
+                }, { onlyOnce: true });
             }
-        }
-
-        // ============================================
-        // NOTIFICATION SYSTEM
-        // ============================================
-        function showNotification(type, title, message) {
-            const container = document.getElementById('notificationContainer');
-            
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            
-            // Set icon based on type
-            let icon = 'info-circle';
-            if (type === 'success') icon = 'check-circle';
-            if (type === 'error') icon = 'exclamation-circle';
-            if (type === 'warning') icon = 'exclamation-triangle';
-            
-            notification.innerHTML = `
-                <div class="notification-icon">
-                    <i class="fas fa-${icon}"></i>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title">${title}</div>
-                    <div class="notification-message">${message}</div>
-                </div>
-                <div class="notification close" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </div>
-            `;
-            
-            // Add to container
-            container.appendChild(notification);
-            
-            // Show with animation
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.classList.remove('show');
-                    setTimeout(() => {
-                        if (notification.parentElement) {
-                            notification.remove();
-                        }
-                    }, 500);
-                }
-            }, 5000);
-        }
-
-        // ============================================
-        // HELPER FUNCTIONS
-        // ============================================
-        window.closeNotification = function(button) {
-            const notification = button.closest('.notification');
-            notification.classList.remove('show');
-            setTimeout(() => {
-                notification.remove();
-            }, 500);
         };
+
+        // ========================================================
+        // 6. ADMINISTRAÇÃO
+        // ========================================================
+        window.admin = {
+            login: () => {
+                const pass = document.getElementById('admin-pass').value;
+                const auth = AUTH_HASHES[pass];
+                
+                if (auth) {
+                    globalState.currentUser = auth;
+                    toast(`Bem-vindo, ${auth.name}`, "success");
+                    document.getElementById('admin-pass').value = '';
+                    nav.goto('admin-dash');
+                    admin.initDash();
+                } else {
+                    toast("Acesso Negado. Credenciais inválidas.", "error");
+                }
+            },
+
+            logout: () => {
+                globalState.currentUser = null;
+                nav.goto('home');
+            },
+
+            initDash: () => {
+                const user = globalState.currentUser;
+                document.getElementById('admin-welcome').innerText = `Oficial: ${user.name}`;
+                
+                // Mostrar controles TSE se for TSE
+                if (user.role === 'TSE') {
+                    document.getElementById('tse-controls').style.display = 'block';
+                    // Load current config values to inputs
+                    document.getElementById('admin-mode-select').value = globalState.mode;
+                    document.getElementById('admin-status-select').value = globalState.isOpen ? 'aberta' : 'fechada';
+                } else {
+                    document.getElementById('tse-controls').style.display = 'none';
+                }
+
+                // Carregar Tabela
+                const tableBody = document.querySelector('#admin-table tbody');
+                const dbRef = ref(db, 'candidatos');
+                
+                onValue(dbRef, (snapshot) => {
+                    tableBody.innerHTML = '';
+                    snapshot.forEach(estSnap => {
+                        // Se for TRE, filtrar apenas seu estado
+                        if (user.role === 'TRE' && estSnap.key !== user.state) return;
+
+                        estSnap.forEach(cSnap => {
+                            const c = cSnap.val();
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${c.nome}</td>
+                                <td>${c.cargo}</td>
+                                <td>${c.sigla}</td>
+                                <td>${c.estado === 'Municipal' ? c.cidade : c.estado}</td>
+                                <td style="font-family: var(--font-display); color: var(--accent-sapphire);">${c.numero}</td>
+                                <td><span class="status-badge ${c.status}">${c.status}</span></td>
+                                <td>
+                                    <div class="admin-controls">
+                                        <button class="btn-mini btn-approve" onclick="admin.setStatus('${estSnap.key}', '${cSnap.key}', 'aprovado')"><i class="fas fa-check"></i></button>
+                                        <button class="btn-mini btn-reject" onclick="admin.setStatus('${estSnap.key}', '${cSnap.key}', 'indeferido')"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                    });
+                });
+            },
+
+            setStatus: (estadoKey, candKey, status) => {
+                update(ref(db, `candidatos/${estadoKey}/${candKey}`), {
+                    status: status
+                }).then(() => toast(`Candidatura ${status}!`, "success"))
+                  .catch(() => toast("Erro ao atualizar.", "error"));
+            },
+
+            updateConfig: () => {
+                if (globalState.currentUser.role !== 'TSE') return;
+                
+                const newMode = document.getElementById('admin-mode-select').value;
+                const newStatus = document.getElementById('admin-status-select').value === 'aberta';
+
+                update(ref(db, 'config'), {
+                    modoEleicao: newMode,
+                    eleicaoAberta: newStatus
+                }).then(() => toast("Sistema Eleitoral Atualizado!", "success"));
+            }
+        };
+
+        // Boot
+        logic.init();
+
+        // Export logic to window for HTML onclicks
+        window.logic = logic;
+        window.admin = admin;
+        window.consult = consult;
+
     </script>
 </body>
-                                </html>
+</html>
