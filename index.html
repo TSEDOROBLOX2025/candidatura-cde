@@ -1,687 +1,430 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSE RP OFICIAL | SISTEMA DE ESTADO</title>
+    <title>TSE RP BROOKASIL | SISTEMA INTEGRADO</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* * ============================================================
-         * 🎨 CORE DESIGN & VARIABLES
-         * ============================================================
-         */
+        /* =========================================
+           CSS SUPREMO (AAA) - DEFINIÇÕES GLOBAIS
+           ========================================= */
         :root {
-            /* Palette - Dark Cyber State */
-            --bg-obsidian: #05070D;
-            --bg-midnight: #0A1024;
-            --accent-sapphire: #00F0FF;
-            --accent-neon-green: #0AFF60;
-            --accent-gold: #D4AF37;
-            --accent-error: #FF2A2A;
+            /* Paleta Core */
+            --bg-deep: #020204;
+            --bg-panel: rgba(10, 10, 14, 0.7);
+            --gold-tse: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --blue-hud: #00F3FF;
+            --blue-glow: rgba(0, 243, 255, 0.3);
+            --red-alert: #FF3333;
+            --green-success: #00FF9D;
+            --text-main: #F0F0F0;
+            --text-muted: #8899A6;
+
+            /* Efeitos */
+            --glass: blur(12px) saturate(180%);
+            --border-hud: 1px solid rgba(255, 255, 255, 0.08);
+            --border-gold: 1px solid var(--gold-tse);
+            --shadow-float: 0 10px 30px -10px rgba(0,0,0,0.8);
             
-            /* Glassmorphism */
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-blur: blur(20px);
-            --glass-glow: 0 0 20px rgba(0, 240, 255, 0.1);
-
-            /* Typography */
-            --font-display: 'Orbitron', sans-serif;
-            --font-tech: 'Space Grotesk', sans-serif;
+            /* Fontes */
+            --font-hud: 'Orbitron', sans-serif;
             --font-body: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            outline: none;
-            user-select: none; /* Interface app-like */
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
 
         body {
-            background-color: var(--bg-obsidian);
-            color: #ffffff;
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a1a2e 0%, transparent 60%),
+                linear-gradient(0deg, rgba(0,0,0,0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.2) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: var(--text-main);
             font-family: var(--font-body);
             height: 100vh;
-            width: 100vw;
-            overflow: hidden; /* SPA Fixed */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
-        }
-
-        /* Fundo Animado Complexo */
-        .ambient-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background: radial-gradient(circle at 50% 50%, #0d1630 0%, #05070D 80%);
             overflow: hidden;
         }
 
-        .ambient-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: floatOrb 20s infinite alternate ease-in-out;
-        }
-        .orb-1 { width: 600px; height: 600px; background: #001f3f; top: -20%; left: -10%; }
-        .orb-2 { width: 500px; height: 500px; background: #0b2e13; bottom: -20%; right: -10%; animation-delay: -5s; }
-        
-        .noise-overlay {
+        /* Scanline Effect */
+        body::after {
+            content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj48ZmlsdGVyIGlkPSJnoiPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2cpIiBvcGFjaXR5PSIwLjAzIi8+PC9zdmc+');
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 2px, 3px 100%;
             pointer-events: none;
-            z-index: -1;
-            opacity: 0.5;
+            z-index: 9999;
         }
 
-        /* * ============================================================
-         * 🧊 GLASS SYSTEM & LAYOUT
-         * ============================================================
-         */
-        #app-container {
-            width: 95vw;
-            height: 90vh;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 20px;
-            position: relative;
-        }
+        /* Scrollbar Custom */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: var(--gold-tse); border-radius: 3px; }
 
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+        /* =========================================
+           COMPONENTES & UTILITÁRIOS
+           ========================================= */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .grid { display: grid; }
+        .gap-4 { gap: 1rem; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
 
-        /* Cursor Glow Effect */
-        .glass-panel::before {
-            content: '';
-            position: absolute;
-            top: var(--y, -100px);
-            left: var(--x, -100px);
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            transition: opacity 0.5s;
-        }
+        h1, h2, h3 { font-family: var(--font-hud); text-transform: uppercase; letter-spacing: 2px; }
+        
+        .text-gold { color: var(--gold-tse); text-shadow: 0 0 10px var(--gold-glow); }
+        .text-blue { color: var(--blue-hud); text-shadow: 0 0 10px var(--blue-glow); }
+        .text-red { color: var(--red-alert); }
 
-        /* Sidebar */
-        aside {
-            display: flex;
-            flex-direction: column;
-            padding: 30px;
-            justify-content: space-between;
-            z-index: 10;
-        }
-
-        .brand {
-            font-family: var(--font-display);
-            font-weight: 900;
-            font-size: 1.8rem;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, #fff, var(--accent-sapphire));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-        }
-
-        nav button {
-            background: transparent;
-            border: none;
-            width: 100%;
-            text-align: left;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            color: rgba(255,255,255,0.6);
-            font-family: var(--font-tech);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-left: 2px solid transparent;
+        /* Botões HUD */
+        .btn {
+            background: rgba(255,255,255,0.03);
+            border: var(--border-hud);
+            color: var(--text-main);
+            padding: 0.8rem 1.5rem;
+            font-family: var(--font-hud);
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+        .btn:hover { background: rgba(255,255,255,0.1); border-color: var(--text-main); }
+        .btn-gold { border-color: var(--gold-tse); color: var(--gold-tse); }
+        .btn-gold:hover { background: var(--gold-tse); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
+        
+        /* Inputs HUD */
+        .input-group { position: relative; margin-bottom: 1.2rem; }
+        .input-hud {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #333;
+            border-left: 3px solid var(--gold-tse);
+            padding: 1rem;
+            color: var(--text-main);
+            font-family: var(--font-code);
+            transition: 0.3s;
+        }
+        .input-hud:focus { border-color: var(--blue-hud); box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
+        label { display: block; margin-bottom: 0.4rem; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-hud); }
+
+        /* Cards Glass */
+        .glass-panel {
+            background: var(--bg-panel);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+            border: var(--border-hud);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            box-shadow: var(--shadow-float);
         }
 
-        nav button:hover, nav button.active {
-            color: var(--accent-sapphire);
-            background: rgba(0, 240, 255, 0.05);
-            border-left: 2px solid var(--accent-sapphire);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        /* =========================================
+           LAYOUT PRINCIPAL
+           ========================================= */
+        #app { display: flex; height: 100vh; width: 100vw; }
+
+        /* LOGIN SCREEN */
+        #login-screen {
+            position: fixed; inset: 0; z-index: 50;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(2, 2, 4, 0.95);
+            backdrop-filter: blur(20px);
+        }
+        .login-box {
+            width: 400px; padding: 3rem;
+            border: 1px solid var(--gold-tse);
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.1);
+            text-align: center;
         }
 
-        /* Status Widget */
-        .status-widget {
-            padding: 15px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            font-size: 0.8rem;
+        /* SIDEBAR */
+        #sidebar {
+            width: 260px;
+            background: rgba(5, 5, 8, 0.9);
+            border-right: var(--border-hud);
+            display: flex; flex-direction: column;
+            padding: 2rem 1rem;
+            z-index: 10;
         }
-        .status-dot {
-            height: 8px; width: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            background: var(--accent-neon-green);
-            box-shadow: 0 0 8px var(--accent-neon-green);
+        .nav-item {
+            padding: 1rem; margin-bottom: 0.5rem;
+            border-left: 2px solid transparent;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-family: var(--font-hud);
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .nav-item.active, .nav-item:hover {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent);
+            border-left-color: var(--gold-tse);
+            color: var(--text-main);
         }
 
-        /* Main Content Area */
-        main {
-            padding: 40px;
+        /* MAIN CONTENT */
+        #main-content {
+            flex: 1; padding: 2rem;
             overflow-y: auto;
             position: relative;
         }
-
-        /* Scrollbar custom */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-
-        /* * ============================================================
-         * 📑 VIEWS & COMPONENTS
-         * ============================================================
-         */
-        .view-section {
-            display: none;
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .view-section.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
-            to { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
-
-        /* Typography Styles */
-        h1 {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
-        }
-        h2 {
-            font-family: var(--font-tech);
-            font-size: 1.2rem;
-            color: var(--accent-sapphire);
-            margin-bottom: 30px;
-            text-transform: uppercase;
-        }
-
-        /* Cards Grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .candidate-card {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 12px;
-            position: relative;
-            transition: 0.3s;
-        }
-        .candidate-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-sapphire);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .tag-ideology {
-            position: absolute;
-            top: 10px; right: 10px;
-            font-size: 0.7rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        .ideology-left { background: rgba(255, 42, 42, 0.2); color: #ff6b6b; border: 1px solid rgba(255, 42, 42, 0.4); }
-        .ideology-center { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); }
-        .ideology-right { background: rgba(0, 119, 255, 0.2); color: #4dabff; border: 1px solid rgba(0, 119, 255, 0.4); }
-
-        .card-number {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: var(--accent-sapphire);
-            margin: 15px 0;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-        }
-
-        /* FORM STYLES */
-        .form-group { margin-bottom: 25px; position: relative; }
-        label {
-            display: block;
-            font-family: var(--font-tech);
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-            color: rgba(255,255,255,0.7);
-            text-transform: uppercase;
-        }
-        input, select {
-            width: 100%;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: var(--font-body);
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-        input:focus, select:focus {
-            border-color: var(--accent-sapphire);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
-        }
         
-        .btn-main {
-            background: linear-gradient(135deg, var(--bg-midnight), #1a2744);
-            border: 1px solid var(--accent-sapphire);
-            color: var(--accent-sapphire);
-            padding: 15px 40px;
-            font-family: var(--font-display);
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: 0.4s;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 2px;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .btn-main:hover {
-            background: var(--accent-sapphire);
-            color: #000;
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+        .header-hud {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 1rem;
         }
 
-        /* Steps */
-        .step-indicator {
-            display: flex;
-            margin-bottom: 30px;
-            gap: 10px;
+        /* DASHBOARD GRID */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem; margin-bottom: 2rem;
         }
-        .step {
-            flex: 1;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px;
-            transition: 0.3s;
+        .stat-card {
+            padding: 1.5rem; border-radius: 4px; position: relative; overflow: hidden;
         }
-        .step.active { background: var(--accent-sapphire); box-shadow: 0 0 10px var(--accent-sapphire); }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 30px; height: 30px;
+            background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.1) 50%);
+        }
+        .stat-number { font-size: 2.5rem; font-family: var(--font-hud); font-weight: 700; margin-top: 0.5rem; }
 
-        /* Loader */
-        .loader-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5,7,13,0.9);
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        .loader-overlay.active { opacity: 1; pointer-events: all; }
-        .spinner {
-            width: 50px; height: 50px;
-            border: 3px solid rgba(0, 240, 255, 0.3);
-            border-top: 3px solid var(--accent-sapphire);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        /* TABLE */
+        .table-container { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; padding: 1rem; color: var(--gold-tse); font-family: var(--font-hud); border-bottom: 1px solid #333; }
+        td { padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: var(--font-code); font-size: 0.9rem; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
 
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes floatOrb { 0% { transform: translate(0,0); } 100% { transform: translate(50px, 50px); } }
-
-        /* Admin Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { text-align: left; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        th { color: var(--accent-sapphire); font-family: var(--font-tech); text-transform: uppercase; font-size: 0.8rem; }
-        .status-badge { padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; }
-        .status-badge.pendente { background: rgba(255,255,0,0.2); color: #ffeb3b; }
-        .status-badge.aprovado { background: rgba(10, 255, 96, 0.2); color: #0aff60; }
-        .status-badge.indeferido { background: rgba(255, 42, 42, 0.2); color: #ff2a2a; }
-
-        .admin-controls { display: flex; gap: 10px; }
-        .btn-mini { padding: 5px 10px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .btn-approve { background: var(--accent-neon-green); color: #000; }
-        .btn-reject { background: var(--accent-error); color: #fff; }
-
-        /* Welcome Screen specifics */
-        .hero-title {
-            font-size: 4rem;
-            line-height: 1;
-            background: linear-gradient(180deg, #fff, #8892b0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .status-badge {
+            padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;
         }
-        .hero-subtitle {
-            font-size: 1.5rem;
-            color: var(--accent-sapphire);
-            margin-top: 10px;
-            font-family: var(--font-tech);
-        }
+        .bg-pending { background: rgba(255, 165, 0, 0.2); color: orange; border: 1px solid orange; }
+        .bg-approved { background: rgba(0, 255, 157, 0.2); color: var(--green-success); border: 1px solid var(--green-success); }
+        .bg-rejected { background: rgba(255, 51, 51, 0.2); color: var(--red-alert); border: 1px solid var(--red-alert); }
 
-        /* Notificação */
-        #toast-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 200;
-        }
-        .toast {
-            background: rgba(10, 16, 36, 0.95);
-            border-left: 4px solid var(--accent-sapphire);
-            color: #fff;
-            padding: 15px 25px;
-            margin-top: 10px;
-            border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            animation: slideIn 0.3s ease-out;
-            min-width: 300px;
-        }
-        .toast.error { border-color: var(--accent-error); }
-        .toast.success { border-color: var(--accent-neon-green); }
-        
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* LOGS */
+        .log-entry { font-family: var(--font-code); font-size: 0.8rem; padding: 0.5rem; border-left: 1px solid #333; margin-bottom: 0.5rem; }
+        .log-time { color: var(--text-muted); margin-right: 10px; }
 
+        /* LOADING */
+        #loader { 
+            position: fixed; bottom: 20px; right: 20px; 
+            padding: 10px 20px; background: var(--bg-deep); border: 1px solid var(--blue-hud);
+            color: var(--blue-hud); font-family: var(--font-hud); display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div class="ambient-bg">
-        <div class="ambient-orb orb-1"></div>
-        <div class="ambient-orb orb-2"></div>
-    </div>
-    <div class="noise-overlay"></div>
-    <div class="loader-overlay" id="global-loader"><div class="spinner"></div></div>
+    <div id="loader">PROCESSANDO DADOS...</div>
 
-    <div id="app-container">
-        
-        <aside class="glass-panel">
-            <div>
-                <div class="brand">
-                    <i class="fas fa-landmark"></i> TSE RP
-                </div>
-                
-                <nav>
-                    <button onclick="nav.goto('home')" class="active" id="nav-home">
-                        <i class="fas fa-home"></i> Início
-                    </button>
-                    <button onclick="nav.goto('consult')" id="nav-consult">
-                        <i class="fas fa-search"></i> Consultar
-                    </button>
-                    <button onclick="nav.goto('register')" id="nav-register">
-                        <i class="fas fa-id-card"></i> Candidatura
-                    </button>
-                    <button onclick="nav.goto('admin-login')" id="nav-admin">
-                        <i class="fas fa-user-shield"></i> Admin
-                    </button>
-                </nav>
-            </div>
-
-            <div class="status-widget glass-panel" style="border:none; background: rgba(0,0,0,0.2);">
-                <div><span class="status-dot"></span> SISTEMA ONLINE</div>
-                <div style="margin-top:5px; opacity: 0.7; font-size: 0.7rem;" id="mode-display">
-                    MODO: CARREGANDO...
-                </div>
-            </div>
-        </aside>
-
-        <main class="glass-panel" id="main-viewport">
+    <div id="login-screen">
+        <div class="glass-panel login-box">
+            <h1 class="text-gold" style="margin-bottom: 0.5rem;">TSE RP</h1>
+            <h3 class="text-muted" style="margin-bottom: 2rem; font-size: 0.9rem;">SISTEMA DE AUDITORIA BROOKASIL</h3>
             
-            <section id="view-home" class="view-section active">
-                <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;">
-                    <h1 class="hero-title">ELEITORAL<br>CITY 2026</h1>
-                    <div class="hero-subtitle">SISTEMA ELEITORAL ESTATAL</div>
-                    <p style="margin-top: 20px; max-width: 500px; line-height: 1.6; opacity: 0.8;">
-                        Bem-vindo ao portal oficial. Este sistema utiliza criptografia estatal de ponta para garantir a integridade do processo democrático de Eleitoral City e da Federação Brookasil.
-                    </p>
-                    
-                    <div style="margin-top: 40px; display: flex; gap: 20px;">
-                        <button class="btn-main" onclick="nav.goto('register')" style="width: auto;">
-                            <i class="fas fa-pen-nib"></i> Registrar Candidatura
-                        </button>
-                        <button class="btn-main" onclick="nav.goto('consult')" style="width: auto; background: transparent; border-color: rgba(255,255,255,0.2); color: #fff;">
-                            <i class="fas fa-list"></i> Ver Candidatos
-                        </button>
+            <div class="input-group">
+                <input type="text" id="login-user" class="input-hud" placeholder="IDENTIFICAÇÃO">
+            </div>
+            <div class="input-group">
+                <input type="password" id="login-pass" class="input-hud" placeholder="CHAVE DE ACESSO">
+            </div>
+            <button onclick="auth.login()" class="btn btn-gold w-full">INICIAR SESSÃO</button>
+            <p id="login-msg" class="text-red" style="margin-top: 1rem; font-family: var(--font-code); font-size: 0.8rem;"></p>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <nav id="sidebar">
+            <div style="margin-bottom: 3rem; padding-left: 1rem;">
+                <h2 class="text-gold">TSE</h2>
+                <div class="text-muted" style="font-size: 0.7rem;" id="user-display">LOGIN: ???</div>
+            </div>
+            
+            <div class="nav-item active" onclick="ui.navigate('dashboard')">DASHBOARD</div>
+            <div class="nav-item" onclick="ui.navigate('cadastro')">NOVO CANDIDATO</div>
+            <div class="nav-item" onclick="ui.navigate('lista')">CANDIDATURAS</div>
+            <div class="nav-item" onclick="ui.navigate('recusados')">RECUSADOS</div>
+            <div class="nav-item" id="nav-logs" onclick="ui.navigate('logs')">LOGS DO SISTEMA</div>
+            <div class="nav-item" onclick="location.reload()" style="margin-top: auto; color: var(--red-alert);">LOGOUT</div>
+        </nav>
+
+        <main id="main-content">
+            
+            <div id="view-dashboard" class="view-section">
+                <div class="header-hud">
+                    <h2 class="text-blue">PAINEL DE CONTROLE // <span class="text-gold" id="dash-region">NACIONAL</span></h2>
+                    <div class="text-code" id="clock">00:00:00</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="glass-panel stat-card">
+                        <label>TOTAL DE REGISTROS</label>
+                        <div class="stat-number text-blue" id="stat-total">0</div>
+                    </div>
+                    <div class="glass-panel stat-card">
+                        <label>HOMOLOGADOS</label>
+                        <div class="stat-number" style="color: var(--green-success)" id="stat-aprovados">0</div>
+                    </div>
+                    <div class="glass-panel stat-card">
+                        <label>EM ANÁLISE</label>
+                        <div class="stat-number" style="color: orange" id="stat-analise">0</div>
+                    </div>
+                    <div class="glass-panel stat-card">
+                        <label>INDEFERIDOS</label>
+                        <div class="stat-number text-red" id="stat-recusados">0</div>
                     </div>
                 </div>
-            </section>
 
-            <section id="view-register" class="view-section">
-                <h1>REGISTRO DE CANDIDATURA</h1>
-                <h2 id="reg-subtitle">Iniciando protocolo seguro...</h2>
-
-                <div class="step-indicator">
-                    <div class="step active" id="step-1-dot"></div>
-                    <div class="step" id="step-2-dot"></div>
-                    <div class="step" id="step-3-dot"></div>
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="glass-panel" style="padding: 1rem;">
+                        <h3 style="margin-bottom: 1rem; font-size: 0.9rem;">IDEOLOGIA PARTIDÁRIA</h3>
+                        <canvas id="chartIdeologia"></canvas>
+                    </div>
+                    <div class="glass-panel" style="padding: 1rem;">
+                        <h3 style="margin-bottom: 1rem; font-size: 0.9rem;">DISTRIBUIÇÃO POR ESTADO</h3>
+                        <canvas id="chartEstado"></canvas>
+                    </div>
                 </div>
+            </div>
 
-                <form id="reg-form" onsubmit="event.preventDefault();">
-                    
-                    <div id="step-1">
-                        <div class="form-group">
-                            <label>Nome Completo (RG)</label>
-                            <input type="text" id="reg-nome" required placeholder="Ex: João da Silva">
-                        </div>
-                        <div class="form-group">
-                            <label>Usuário TikTok (@)</label>
-                            <input type="text" id="reg-tiktok" required placeholder="@usuario">
-                        </div>
-                        <div class="form-group">
-                            <label>Partido / Ideologia</label>
-                            <select id="reg-partido" onchange="logic.updatePartyInfo()" required>
-                                <option value="">Selecione o Partido...</option>
-                                </select>
-                        </div>
-                        <div id="party-info" style="margin-bottom: 20px; font-size: 0.9rem; color: var(--accent-sapphire);"></div>
-                        
-                        <button class="btn-main" onclick="logic.nextStep(1)">PRÓXIMO <i class="fas fa-chevron-right"></i></button>
-                    </div>
-
-                    <div id="step-2" style="display:none;">
-                        <div class="form-group">
-                            <label>Cargo Pretendido</label>
-                            <select id="reg-cargo" onchange="logic.updateLocationFields()" required>
-                                </select>
-                        </div>
-
-                        <div class="form-group" id="group-estado" style="display:none;">
-                            <label>Estado</label>
-                            <select id="reg-estado" onchange="logic.updateCityField()">
-                                <option value="">Selecione o Estado...</option>
-                                <option value="Brookhaven">Brookhaven</option>
-                                <option value="Novacore">Novacore</option>
-                                <option value="Casteríber">Casteríber</option>
-                                <option value="Fortemega">Fortemega</option>
-                                <option value="Florêmix">Florêmix</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="group-cidade" style="display:none;">
-                            <label>Cidade</label>
-                            <select id="reg-cidade">
-                                </select>
-                        </div>
-
-                        <button class="btn-main" onclick="logic.nextStep(2)">PRÓXIMO <i class="fas fa-chevron-right"></i></button>
-                        <button class="btn-main" onclick="logic.prevStep(2)" style="background: transparent; border: none; color: #fff; margin-top: 10px;">Voltar</button>
-                    </div>
-
-                    <div id="step-3" style="display:none;">
-                        <div class="glass-panel" style="padding: 20px; background: rgba(0,0,0,0.3); margin-bottom: 20px;">
-                            <p id="review-data" style="line-height: 1.8; font-size: 0.9rem;"></p>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Número da Urna</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" id="reg-num-prefix" readonly style="width: 80px; text-align: center; color: var(--accent-sapphire); font-weight: bold;" title="Prefixo do Partido">
-                                <input type="number" id="reg-num-user" placeholder="Digitos Finais" required style="letter-spacing: 5px; font-size: 1.2rem;">
-                            </div>
-                            <small style="color: rgba(255,255,255,0.5); display: block; margin-top: 5px;" id="reg-num-hint">Insira os dígitos restantes.</small>
-                        </div>
-
-                        <button class="btn-main" onclick="logic.submitCandidacy()">CONFIRMAR E ENVIAR <i class="fas fa-check"></i></button>
-                        <button class="btn-main" onclick="logic.prevStep(3)" style="background: transparent; border: none; color: #fff; margin-top: 10px;">Voltar</button>
-                    </div>
-
-                </form>
-            </section>
-
-            <section id="view-consult" class="view-section">
-                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <h1>CANDIDATOS</h1>
-                    <select id="filter-state" onchange="consult.load()" style="width: 200px; padding: 10px;">
-                        <option value="all">Todos os Estados</option>
-                        <option value="Brookhaven">Brookhaven</option>
-                        <option value="Novacore">Novacore</option>
-                        <option value="Casteríber">Casteríber</option>
-                        <option value="Fortemega">Fortemega</option>
-                        <option value="Florêmix">Florêmix</option>
-                    </select>
-                </div>
+            <div id="view-cadastro" class="view-section hidden">
+                <div class="header-hud"><h2 class="text-gold">REGISTRO DE CANDIDATURA</h2></div>
                 
-                <div id="candidates-container" class="cards-grid">
-                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
-                        Carregando base de dados...
-                    </div>
-                </div>
-            </section>
-
-            <section id="view-admin-login" class="view-section">
-                <div style="max-width: 400px; margin: 0 auto; text-align: center; padding-top: 50px;">
-                    <i class="fas fa-shield-alt" style="font-size: 4rem; color: var(--accent-sapphire); margin-bottom: 20px;"></i>
-                    <h1>ACESSO RESTRITO</h1>
-                    <p style="margin-bottom: 30px;">Área exclusiva para oficiais do TSE e TREs.</p>
-                    
-                    <form onsubmit="event.preventDefault(); admin.login();">
-                        <div class="form-group">
-                            <label>Identificação de Acesso (Senha)</label>
-                            <input type="password" id="admin-pass" required style="text-align: center; letter-spacing: 3px;">
+                <div class="glass-panel" style="padding: 2rem; max-width: 800px;">
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="input-group">
+                            <label>NOME COMPLETO</label>
+                            <input type="text" id="cand-nome" class="input-hud">
                         </div>
-                        <button class="btn-main">AUTENTICAR</button>
-                    </form>
-                </div>
-            </section>
-
-            <section id="view-admin-dash" class="view-section">
-                <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px;">
-                    <div>
-                        <h1>PAINEL DE CONTROLE</h1>
-                        <h2 id="admin-welcome" style="margin:0;">Bem-vindo, Oficial.</h2>
+                        <div class="input-group">
+                            <label>TIKTOK (@USUARIO)</label>
+                            <input type="text" id="cand-tiktok" class="input-hud" placeholder="@">
+                        </div>
                     </div>
-                    <button onclick="admin.logout()" class="btn-mini" style="background: rgba(255,255,255,0.1); color: #fff;">SAIR</button>
-                </div>
 
-                <div id="tse-controls" class="glass-panel" style="padding: 20px; margin-bottom: 30px; border-color: var(--accent-gold); display: none;">
-                    <h3 style="color: var(--accent-gold); margin-bottom: 15px;"><i class="fas fa-crown"></i> COMANDO NACIONAL (TSE)</h3>
-                    <div style="display: flex; gap: 20px; align-items: center;">
-                        <div class="form-group" style="margin-bottom: 0; flex: 1;">
-                            <label>Modo da Eleição</label>
-                            <select id="admin-mode-select">
-                                <option value="municipal">MUNICIPAL</option>
-                                <option value="federal">FEDERAL</option>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="input-group">
+                            <label>ESTADO</label>
+                            <select id="cand-estado" class="input-hud">
+                                </select>
+                        </div>
+                        <div class="input-group">
+                            <label>CIDADE/LOCALIDADE</label>
+                            <select id="cand-cidade" class="input-hud">
+                                <option value="Capital">Capital (Estadual)</option>
+                                <option value="Eleitoral City">Eleitoral City</option>
+                                <option value="Liberty City">Liberty City</option>
+                                <option value="Nexaville">Nexaville</option>
+                                <option value="Castelo Verde">Castelo Verde</option>
+                                <option value="Marinha City">Marinha City</option>
+                                <option value="Florápolis">Florápolis</option>
                             </select>
                         </div>
-                        <div class="form-group" style="margin-bottom: 0; flex: 1;">
-                            <label>Status da Urna</label>
-                            <select id="admin-status-select">
-                                <option value="aberta">ABERTA</option>
-                                <option value="fechada">FECHADA</option>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="input-group">
+                            <label>PARTIDO</label>
+                            <select id="cand-partido" class="input-hud" onchange="formLogic.updateNumberPrefix()">
+                                </select>
+                        </div>
+                        <div class="input-group">
+                            <label>CARGO</label>
+                            <select id="cand-cargo" class="input-hud" onchange="formLogic.updateNumberPrefix()">
+                                <option value="Governador">Governador</option>
+                                <option value="Prefeito">Prefeito</option>
+                                <option value="Deputado">Deputado</option>
+                                <option value="Vereador">Vereador</option>
                             </select>
                         </div>
-                        <button class="btn-main" onclick="admin.updateConfig()" style="width: auto; margin-top: 22px;">ATUALIZAR SISTEMA</button>
+                    </div>
+
+                    <div class="input-group">
+                        <label>NÚMERO DA URNA (AUTO-PREFIXO)</label>
+                        <div class="flex">
+                            <input type="text" id="cand-num-prefix" class="input-hud" style="width: 60px; text-align: center; color: var(--gold-tse);" readonly>
+                            <input type="number" id="cand-num-suffix" class="input-hud" placeholder="Restante dos dígitos">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>IDEOLOGIA (AUTOMÁTICA)</label>
+                        <input type="text" id="cand-ideologia" class="input-hud" readonly>
+                    </div>
+
+                    <button onclick="db.createCandidate()" class="btn btn-gold w-full">PROTOCOLAR CANDIDATURA</button>
+                </div>
+            </div>
+
+            <div id="view-lista" class="view-section hidden">
+                <div class="header-hud"><h2 class="text-blue">REGISTRO GERAL</h2></div>
+                <div class="glass-panel" style="padding: 1rem;">
+                    <div class="table-container">
+                        <table id="table-candidatos">
+                            <thead>
+                                <tr>
+                                    <th>NOME</th>
+                                    <th>CARGO</th>
+                                    <th>PARTIDO</th>
+                                    <th>ESTADO</th>
+                                    <th>STATUS</th>
+                                    <th>AÇÃO</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
+            </div>
 
-                <h3>FILA DE ANÁLISE</h3>
-                <div class="glass-panel" style="overflow-x: auto;">
-                    <table id="admin-table">
+            <div id="view-recusados" class="view-section hidden">
+                <div class="header-hud"><h2 class="text-red">LISTA NEGRA (INDEFERIDOS)</h2></div>
+                <div class="glass-panel" style="padding: 1rem;">
+                    <table id="table-recusados">
                         <thead>
                             <tr>
-                                <th>Candidato</th>
-                                <th>Cargo</th>
-                                <th>Partido</th>
-                                <th>Local</th>
-                                <th>Número</th>
-                                <th>Status</th>
-                                <th>Ações</th>
+                                <th>CANDIDATO</th>
+                                <th>MOTIVO</th>
+                                <th>RESPONSÁVEL</th>
+                                <th>DATA</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
-            </section>
+            </div>
+
+             <div id="view-logs" class="view-section hidden">
+                <div class="header-hud"><h2 class="text-muted">AUDITORIA DE SISTEMA</h2></div>
+                <div class="glass-panel" style="padding: 1rem; max-height: 80vh; overflow-y: auto;" id="logs-container">
+                    </div>
+            </div>
 
         </main>
     </div>
 
-    <div id="toast-container"></div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, update, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-        // ========================================================
-        // 1. CONFIGURAÇÃO & INIT
-        // ========================================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyAwFLV5X9ICB3mvU4WU1ihxGUeG9UsrbtQ",
-            authDomain: "candidatura-cde.firebaseapp.com",
-            databaseURL: "https://candidatura-cde-default-rtdb.firebaseio.com",
-            projectId: "candidatura-cde",
-            storageBucket: "candidatura-cde.firebasestorage.app",
-            messagingSenderId: "958958180950",
-            appId: "1:958958180950:web:51427276d0a83978fdb9f7"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // ========================================================
-        // 2. CONSTANTES & DADOS ESTÁTICOS
-        // ========================================================
+    <script>
+        // =========================================
+        // 1. CONFIGURAÇÃO & DADOS ESTÁTICOS
+        // =========================================
+        const FIREBASE_URL = "https://candidatura-cde-default-rtdb.firebaseio.com";
         
-        const PARTIDOS_MAP = {
+        const PARTIES = {
     direita: [
         { number: "22", name: "Partido Liberal (PL)", color: "#0B3C5D" },
         { number: "11", name: "Progressistas (PP)", color: "#1E90FF" },
@@ -737,488 +480,428 @@
         { number: "54", name: "Partido Pátria Livre (PPL)", color: "#C00000" },
         { number: "40", name: "Partido Socialista Brasileiro (PSB)", color: "#E60026" },
 
-       
+        // 🔹 FICTÍCIOS
         { number: "60", name: "Partido da Frente Socialista (PFS)", color: "#B30000" },
         { number: "56", name: "Partido Socialista (PS)", color: "#990000" },
         { number: "31", name: "Partido Social Trabalhista Nacional (PSTN)", color: "#CD2626" }
     ]
 };
-        const CIDADES_MUNICIPAL = ["Eleitoral City", "Liberty City", "Nexaville", "Castelo Verde", "Marinha City", "Florápolis"];
+
+        const USERS = {
+            "TSE Brookasil": { pass: "Brookasil1234", role: "TSE", region: "ALL" },
+            "tutuBH": { pass: "tutuBH", role: "TRE", region: "Brookhaven" },
+            "williamNC": { pass: "williamNC", role: "TRE", region: "Novacore" },
+            "henriqueCB": { pass: "henriqueCB", role: "TRE", region: "Casteríber" },
+            "lucasFM": { pass: "lucasFM", role: "TRE", region: "Fortemega" },
+            "popoFX": { pass: "popoFX", role: "TRE", region: "Florêmix" }
+        };
+
+        const REGIONS = ["Brookhaven", "Novacore", "Casteríber", "Fortemega", "Florêmix"];
+
+        let currentUser = null;
+        let candidatesData = {};
+        let logsData = {};
+        let charts = {};
+
+        // Configuração Firebase (Simples HTTP para evitar problemas de versão CDN complexos em 1 arquivo)
+        // Nota: Em um ambiente real usariamos o SDK completo com Auth, mas aqui usaremos REST wrapper simples
+        // para garantir funcionamento imediato com o link fornecido.
         
-        // Hashes Simples (Para demonstração client-side segura contra visualização direta)
-        // Em prod real, isso seria server-side.
-        // Brookhaven1234 -> hash fictício mapeado
-        const AUTH_HASHES = {
-            "Brookasil1234": { role: "TSE", name: "TSE NACIONAL" },
-            "tutuBH": { role: "TRE", name: "TRE Brookhaven", state: "Brookhaven" },
-            "williamNC": { role: "TRE", name: "TRE Novacore", state: "Novacore" },
-            "henriqueCB": { role: "TRE", name: "TRE Casteríber", state: "Casteríber" },
-            "lucasFM": { role: "TRE", name: "TRE Fortemega", state: "Fortemega" },
-            "popoFX": { role: "TRE", name: "TRE Florêmix", state: "Florêmix" }
-        };
-
-        // Estado Global da Aplicação
-        let globalState = {
-            mode: "municipal", // ou federal
-            isOpen: false,
-            currentUser: null, // Objeto admin logado
-            registration: {} // Dados temporários do formulário
-        };
-
-        // ========================================================
-        // 3. UI UTILS
-        // ========================================================
-        
-        window.nav = {
-            goto: (viewName) => {
-                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-                document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
-                
-                const target = document.getElementById(`view-${viewName}`);
-                if (target) {
-                    target.classList.add('active');
-                    // Special routing logic
-                    if(viewName === 'admin-login' && globalState.currentUser) {
-                        nav.goto('admin-dash');
-                        return;
-                    }
-                    if(viewName === 'consult') consult.load();
-                }
-
-                const navBtn = document.getElementById(`nav-${viewName === 'admin-dash' || viewName === 'admin-login' ? 'admin' : viewName}`);
-                if(navBtn) navBtn.classList.add('active');
-            }
-        };
-
-        window.toast = (msg, type = 'info') => {
-            const container = document.getElementById('toast-container');
-            const el = document.createElement('div');
-            el.className = `toast ${type}`;
-            el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> <span>${msg}</span>`;
-            container.appendChild(el);
-            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 4000);
-        };
-
-        const loader = {
-            show: () => document.getElementById('global-loader').classList.add('active'),
-            hide: () => document.getElementById('global-loader').classList.remove('active')
-        };
-
-        // Efeito Mouse
-        document.addEventListener('mousemove', (e) => {
-            document.querySelectorAll('.glass-panel, .btn-main').forEach(card => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--x', `${x}px`);
-                card.style.setProperty('--y', `${y}px`);
-            });
-        });
-
-        // ========================================================
-        // 4. LÓGICA DE NEGÓCIO (ELEIÇÃO)
-        // ========================================================
-
-        window.logic = {
-            init: () => {
-                // Ouvir configurações globais
-                const configRef = ref(db, 'config');
-                onValue(configRef, (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        globalState.mode = data.modoEleicao || "municipal";
-                        globalState.isOpen = data.eleicaoAberta;
-                        document.getElementById('mode-display').innerText = `MODO: ${globalState.mode.toUpperCase()} | ${globalState.isOpen ? 'ABERTA' : 'FECHADA'}`;
-                        document.getElementById('mode-display').style.color = globalState.isOpen ? 'var(--accent-neon-green)' : 'var(--accent-error)';
-                    }
-                });
-                
-                // Povoar Partidos
-                const sel = document.getElementById('reg-partido');
-                PARTIDOS_MAP.forEach((p, idx) => {
-                    const opt = document.createElement('option');
-                    opt.value = idx; // Index no array
-                    opt.text = `${p.numero} - ${p.nome} (${p.sigla})`;
-                    sel.appendChild(opt);
-                });
-            },
-
-            updatePartyInfo: () => {
-                const idx = document.getElementById('reg-partido').value;
-                if(idx === "") return;
-                const p = PARTIDOS_MAP[idx];
-                const color = p.ideologia === 'direita' ? '#4dabff' : p.ideologia === 'esquerda' ? '#ff6b6b' : '#fff';
-                document.getElementById('party-info').innerHTML = `<span style="color:${color}; text-transform:uppercase; font-weight:bold;">Ideologia: ${p.ideologia}</span>`;
-            },
-
-            nextStep: (current) => {
-                // Validações Step 1
-                if (current === 1) {
-                    if (!document.getElementById('reg-nome').value || !document.getElementById('reg-tiktok').value || document.getElementById('reg-partido').value === "") {
-                        toast("Preencha todos os campos.", "error"); return;
-                    }
-                    // Popular Step 2
-                    const cargoSel = document.getElementById('reg-cargo');
-                    cargoSel.innerHTML = '<option value="">Selecione...</option>';
-                    
-                    if (globalState.mode === 'municipal') {
-                        cargoSel.innerHTML += '<option value="Prefeito">Prefeito</option><option value="Vereador">Vereador</option>';
-                        document.getElementById('group-estado').style.display = 'none';
-                        document.getElementById('group-cidade').style.display = 'block';
-                        // Popular Cidades
-                        const cidSel = document.getElementById('reg-cidade');
-                        cidSel.innerHTML = '<option value="">Selecione...</option>';
-                        CIDADES_MUNICIPAL.forEach(c => cidSel.innerHTML += `<option value="${c}">${c}</option>`);
-                    } else {
-                        // Federal
-                        cargoSel.innerHTML += `
-                            <option value="Presidente">Presidente</option>
-                            <option value="Governador">Governador</option>
-                            <option value="Senador">Senador</option>
-                            <option value="Deputado Federal">Deputado Federal</option>
-                            <option value="Deputado Estadual">Deputado Estadual</option>
-                        `;
-                    }
-                }
-
-                // Validações Step 2
-                if (current === 2) {
-                    const cargo = document.getElementById('reg-cargo').value;
-                    if (!cargo) { toast("Selecione o cargo.", "error"); return; }
-                    
-                    if (globalState.mode === 'federal') {
-                        if (cargo !== 'Presidente' && !document.getElementById('reg-estado').value) {
-                             toast("Selecione o estado.", "error"); return;
-                        }
-                        if (cargo === 'Deputado Federal' && !document.getElementById('reg-cidade').value) {
-                             toast("Selecione a cidade base.", "error"); return;
-                        }
-                    } else {
-                        if (!document.getElementById('reg-cidade').value) { toast("Selecione a cidade.", "error"); return; }
-                    }
-
-                    // Configurar Step 3 (Números)
-                    const pIdx = document.getElementById('reg-partido').value;
-                    const partido = PARTIDOS_MAP[pIdx];
-                    document.getElementById('reg-num-prefix').value = partido.numero;
-                    
-                    // Lógica de dígitos
-                    const numInput = document.getElementById('reg-num-user');
-                    numInput.value = "";
-                    let maxLen = 0;
-
-                    if (cargo === 'Presidente' || cargo === 'Governador' || cargo === 'Prefeito') {
-                        maxLen = 0; // Só número do partido
-                        numInput.placeholder = "Bloqueado";
-                        numInput.disabled = true;
-                    } else if (cargo === 'Senador' || cargo === 'Deputado Estadual') {
-                        maxLen = 1; // 3 digitos total (2 partido + 1)
-                        numInput.placeholder = "X";
-                        numInput.disabled = false;
-                    } else if (cargo === 'Deputado Federal' || cargo === 'Vereador') {
-                        maxLen = 2; // 4 digitos total (2 partido + 2)
-                        numInput.placeholder = "XX";
-                        numInput.disabled = false;
-                    }
-                    numInput.setAttribute('maxlength', maxLen);
-                    
-                    // Resumo
-                    const local = globalState.mode === 'municipal' ? 
-                        document.getElementById('reg-cidade').value : 
-                        (cargo === 'Presidente' ? 'Nacional' : document.getElementById('reg-estado').value);
-
-                    document.getElementById('review-data').innerHTML = `
-                        <strong>Candidato:</strong> ${document.getElementById('reg-nome').value}<br>
-                        <strong>Cargo:</strong> ${cargo}<br>
-                        <strong>Partido:</strong> ${partido.nome}<br>
-                        <strong>Local:</strong> ${local}
-                    `;
-                }
-
-                document.getElementById(`step-${current}`).style.display = 'none';
-                document.getElementById(`step-${current+1}`).style.display = 'block';
-                document.getElementById(`step-${current}-dot`).classList.remove('active');
-                document.getElementById(`step-${current+1}-dot`).classList.add('active');
-            },
-
-            prevStep: (current) => {
-                document.getElementById(`step-${current}`).style.display = 'none';
-                document.getElementById(`step-${current-1}`).style.display = 'block';
-                document.getElementById(`step-${current}-dot`).classList.remove('active');
-                document.getElementById(`step-${current-1}-dot`).classList.add('active');
-            },
-
-            updateLocationFields: () => {
-                const cargo = document.getElementById('reg-cargo').value;
-                const estGroup = document.getElementById('group-estado');
-                const cidGroup = document.getElementById('group-cidade');
-
-                if (globalState.mode === 'federal') {
-                    if (cargo === 'Presidente') {
-                        estGroup.style.display = 'none';
-                        cidGroup.style.display = 'none';
-                    } else if (cargo === 'Deputado Federal') {
-                        estGroup.style.display = 'block';
-                        cidGroup.style.display = 'block'; // Prompt diz "Estado + Cidade"
-                        logic.updateCityField(); // Reset list
-                    } else {
-                        estGroup.style.display = 'block';
-                        cidGroup.style.display = 'none';
-                    }
-                }
-            },
-
-            updateCityField: () => {
-                // Se for federal e deputado federal, lista cidades do estado selecionado?
-                // O prompt simplifica "Estado + Cidade". Vou usar as cidades genéricas para preencher.
-                if (globalState.mode === 'federal') {
-                    const sel = document.getElementById('reg-cidade');
-                    sel.innerHTML = '<option value="">Selecione...</option>';
-                    CIDADES_MUNICIPAL.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
-                }
-            },
-
-            submitCandidacy: async () => {
-                if (!globalState.isOpen) { toast("Eleições fechadas.", "error"); return; }
-                
-                loader.show();
-                
-                // Coletar dados
-                const pIdx = document.getElementById('reg-partido').value;
-                const partidoObj = PARTIDOS_MAP[pIdx];
-                const prefix = document.getElementById('reg-num-prefix').value;
-                const suffix = document.getElementById('reg-num-user').value;
-                const finalNum = prefix + suffix;
-                const cargo = document.getElementById('reg-cargo').value;
-                
-                let estado = "BR";
-                let cidade = "-";
-                
-                if (globalState.mode === 'municipal') {
-                    cidade = document.getElementById('reg-cidade').value;
-                    estado = "Municipal"; // Simplificação
-                } else {
-                    if(cargo !== 'Presidente') estado = document.getElementById('reg-estado').value;
-                    if(cargo === 'Deputado Federal') cidade = document.getElementById('reg-cidade').value;
-                }
-
-                // VALIDAR NÚMERO E REGRAS
-                // Regra: Max 4 candidatos por cargo do mesmo partido
-                // Regra: Numero único
-                // Regra: Nome único
-                
-                // Consulta ao BD para validação (Query pesada mas necessária)
-                const candRef = ref(db, 'candidatos');
-                
+        const api = {
+            async get(path) {
+                ui.loading(true);
                 try {
-                    const snapshot = await get(candRef);
-                    let erro = null;
-                    let countPartyCargo = 0;
-
-                    if (snapshot.exists()) {
-                        snapshot.forEach(estadoSnap => {
-                            estadoSnap.forEach(candSnap => {
-                                const c = candSnap.val();
-                                if (c.numero == finalNum) erro = "Número já existe na federação.";
-                                if (c.nome.toLowerCase() === document.getElementById('reg-nome').value.toLowerCase()) erro = "Nome já registrado.";
-                                if (c.tiktok === document.getElementById('reg-tiktok').value) erro = "TikTok já em uso.";
-                                
-                                if (c.partido === partidoObj.nome && c.cargo === cargo && c.estado === estado) {
-                                    countPartyCargo++;
-                                }
-                            });
-                        });
-                    }
-
-                    if (erro) { loader.hide(); toast(erro, "error"); return; }
-                    if (countPartyCargo >= 4) { loader.hide(); toast("Limite de 4 candidatos deste partido para este cargo atingido.", "error"); return; }
-
-                    // Salvar
-                    const newCandRef = push(ref(db, `candidatos/${estado}`));
-                    await set(newCandRef, {
-                        id: newCandRef.key,
-                        nome: document.getElementById('reg-nome').value,
-                        tiktok: document.getElementById('reg-tiktok').value,
-                        partido: partidoObj.nome,
-                        ideologia: partidoObj.ideologia,
-                        sigla: partidoObj.sigla,
-                        numero: finalNum,
-                        cargo: cargo,
-                        estado: estado,
-                        cidade: cidade,
-                        status: 'pendente', // pendente, aprovado, indeferido
-                        criadoEm: Date.now()
+                    const res = await fetch(`${FIREBASE_URL}/${path}.json`);
+                    return await res.json();
+                } catch(e) { console.error(e); } 
+                finally { ui.loading(false); }
+            },
+            async post(path, data) {
+                ui.loading(true);
+                try {
+                    await fetch(`${FIREBASE_URL}/${path}.json`, {
+                        method: 'POST', body: JSON.stringify(data)
                     });
-
-                    loader.hide();
-                    toast("Candidatura enviada para análise!", "success");
-                    document.getElementById('reg-form').reset();
-                    nav.goto('home');
-                    
-                } catch (e) {
-                    loader.hide();
-                    console.error(e);
-                    toast("Erro de conexão.", "error");
-                }
+                } finally { ui.loading(false); }
+            },
+            async update(path, data) {
+                ui.loading(true);
+                try {
+                    await fetch(`${FIREBASE_URL}/${path}.json`, {
+                        method: 'PATCH', body: JSON.stringify(data)
+                    });
+                } finally { ui.loading(false); }
             }
         };
 
-        // ========================================================
-        // 5. CONSULTA PÚBLICA
-        // ========================================================
-        window.consult = {
-            load: () => {
-                const container = document.getElementById('candidates-container');
-                container.innerHTML = '<div class="spinner" style="margin: 50px auto;"></div>';
-                
-                const filterState = document.getElementById('filter-state').value;
-                
-                // Buscar tudo e filtrar no cliente (para simplicidade do index.html único)
-                const dbRef = ref(db, 'candidatos');
-                onValue(dbRef, (snapshot) => {
-                    container.innerHTML = '';
-                    if (!snapshot.exists()) {
-                        container.innerHTML = '<p style="text-align:center; opacity:0.5;">Nenhum candidato encontrado.</p>';
-                        return;
-                    }
-
-                    let candidates = [];
-                    snapshot.forEach(estSnap => {
-                        const estadoKey = estSnap.key;
-                        // Filtro de estado
-                        if (filterState !== 'all' && estadoKey !== filterState) return;
-                        
-                        estSnap.forEach(cSnap => {
-                            const c = cSnap.val();
-                            if(c.status === 'aprovado') candidates.push(c);
-                        });
-                    });
-
-                    if (candidates.length === 0) {
-                        container.innerHTML = '<p style="text-align:center; opacity:0.5;">Nenhum registro aprovado nesta região.</p>';
-                        return;
-                    }
-
-                    candidates.sort((a,b) => a.cargo.localeCompare(b.cargo));
-
-                    candidates.forEach(c => {
-                        const html = `
-                            <div class="candidate-card glass-panel">
-                                <span class="tag-ideology ideology-${c.ideologia}">${c.ideologia}</span>
-                                <h3 style="margin-top:15px; font-size: 1.1rem;">${c.nome}</h3>
-                                <p style="font-size:0.8rem; opacity:0.7;">${c.cargo}</p>
-                                <div class="card-number">${c.numero}</div>
-                                <div style="font-size:0.8rem;">
-                                    <strong>${c.partido}</strong> (${c.sigla})<br>
-                                    <i class="fab fa-tiktok"></i> ${c.tiktok}<br>
-                                    <i class="fas fa-map-marker-alt"></i> ${c.estado === 'Municipal' ? c.cidade : c.estado}
-                                </div>
-                            </div>
-                        `;
-                        container.innerHTML += html;
-                    });
-                }, { onlyOnce: true });
-            }
-        };
-
-        // ========================================================
-        // 6. ADMINISTRAÇÃO
-        // ========================================================
-        window.admin = {
+        // =========================================
+        // 2. LÓGICA DE AUTENTICAÇÃO
+        // =========================================
+        const auth = {
             login: () => {
-                const pass = document.getElementById('admin-pass').value;
-                const auth = AUTH_HASHES[pass];
-                
-                if (auth) {
-                    globalState.currentUser = auth;
-                    toast(`Bem-vindo, ${auth.name}`, "success");
-                    document.getElementById('admin-pass').value = '';
-                    nav.goto('admin-dash');
-                    admin.initDash();
+                const u = document.getElementById('login-user').value;
+                const p = document.getElementById('login-pass').value;
+                const msg = document.getElementById('login-msg');
+
+                if (USERS[u] && USERS[u].pass === p) {
+                    currentUser = { name: u, ...USERS[u] };
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('app').classList.remove('hidden');
+                    document.getElementById('user-display').innerText = `USUÁRIO: ${u} [${currentUser.role}]`;
+                    document.getElementById('dash-region').innerText = currentUser.region === 'ALL' ? 'NACIONAL' : currentUser.region.toUpperCase();
+                    
+                    if(currentUser.role !== 'TSE') {
+                        document.getElementById('nav-logs').classList.add('hidden');
+                    }
+                    
+                    app.init();
                 } else {
-                    toast("Acesso Negado. Credenciais inválidas.", "error");
+                    msg.innerText = "ACESSO NEGADO: CREDENCIAIS INVÁLIDAS";
+                    
+                    // Efeito de erro visual
+                    document.querySelector('.login-box').style.borderColor = "red";
+                    setTimeout(() => document.querySelector('.login-box').style.borderColor = "var(--gold-tse)", 500);
                 }
+            }
+        };
+
+        // =========================================
+        // 3. UI MANAGER
+        // =========================================
+        const ui = {
+            navigate: (viewId) => {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+                document.getElementById(`view-${viewId}`).classList.remove('hidden');
+                
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                // Simples highlight logic
+                event.target.classList.add('active');
+
+                if(viewId === 'dashboard') db.fetchData();
+                if(viewId === 'lista') renderer.renderList();
+                if(viewId === 'recusados') renderer.renderRejected();
+                if(viewId === 'logs') renderer.renderLogs();
+            },
+            loading: (show) => {
+                document.getElementById('loader').style.display = show ? 'block' : 'none';
+            },
+            fillSelects: () => {
+                const selRegion = document.getElementById('cand-estado');
+                REGIONS.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r; opt.innerText = r;
+                    selRegion.appendChild(opt);
+                });
+
+                const selParty = document.getElementById('cand-partido');
+                PARTIES.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.sigla; opt.innerText = `${p.sigla} - ${p.num}`;
+                    selParty.appendChild(opt);
+                });
+                
+                // Trigger inicial
+                formLogic.updateNumberPrefix();
+            }
+        };
+
+        // =========================================
+        // 4. LÓGICA DE NEGÓCIO (FORM & VALIDAÇÃO)
+        // =========================================
+        const formLogic = {
+            updateNumberPrefix: () => {
+                const sigla = document.getElementById('cand-partido').value;
+                const cargo = document.getElementById('cand-cargo').value;
+                const party = PARTIES.find(p => p.sigla === sigla);
+                
+                if (!party) return;
+
+                // Definir Ideologia
+                document.getElementById('cand-ideologia').value = party.ideo;
+
+                // Regra da Urna
+                const prefixInput = document.getElementById('cand-num-prefix');
+                prefixInput.value = party.num;
+
+                // Limite de digitos baseados no cargo
+                const suffixInput = document.getElementById('cand-num-suffix');
+                suffixInput.value = "";
+                
+                // 2 digitos (Partido) já vão fixos.
+                // Prefeito: 2 digitos totais? Não, geralmente Prefeito é 2 dígitos. Mas a regra diz: 2 do partido + usuario nao altera.
+                // Vamos assumir padrão TSE Brasil:
+                // Prefeito = 2 dígitos (Só o partido). Então sufixo disabled.
+                // Vereador = 5 dígitos (2 partido + 3 sufixo).
+                // Deputado = 4 ou 5 dígitos.
+                // Governador = 2 dígitos.
+                
+                if (cargo === 'Prefeito' || cargo === 'Governador') {
+                    suffixInput.setAttribute('disabled', true);
+                    suffixInput.placeholder = "N/A";
+                } else {
+                    suffixInput.removeAttribute('disabled');
+                    suffixInput.placeholder = "XXX";
+                }
+            }
+        };
+
+        // =========================================
+        // 5. DATABASE & ACTIONS
+        // =========================================
+        const db = {
+            fetchData: async () => {
+                const data = await api.get('candidatos');
+                candidatesData = data || {};
+                const logs = await api.get('logs');
+                logsData = logs || {};
+                renderer.updateDashboard();
+            },
+            
+            createCandidate: async () => {
+                const nome = document.getElementById('cand-nome').value;
+                const tiktok = document.getElementById('cand-tiktok').value;
+                const estado = document.getElementById('cand-estado').value;
+                const cidade = document.getElementById('cand-cidade').value;
+                const partidoSigla = document.getElementById('cand-partido').value;
+                const cargo = document.getElementById('cand-cargo').value;
+                const numPrefix = document.getElementById('cand-num-prefix').value;
+                const numSuffix = document.getElementById('cand-num-suffix').value;
+                const ideologia = document.getElementById('cand-ideologia').value;
+
+                // Validações Rígidas
+                if(!nome || !tiktok) return alert("ERRO: Preencha todos os campos.");
+                
+                // Formatar Numero Final
+                let numeroUrna = numPrefix;
+                if(!document.getElementById('cand-num-suffix').disabled) {
+                    if(numSuffix.length < 2) return alert("ERRO: Número inválido (curto demais).");
+                    numeroUrna += numSuffix;
+                }
+
+                // Checar Permissão de Estado
+                if(currentUser.role === 'TRE' && currentUser.region !== estado) {
+                    return alert(`ERRO: Seu TRE (${currentUser.region}) não pode registrar em ${estado}.`);
+                }
+
+                // Checar Duplicidade (TikTok e Numero)
+                const all = Object.values(candidatesData);
+                if(all.find(c => c.tiktok === tiktok)) return alert("ERRO: TikTok já registrado.");
+                if(all.find(c => c.numero === numeroUrna && c.estado === estado && c.cargo === cargo)) return alert("ERRO: Número já em uso neste cargo/estado.");
+
+                const novoCandidato = {
+                    nome, tiktok, estado, cidade, partido: partidoSigla, 
+                    cargo, numero: numeroUrna, ideologia,
+                    status: 'ANALISE',
+                    data: new Date().toLocaleString()
+                };
+
+                await api.post('candidatos', novoCandidato);
+                await db.logAction(`Candidato ${nome} (${cargo}) registrado por ${currentUser.name}`);
+                alert("SUCESSO: Candidatura Protocolada.");
+                
+                // Reset e Atualiza
+                document.getElementById('cand-nome').value = "";
+                document.getElementById('cand-num-suffix').value = "";
+                db.fetchData();
             },
 
-            logout: () => {
-                globalState.currentUser = null;
-                nav.goto('home');
+            approve: async (id, nome) => {
+                const cand = candidatesData[id];
+                if(currentUser.role === 'TRE' && cand.estado !== currentUser.region) return alert("SEM PERMISSÃO: Outro Estado.");
+                
+                await api.update(`candidatos/${id}`, { status: 'APROVADO' });
+                await db.logAction(`Candidatura ${nome} APROVADA por ${currentUser.name}`);
+                db.fetchData();
+                ui.navigate('lista');
             },
 
-            initDash: () => {
-                const user = globalState.currentUser;
-                document.getElementById('admin-welcome').innerText = `Oficial: ${user.name}`;
-                
-                // Mostrar controles TSE se for TSE
-                if (user.role === 'TSE') {
-                    document.getElementById('tse-controls').style.display = 'block';
-                    // Load current config values to inputs
-                    document.getElementById('admin-mode-select').value = globalState.mode;
-                    document.getElementById('admin-status-select').value = globalState.isOpen ? 'aberta' : 'fechada';
-                } else {
-                    document.getElementById('tse-controls').style.display = 'none';
-                }
+            reject: async (id, nome) => {
+                const cand = candidatesData[id];
+                if(currentUser.role === 'TRE' && cand.estado !== currentUser.region) return alert("SEM PERMISSÃO: Outro Estado.");
 
-                // Carregar Tabela
-                const tableBody = document.querySelector('#admin-table tbody');
-                const dbRef = ref(db, 'candidatos');
-                
-                onValue(dbRef, (snapshot) => {
-                    tableBody.innerHTML = '';
-                    snapshot.forEach(estSnap => {
-                        // Se for TRE, filtrar apenas seu estado
-                        if (user.role === 'TRE' && estSnap.key !== user.state) return;
+                const motivo = prompt("MOTIVO DA RECUSA (OBRIGATÓRIO):");
+                if(!motivo) return alert("Cancelado: Motivo obrigatório.");
 
-                        estSnap.forEach(cSnap => {
-                            const c = cSnap.val();
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${c.nome}</td>
-                                <td>${c.cargo}</td>
-                                <td>${c.sigla}</td>
-                                <td>${c.estado === 'Municipal' ? c.cidade : c.estado}</td>
-                                <td style="font-family: var(--font-display); color: var(--accent-sapphire);">${c.numero}</td>
-                                <td><span class="status-badge ${c.status}">${c.status}</span></td>
-                                <td>
-                                    <div class="admin-controls">
-                                        <button class="btn-mini btn-approve" onclick="admin.setStatus('${estSnap.key}', '${cSnap.key}', 'aprovado')"><i class="fas fa-check"></i></button>
-                                        <button class="btn-mini btn-reject" onclick="admin.setStatus('${estSnap.key}', '${cSnap.key}', 'indeferido')"><i class="fas fa-times"></i></button>
-                                    </div>
-                                </td>
-                            `;
-                            tableBody.appendChild(tr);
-                        });
-                    });
+                // Atualiza status e adiciona metadados de recusa
+                await api.update(`candidatos/${id}`, { 
+                    status: 'RECUSADO',
+                    motivoRecusa: motivo,
+                    autorRecusa: currentUser.name
+                });
+                await db.logAction(`Candidatura ${nome} RECUSADA por ${currentUser.name}. Motivo: ${motivo}`);
+                db.fetchData();
+                ui.navigate('lista');
+            },
+
+            logAction: async (msg) => {
+                await api.post('logs', {
+                    msg,
+                    user: currentUser.name,
+                    time: new Date().toLocaleString()
+                });
+            }
+        };
+
+        // =========================================
+        // 6. RENDERIZADOR
+        // =========================================
+        const renderer = {
+            updateDashboard: () => {
+                const list = Object.values(candidatesData);
+                
+                // Filtros de Região (TRE vê só o seu)
+                const filtered = currentUser.role === 'TSE' ? list : list.filter(c => c.estado === currentUser.region);
+
+                // Counters
+                document.getElementById('stat-total').innerText = filtered.length;
+                document.getElementById('stat-aprovados').innerText = filtered.filter(c => c.status === 'APROVADO').length;
+                document.getElementById('stat-analise').innerText = filtered.filter(c => c.status === 'ANALISE').length;
+                document.getElementById('stat-recusados').innerText = filtered.filter(c => c.status === 'RECUSADO').length;
+
+                // Charts Logic
+                renderer.renderCharts(filtered);
+            },
+
+            renderCharts: (data) => {
+                // Ideologia
+                const ideologias = {};
+                data.forEach(c => { ideologias[c.ideologia] = (ideologias[c.ideologia] || 0) + 1 });
+                
+                // Estados
+                const estados = {};
+                data.forEach(c => { estados[c.estado] = (estados[c.estado] || 0) + 1 });
+
+                // Destruir anteriores se existirem
+                if(charts.ideologia) charts.ideologia.destroy();
+                if(charts.estado) charts.estado.destroy();
+
+                const commonOptions = {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: 'white' } } }
+                };
+
+                // Chart 1
+                const ctx1 = document.getElementById('chartIdeologia').getContext('2d');
+                charts.ideologia = new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(ideologias),
+                        datasets: [{
+                            data: Object.values(ideologias),
+                            backgroundColor: ['#D4AF37', '#00F3FF', '#FF3333', '#00FF9D', '#FFFFFF'],
+                            borderColor: '#020204'
+                        }]
+                    },
+                    options: commonOptions
+                });
+
+                // Chart 2
+                const ctx2 = document.getElementById('chartEstado').getContext('2d');
+                charts.estado = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(estados),
+                        datasets: [{
+                            label: 'Candidatos',
+                            data: Object.values(estados),
+                            backgroundColor: '#00F3FF'
+                        }]
+                    },
+                    options: { ...commonOptions, scales: { y: { ticks: { color: 'white' }, grid: { color: '#333'} }, x: { ticks: { color: 'white' } } } }
                 });
             },
 
-            setStatus: (estadoKey, candKey, status) => {
-                update(ref(db, `candidatos/${estadoKey}/${candKey}`), {
-                    status: status
-                }).then(() => toast(`Candidatura ${status}!`, "success"))
-                  .catch(() => toast("Erro ao atualizar.", "error"));
+            renderList: async () => {
+                // Força refresh antes de listar
+                await db.fetchData();
+                const tbody = document.querySelector('#table-candidatos tbody');
+                tbody.innerHTML = "";
+
+                Object.entries(candidatesData).forEach(([id, c]) => {
+                    // Filtro de Visão
+                    if(currentUser.role === 'TRE' && c.estado !== currentUser.region) return;
+
+                    const tr = document.createElement('tr');
+                    
+                    let statusClass = 'bg-pending';
+                    if(c.status === 'APROVADO') statusClass = 'bg-approved';
+                    if(c.status === 'RECUSADO') statusClass = 'bg-rejected';
+
+                    // Botões de Ação (Apenas se em analise)
+                    let actions = "-";
+                    if(c.status === 'ANALISE') {
+                        actions = `
+                            <button class="btn btn-gold" style="padding: 2px 8px; font-size: 0.6rem;" onclick="db.approve('${id}', '${c.nome}')">✔</button>
+                            <button class="btn" style="padding: 2px 8px; font-size: 0.6rem; color: red; border-color: red;" onclick="db.reject('${id}', '${c.nome}')">✖</button>
+                        `;
+                    }
+
+                    tr.innerHTML = `
+                        <td><strong style="color:white">${c.nome}</strong><br><span class="text-muted" style="font-size:0.7rem">${c.tiktok}</span></td>
+                        <td>${c.cargo} (${c.numero})</td>
+                        <td><span style="color:${PARTIES.find(p=>p.sigla===c.partido)?.color}">${c.partido}</span></td>
+                        <td>${c.estado}</td>
+                        <td><span class="status-badge ${statusClass}">${c.status}</span></td>
+                        <td>${actions}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
             },
 
-            updateConfig: () => {
-                if (globalState.currentUser.role !== 'TSE') return;
-                
-                const newMode = document.getElementById('admin-mode-select').value;
-                const newStatus = document.getElementById('admin-status-select').value === 'aberta';
+            renderRejected: async () => {
+                await db.fetchData();
+                const tbody = document.querySelector('#table-recusados tbody');
+                tbody.innerHTML = "";
 
-                update(ref(db, 'config'), {
-                    modoEleicao: newMode,
-                    eleicaoAberta: newStatus
-                }).then(() => toast("Sistema Eleitoral Atualizado!", "success"));
+                Object.values(candidatesData).forEach(c => {
+                    if(c.status !== 'RECUSADO') return;
+                    // TRE filter
+                    if(currentUser.role === 'TRE' && c.estado !== currentUser.region) return;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${c.nome} (${c.partido})</td>
+                        <td class="text-red">${c.motivoRecusa || 'N/A'}</td>
+                        <td class="text-gold">${c.autorRecusa || 'Sistema'}</td>
+                        <td class="text-muted">${c.data || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            },
+
+            renderLogs: async () => {
+                 // Apenas TSE vê logs
+                 if(currentUser.role !== 'TSE') return;
+                 
+                 const container = document.getElementById('logs-container');
+                 container.innerHTML = "";
+                 
+                 // Ordenar logs (mais recente primeiro se possível, mas obj firebase é chato)
+                 // Convertendo para array
+                 const logsArr = logsData ? Object.values(logsData) : [];
+                 logsArr.reverse().forEach(log => {
+                     const div = document.createElement('div');
+                     div.className = 'log-entry';
+                     div.innerHTML = `<span class="log-time">[${log.time}]</span> <span class="text-gold">${log.user}</span>: ${log.msg}`;
+                     container.appendChild(div);
+                 });
             }
         };
 
-        // Boot
-        logic.init();
-
-        // Export logic to window for HTML onclicks
-        window.logic = logic;
-        window.admin = admin;
-        window.consult = consult;
+        // =========================================
+        // 7. INICIALIZAÇÃO
+        // =========================================
+        const app = {
+            init: () => {
+                ui.fillSelects();
+                db.fetchData();
+                
+                // Relógio
+                setInterval(() => {
+                    document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+                }, 1000);
+            }
+        };
 
     </script>
 </body>
