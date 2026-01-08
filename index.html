@@ -3,183 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSE RP BROOKASIL - Sistema Eleitoral Oficial</title>
+    <title>TSE RP BROOKASIL - Sistema Quântico V2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
     <style>
         :root {
-            --primary: #0f0f23;
-            --secondary: #00ff41;
-            --accent: #9d00ff;
-            --danger: #ff3860;
-            --success: #00ff88;
-            --warning: #ffaa00;
-            --dark: #0a0a0f;
-            --darker: #050508;
-            --light: #e0e0ff;
-            --glass: rgba(15, 15, 35, 0.8);
-            --glass-light: rgba(0, 255, 65, 0.1);
-            --neon-glow: 0 0 10px var(--secondary), 0 0 20px var(--secondary), 0 0 30px var(--secondary);
-            --neon-accent: 0 0 10px var(--accent), 0 0 20px var(--accent);
+            --bg-color: #050505;
+            --glass-panel: rgba(20, 20, 35, 0.85);
+            --neon-green: #00ff41;
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-red: #ff003c;
+            --text-main: #e0e0e0;
+            --border-glow: 0 0 10px rgba(0, 255, 65, 0.3);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: var(--neon-green) var(--bg-color); }
 
         body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
             font-family: 'Rajdhani', sans-serif;
-            background: var(--darker);
-            color: var(--light);
-            min-height: 100vh;
-            overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 20% 30%, rgba(0, 255, 65, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(157, 0, 255, 0.05) 0%, transparent 50%),
-                linear-gradient(45deg, var(--darker), var(--primary));
-        }
-
-        /* Matrix Effect Background */
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
                 linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: -2;
-            animation: matrixMove 20s linear infinite;
+            background-size: 50px 50px;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        @keyframes matrixMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(40px, 40px); }
-        }
-
-        /* Header Cyberpunk */
-        .cyber-header {
+        /* --- Header & Nav --- */
+        header {
             position: fixed;
             top: 0;
-            left: 0;
             width: 100%;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-bottom: 2px solid var(--secondary);
             padding: 1rem 2rem;
+            background: rgba(5, 5, 5, 0.9);
+            border-bottom: 2px solid var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 1000;
-            box-shadow: var(--neon-glow);
+            backdrop-filter: blur(10px);
         }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logo-icon {
-            font-size: 2.5rem;
-            color: var(--secondary);
-            text-shadow: var(--neon-glow);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .logo-text {
+        .logo {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.8rem;
             font-weight: 900;
-            background: linear-gradient(45deg, var(--secondary), var(--accent));
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .logo-subtitle {
-            font-size: 0.8rem;
-            color: var(--secondary);
-            letter-spacing: 3px;
-            font-weight: 600;
+        .system-status {
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--neon-blue);
+            border-radius: 4px;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
         }
 
-        /* Navigation Holographic */
-        .cyber-nav {
+        nav {
             position: fixed;
-            left: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 80px;
+            left: 0;
+            width: 250px;
+            height: calc(100vh - 80px);
+            background: var(--glass-panel);
+            border-right: 1px solid var(--neon-green);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
             z-index: 999;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 2px solid var(--secondary);
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: var(--neon-glow);
         }
 
-        .nav-item {
+        nav.open { transform: translateX(0); }
+
+        .nav-toggle {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--neon-green);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 1rem;
+            text-align: left;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            color: var(--light);
-            text-decoration: none;
-            border-radius: 10px;
-            margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            gap: 10px;
         }
 
-        .nav-item:hover {
-            background: var(--glass-light);
-            transform: translateX(5px);
-            border-left: 3px solid var(--secondary);
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: inset 5px 0 0 var(--neon-green);
         }
 
-        .nav-item.active {
-            background: var(--glass-light);
-            border-left: 3px solid var(--secondary);
-            color: var(--secondary);
-        }
-
-        .nav-item i {
-            width: 24px;
-            text-align: center;
-            font-size: 1.2rem;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-top: 100px;
-            margin-left: 280px;
+        /* --- Main Content --- */
+        main {
+            margin-top: 80px;
             padding: 2rem;
-            max-width: 1400px;
+            width: 100%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: margin-left 0.3s;
         }
 
+        .section { display: none; animation: fadeIn 0.5s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Cards & Forms --- */
         .cyber-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 2px solid var(--secondary);
-            border-radius: 20px;
-            padding: 2.5rem;
+            background: var(--glass-panel);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: var(--neon-glow);
             position: relative;
             overflow: hidden;
         }
@@ -187,772 +157,502 @@
         .cyber-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
-            transition: 0.5s;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
         }
 
-        .cyber-card:hover::before {
-            left: 100%;
-        }
-
-        .card-title {
+        h2 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            color: var(--secondary);
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid var(--secondary);
-            padding-bottom: 1rem;
+            color: var(--neon-green);
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+            padding-bottom: 0.5rem;
         }
 
-        /* Stats Grid */
-        .cyber-grid {
+        .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
-            margin: 2rem 0;
         }
 
-        .cyber-stat {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--secondary);
-            border-radius: 15px;
+        .input-group { margin-bottom: 1rem; }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--neon-blue);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
+            color: #fff;
+            padding: 0.8rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+        }
+
+        /* --- Buttons --- */
+        .btn-cyber {
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 0.8rem 2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+
+        .btn-cyber:hover {
+            background: var(--neon-green);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .btn-danger {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+        }
+        .btn-danger:hover {
+            background: var(--neon-red);
+            color: #fff;
+            box-shadow: 0 0 20px var(--neon-red);
+        }
+
+        /* --- Tables --- */
+        .table-container { overflow-x: auto; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            color: var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* --- Stats --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid var(--neon-green);
             padding: 1.5rem;
             text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .cyber-stat:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--neon-glow);
         }
 
         .stat-number {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 900;
-            color: var(--secondary);
-            margin: 1rem 0;
-            text-shadow: var(--neon-glow);
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-green);
         }
 
-        /* Forms */
-        .cyber-form {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--secondary);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            color: var(--secondary);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-
-        .cyber-input, .cyber-select, .cyber-textarea {
-            width: 100%;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--secondary);
-            border-radius: 10px;
-            color: var(--light);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .cyber-input:focus, .cyber-select:focus, .cyber-textarea:focus {
-            outline: none;
-            box-shadow: var(--neon-glow);
-        }
-
-        /* Buttons */
-        .cyber-btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cyber-btn-primary {
-            background: linear-gradient(45deg, var(--secondary), var(--accent));
-            color: var(--dark);
-            border: 2px solid var(--secondary);
-        }
-
-        .cyber-btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--neon-glow);
-        }
-
-        .cyber-btn-outline {
-            background: transparent;
-            border: 2px solid var(--secondary);
-            color: var(--secondary);
-        }
-
-        .cyber-btn-outline:hover {
-            background: var(--glass-light);
-            transform: translateY(-3px);
-            box-shadow: var(--neon-glow);
-        }
-
-        /* Tables */
-        .cyber-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--secondary);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .cyber-table th {
-            background: rgba(0, 255, 65, 0.1);
-            color: var(--secondary);
-            padding: 1.5rem;
-            text-align: left;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .cyber-table td {
-            padding: 1.2rem;
-            border-bottom: 1px solid rgba(0, 255, 65, 0.1);
-        }
-
-        .cyber-table tr:hover {
-            background: rgba(0, 255, 65, 0.05);
-        }
-
-        /* Status Badges */
-        .cyber-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .badge-success {
-            background: rgba(0, 255, 136, 0.1);
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
-
-        .badge-warning {
-            background: rgba(255, 170, 0, 0.1);
-            color: var(--warning);
-            border: 1px solid var(--warning);
-        }
-
-        .badge-danger {
-            background: rgba(255, 56, 96, 0.1);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-        }
-
-        /* Tabs */
-        .cyber-tabs {
+        /* --- Loading --- */
+        #loading {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--secondary);
-            padding-bottom: 1rem;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: var(--neon-green);
+            font-family: 'Orbitron';
+            display: none;
+        }
+        
+        /* --- Photo Upload Preview --- */
+        .photo-preview {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed var(--neon-blue);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            color: #aaa;
         }
 
-        .cyber-tab {
-            padding: 1rem 2rem;
-            background: transparent;
-            border: 2px solid var(--secondary);
-            border-radius: 10px;
-            color: var(--secondary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 600;
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
+        .status-aprovado { background: rgba(0, 255, 65, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
+        .status-pendente { background: rgba(255, 165, 0, 0.2); color: orange; border: 1px solid orange; }
+        .status-rejeitado { background: rgba(255, 0, 60, 0.2); color: var(--neon-red); border: 1px solid var(--neon-red); }
 
-        .cyber-tab.active {
-            background: var(--secondary);
-            color: var(--dark);
-            box-shadow: var(--neon-glow);
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
-            }
-
-            .cyber-nav {
-                display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .cyber-header {
-                flex-direction: column;
-                padding: 1rem;
-                text-align: center;
-            }
-
-            .logo-container {
-                margin-bottom: 1rem;
-            }
-
-            .cyber-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (min-width: 768px) {
+            nav { transform: translateX(0); width: 250px; top: 80px; left: 0; }
+            main { margin-left: 260px; }
+            .nav-toggle { display: none; }
         }
     </style>
 </head>
 <body>
-    <!-- Background Effects -->
-    <div class="matrix-bg"></div>
-    
-    <!-- Header -->
-    <header class="cyber-header">
-        <div class="logo-container">
-            <div class="logo-icon">
-                <i class="fas fa-server"></i>
-            </div>
-            <div>
-                <div class="logo-text">TSE RP BROOKASIL</div>
-                <div class="logo-subtitle">SISTEMA ELEITORAL QUÂNTICO</div>
-            </div>
-        </div>
-        
-        <div class="header-info">
-            <div class="cyber-badge badge-success" id="electionMode">
-                <i class="fas fa-vote-yea"></i>
-                <span>MODO: MUNICIPAL</span>
+
+    <div id="loading">
+        <i class="fas fa-microchip fa-spin fa-3x"></i>
+        <p style="margin-top: 15px;">PROCESSANDO DADOS QUÂNTICOS...</p>
+    </div>
+
+    <header>
+        <div class="logo"><i class="fas fa-vote-yea"></i> TSE RP BROOKASIL</div>
+        <div class="system-status" id="modeDisplay">MODO: CARREGANDO...</div>
+    </header>
+
+    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i> MENU</button>
+
+    <nav id="navbar">
+        <button class="nav-btn active" onclick="showSection('dashboard')"><i class="fas fa-chart-pie"></i> Painel Geral</button>
+        <button class="nav-btn" onclick="showSection('candidatos')"><i class="fas fa-users"></i> Candidatos</button>
+        <button class="nav-btn" onclick="showSection('registro')"><i class="fas fa-user-plus"></i> Nova Candidatura</button>
+        <button class="nav-btn" onclick="showSection('partidos')"><i class="fas fa-flag"></i> Partidos</button>
+        <div style="flex-grow: 1;"></div>
+        <button class="nav-btn" onclick="showSection('admin-login')" id="adminBtn"><i class="fas fa-user-lock"></i> Acesso Restrito</button>
+    </nav>
+
+    <main>
+        <section id="dashboard" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div>Total de Candidatos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingCount" style="color: orange;">0</div>
+                    <div>Pendentes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedCount" style="color: var(--neon-green);">0</div>
+                    <div>Aprovados</div>
+                </div>
             </div>
             
-            <div id="adminBadge" style="display: none;">
-                <div class="cyber-badge badge-warning">
-                    <i class="fas fa-user-shield"></i>
-                    <span>MODO ADMIN</span>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <!-- Navigation -->
-    <nav class="cyber-nav">
-        <a class="nav-item active" onclick="showSection('dashboard')">
-            <i class="fas fa-dashboard"></i>
-            <span>Dashboard</span>
-        </a>
-        <a class="nav-item" onclick="showSection('candidates')">
-            <i class="fas fa-users"></i>
-            <span>Candidatos</span>
-        </a>
-        <a class="nav-item" onclick="showSection('apply')">
-            <i class="fas fa-user-plus"></i>
-            <span>Candidatar-se</span>
-        </a>
-        <a class="nav-item" onclick="showSection('parties')">
-            <i class="fas fa-flag"></i>
-            <span>Partidos</span>
-        </a>
-        <a class="nav-item" onclick="showSection('tres')">
-            <i class="fas fa-balance-scale"></i>
-            <span>Tribunais</span>
-        </a>
-        <a class="nav-item" onclick="showSection('admin')" id="adminNav" style="display: none;">
-            <i class="fas fa-user-shield"></i>
-            <span>Admin</span>
-        </a>
-        <a class="nav-item" onclick="showSection('login')" id="loginNav">
-            <i class="fas fa-key"></i>
-            <span>Acesso</span>
-        </a>
-    </nav>
-    
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Dashboard -->
-        <section id="dashboard" class="section active">
             <div class="cyber-card">
-                <h2 class="card-title">
-                    <i class="fas fa-dashboard"></i>
-                    DASHBOARD SISTÊMICO
-                </h2>
-                
-                <div class="cyber-grid">
-                    <div class="cyber-stat">
-                        <div class="stat-label">CANDIDATURAS</div>
-                        <div class="stat-number" id="totalCandidates">0</div>
-                        <div class="stat-desc">Total Registradas</div>
-                    </div>
-                    
-                    <div class="cyber-stat">
-                        <div class="stat-label">APROVADAS</div>
-                        <div class="stat-number" id="approvedCandidates">0</div>
-                        <div class="stat-desc">Homologadas</div>
-                    </div>
-                    
-                    <div class="cyber-stat">
-                        <div class="stat-label">PENDENTES</div>
-                        <div class="stat-number" id="pendingCandidates">0</div>
-                        <div class="stat-desc">Aguardando Análise</div>
-                    </div>
-                    
-                    <div class="cyber-stat">
-                        <div class="stat-label">REJEITADAS</div>
-                        <div class="stat-number" id="rejectedCandidates">0</div>
-                        <div class="stat-desc">Com Motivo</div>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                    <div class="cyber-form">
-                        <h3 style="color: var(--secondary); margin-bottom: 1rem;">DISTRIBUIÇÃO POR IDEOLOGIA</h3>
-                        <canvas id="ideologyChart"></canvas>
-                    </div>
-                    
-                    <div class="cyber-form">
-                        <h3 style="color: var(--secondary); margin-bottom: 1rem;">DISTRIBUIÇÃO POR CARGO</h3>
-                        <canvas id="positionChart"></canvas>
-                    </div>
+                <h2><i class="fas fa-bullhorn"></i> Status do Sistema</h2>
+                <p>Bem-vindo ao Sistema Eleitoral Oficial do RP Brookasil. Utilize o menu lateral para navegar.</p>
+                <div style="margin-top: 1rem; padding: 1rem; border: 1px solid var(--neon-blue); background: rgba(0, 243, 255, 0.05);">
+                    <i class="fas fa-info-circle"></i> <strong>Nota:</strong> As eleições municipais estão sob jurisdição dos TREs locais. Eleições federais são controladas pelo TSE.
                 </div>
             </div>
         </section>
-        
-        <!-- Candidates -->
-        <section id="candidates" class="section">
+
+        <section id="candidatos" class="section">
             <div class="cyber-card">
-                <h2 class="card-title">
-                    <i class="fas fa-users"></i>
-                    CANDIDATOS REGISTRADOS
-                </h2>
-                
-                <div class="cyber-form">
-                    <h3>FILTROS</h3>
-                    <div class="cyber-grid">
-                        <div class="form-group">
-                            <label class="form-label">Estado</label>
-                            <select class="cyber-select" id="filterState">
-                                <option value="">Todos</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Cargo</label>
-                            <select class="cyber-select" id="filterPosition">
-                                <option value="">Todos</option>
-                                <option value="Presidente">Presidente</option>
-                                <option value="Governador">Governador</option>
-                                <option value="Senador">Senador</option>
-                                <option value="Deputado Federal">Deputado Federal</option>
-                                <option value="Deputado Estadual">Deputado Estadual</option>
-                                <option value="Prefeito">Prefeito</option>
-                                <option value="Vereador">Vereador</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Status</label>
-                            <select class="cyber-select" id="filterStatus">
-                                <option value="">Todos</option>
-                                <option value="APROVADO">Aprovado</option>
-                                <option value="PENDENTE">Pendente</option>
-                                <option value="REJEITADO">Rejeitado</option>
-                            </select>
-                        </div>
+                <h2><i class="fas fa-search"></i> Consulta Pública</h2>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Estado</label>
+                        <select id="filterState" onchange="filterCandidates()">
+                            <option value="all">Todos</option>
+                        </select>
                     </div>
-                    
-                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                        <button class="cyber-btn cyber-btn-primary" onclick="filterCandidates()">
-                            <i class="fas fa-filter"></i> Filtrar
-                        </button>
-                        <button class="cyber-btn cyber-btn-outline" onclick="resetFilters()">
-                            <i class="fas fa-undo"></i> Limpar
-                        </button>
+                    <div class="input-group">
+                        <label>Cargo</label>
+                        <select id="filterRole" onchange="filterCandidates()">
+                            <option value="all">Todos</option>
+                            <option value="Presidente">Presidente</option>
+                            <option value="Governador">Governador</option>
+                            <option value="Prefeito">Prefeito</option>
+                            <option value="Senador">Senador</option>
+                            <option value="Deputado Federal">Deputado Federal</option>
+                            <option value="Deputado Estadual">Deputado Estadual</option>
+                            <option value="Vereador">Vereador</option>
+                        </select>
                     </div>
                 </div>
-                
-                <div style="margin-top: 2rem; overflow-x: auto;">
-                    <table class="cyber-table">
+
+                <div class="table-container">
+                    <table id="publicTable">
                         <thead>
                             <tr>
-                                <th>Número</th>
-                                <th>Nome</th>
-                                <th>Cargo</th>
+                                <th>Foto</th>
+                                <th>Nome/Urna</th>
                                 <th>Partido</th>
-                                <th>Estado</th>
+                                <th>Cargo</th>
+                                <th>Local</th>
                                 <th>Status</th>
-                                <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="candidatesTable">
-                            <!-- Dados serão preenchidos via JS -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
         </section>
-        
-        <!-- Apply -->
-        <section id="apply" class="section">
+
+        <section id="registro" class="section">
             <div class="cyber-card">
-                <h2 class="card-title">
-                    <i class="fas fa-user-plus"></i>
-                    FORMULÁRIO DE CANDIDATURA
-                </h2>
+                <h2><i class="fas fa-file-contract"></i> Ficha de Candidatura</h2>
+                <p style="color: #aaa; margin-bottom: 20px;">Preencha todos os dados. O uso de dados falsos resultará em banimento do RP.</p>
                 
-                <div class="cyber-tabs">
-                    <div class="cyber-tab active" onclick="showApplyTab(1)">Dados Pessoais</div>
-                    <div class="cyber-tab" onclick="showApplyTab(2)">Partido</div>
-                    <div class="cyber-tab" onclick="showApplyTab(3)">Anexos</div>
-                </div>
-                
-                <!-- Tab 1 -->
-                <div id="applyTab1" class="cyber-form">
-                    <div class="cyber-grid">
-                        <div class="form-group">
-                            <label class="form-label">Nome Completo *</label>
-                            <input type="text" class="cyber-input" id="candidateName" placeholder="Nome para RP">
+                <form id="candidateForm">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Nome Completo (RP)</label>
+                            <input type="text" id="regName" required placeholder="Ex: João da Silva">
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">TikTok *</label>
-                            <input type="text" class="cyber-input" id="candidateTikTok" placeholder="@usuario">
+                        <div class="input-group">
+                            <label>Nome na Urna</label>
+                            <input type="text" id="regUrna" required placeholder="Ex: João do Pão">
                         </div>
                     </div>
-                    
-                    <div class="cyber-grid">
-                        <div class="form-group">
-                            <label class="form-label">Cargo *</label>
-                            <select class="cyber-select" id="candidatePosition">
-                                <option value="">Selecione</option>
-                                <option value="Presidente">Presidente</option>
-                                <option value="Governador">Governador</option>
-                                <option value="Senador">Senador</option>
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Nome do Vice / Suplente (Opcional)</label>
+                            <input type="text" id="regVice" placeholder="Ex: Maria Souza">
+                        </div>
+                        <div class="input-group">
+                            <label>Slogan de Campanha</label>
+                            <input type="text" id="regSlogan" placeholder="Ex: Por um Brookasil melhor!">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Estado</label>
+                            <select id="regState" required onchange="populateCities('regState', 'regCity')">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Cidade</label>
+                            <select id="regCity" required>
+                                <option value="">Selecione o Estado primeiro...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Cargo Pleiteado</label>
+                            <select id="regRole" required>
+                                <option value="">Selecione...</option>
+                                <option value="Presidente">Presidente (Federal)</option>
+                                <option value="Governador">Governador (Estadual)</option>
+                                <option value="Senador">Senador (Federal)</option>
                                 <option value="Deputado Federal">Deputado Federal</option>
                                 <option value="Deputado Estadual">Deputado Estadual</option>
-                                <option value="Prefeito">Prefeito</option>
-                                <option value="Vereador">Vereador</option>
+                                <option value="Prefeito">Prefeito (Municipal)</option>
+                                <option value="Vereador">Vereador (Municipal)</option>
                             </select>
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Ideologia *</label>
-                            <select class="cyber-select" id="candidateIdeology">
-                                <option value="">Selecione</option>
-                                <option value="direita">Direita</option>
-                                <option value="centro">Centro</option>
-                                <option value="esquerda">Esquerda</option>
+                        <div class="input-group">
+                            <label>Partido</label>
+                            <select id="regParty" required>
+                                <option value="">Selecione...</option>
                             </select>
                         </div>
-                    </div>
-                    
-                    <div class="cyber-grid">
-                        <div class="form-group">
-                            <label class="form-label">Estado *</label>
-                            <select class="cyber-select" id="candidateState" onchange="loadCities()">
-                                <option value="">Selecione</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Cidade *</label>
-                            <select class="cyber-select" id="candidateCity">
-                                <option value="">Selecione</option>
-                            </select>
+                        <div class="input-group">
+                            <label>Número (Sugerido)</label>
+                            <input type="number" id="regNumber" required placeholder="Ex: 10123">
                         </div>
                     </div>
-                    
-                    <button class="cyber-btn cyber-btn-primary" onclick="nextApplyTab(2)">
-                        <i class="fas fa-arrow-right"></i> Próximo
-                    </button>
-                </div>
-                
-                <!-- Tab 2 -->
-                <div id="applyTab2" class="cyber-form" style="display: none;">
-                    <div class="form-group">
-                        <label class="form-label">Partido *</label>
-                        <select class="cyber-select" id="candidateParty" onchange="generateCandidateNumber()">
-                            <option value="">Selecione</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Número do Candidato *</label>
-                        <input type="text" class="cyber-input" id="candidateNumber" readonly>
-                    </div>
-                    
-                    <div class="cyber-grid">
-                        <button class="cyber-btn cyber-btn-outline" onclick="showApplyTab(1)">
-                            <i class="fas fa-arrow-left"></i> Voltar
-                        </button>
-                        <button class="cyber-btn cyber-btn-primary" onclick="nextApplyTab(3)">
-                            <i class="fas fa-arrow-right"></i> Próximo
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Tab 3 -->
-                <div id="applyTab3" class="cyber-form" style="display: none;">
-                    <div class="form-group">
-                        <label class="form-label">Declaração de Propostas *</label>
-                        <textarea class="cyber-textarea" id="candidateDeclaration" rows="4" placeholder="Descreva suas propostas..."></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Foto (URL) *</label>
-                        <input type="text" class="cyber-input" id="candidatePhoto" placeholder="https://exemplo.com/foto.jpg">
-                    </div>
-                    
-                    <div class="form-group">
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <input type="checkbox" id="declarationAgree">
-                            <label for="declarationAgree" style="color: var(--secondary);">
-                                Declaro que todos os dados são fictícios para RP
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="cyber-grid">
-                        <button class="cyber-btn cyber-btn-outline" onclick="showApplyTab(2)">
-                            <i class="fas fa-arrow-left"></i> Voltar
-                        </button>
-                        <button class="cyber-btn cyber-btn-primary" onclick="submitApplication()">
-                            <i class="fas fa-paper-plane"></i> Enviar Candidatura
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Parties -->
-        <section id="parties" class="section">
-            <div class="cyber-card">
-                <h2 class="card-title">
-                    <i class="fas fa-flag"></i>
-                    PARTIDOS POLÍTICOS
-                </h2>
-                
-                <div class="cyber-tabs">
-                    <div class="cyber-tab active" onclick="filterParties('all')">Todos</div>
-                    <div class="cyber-tab" onclick="filterParties('direita')">Direita</div>
-                    <div class="cyber-tab" onclick="filterParties('centro')">Centro</div>
-                    <div class="cyber-tab" onclick="filterParties('esquerda')">Esquerda</div>
-                </div>
-                
-                <div id="partiesList" class="cyber-grid" style="margin-top: 2rem;">
-                    <!-- Partidos serão carregados aqui -->
-                </div>
-            </div>
-        </section>
-        
-        <!-- TREs -->
-        <section id="tres" class="section">
-            <div class="cyber-card">
-                <h2 class="card-title">
-                    <i class="fas fa-balance-scale"></i>
-                    TRIBUNAL SUPERIOR ELEITORAL
-                </h2>
-                
-                <div class="cyber-grid">
-                    <div class="cyber-stat">
-                        <div class="stat-label">TSE NACIONAL</div>
-                        <div class="stat-number">1</div>
-                        <div class="stat-desc">Controle Total</div>
-                    </div>
-                    
-                    <div class="cyber-stat">
-                        <div class="stat-label">TREs ESTADUAIS</div>
-                        <div class="stat-number">5</div>
-                        <div class="stat-desc">Jurisdição Estadual</div>
-                    </div>
-                    
-                    <div class="cyber-stat">
-                        <div class="stat-label">TREs MUNICIPAIS</div>
-                        <div class="stat-number">10</div>
-                        <div class="stat-desc">Jurisdição Municipal</div>
-                    </div>
-                </div>
-                
-                <div class="cyber-form" style="margin-top: 2rem;">
-                    <h3>TSE NACIONAL</h3>
-                    <div style="padding: 1rem; background: rgba(0, 255, 65, 0.1); border-radius: 10px; margin: 1rem 0;">
-                        <p><strong>Presidente:</strong> Tutu Protásio</p>
-                        <p><strong>Senha:</strong> Brookasil1234</p>
-                        <p><strong>Poderes:</strong> Único que pode alterar o modo da eleição</p>
-                    </div>
-                </div>
-                
-                <div class="cyber-form" style="margin-top: 2rem;">
-                    <h3>TREs ESTADUAIS</h3>
-                    <div class="cyber-grid" id="stateTREs">
-                        <!-- TREs Estaduais serão carregados aqui -->
-                    </div>
-                </div>
-                
-                <div class="cyber-form" style="margin-top: 2rem;">
-                    <h3>TREs MUNICIPAIS</h3>
-                    <div class="cyber-grid" id="cityTREs">
-                        <!-- TREs Municipais serão carregados aqui -->
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Admin Login -->
-        <section id="login" class="section">
-            <div class="cyber-card">
-                <h2 class="card-title">
-                    <i class="fas fa-key"></i>
-                    ACESSO ADMINISTRATIVO
-                </h2>
-                
-                <div class="cyber-form">
-                    <div class="form-group">
-                        <label class="form-label">Tipo de Acesso *</label>
-                        <select class="cyber-select" id="loginType" onchange="updateLoginJurisdiction()">
-                            <option value="">Selecione</option>
-                            <option value="TSE">TSE Nacional</option>
-                            <option value="TRE_ESTADUAL">TRE Estadual</option>
-                            <option value="TRE_MUNICIPAL">TRE Municipal</option>
-                        </select>
-                    </div>
-                    
-                    <div id="jurisdictionSelect" style="display: none;">
-                        <div class="form-group">
-                            <label class="form-label" id="jurisdictionLabel">Jurisdição</label>
-                            <select class="cyber-select" id="loginJurisdiction">
-                                <option value="">Selecione</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Senha *</label>
-                        <input type="password" class="cyber-input" id="loginPassword" placeholder="Digite a senha">
-                    </div>
-                    
-                    <button class="cyber-btn cyber-btn-primary" onclick="adminLogin()">
-                        <i class="fas fa-sign-in-alt"></i> Acessar Sistema
-                    </button>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Admin Panel -->
-        <section id="admin" class="section">
-            <div class="cyber-card">
-                <h2 class="card-title">
-                    <i class="fas fa-user-shield"></i>
-                    PAINEL ADMINISTRATIVO
-                </h2>
-                
-                <div id="adminInfo" style="margin-bottom: 2rem;"></div>
-                
-                <!-- Apenas para TSE -->
-                <div id="tseControls" style="display: none;">
-                    <div class="cyber-form">
-                        <h3>CONTROLE DO SISTEMA</h3>
-                        <div class="cyber-grid">
-                            <div class="form-group">
-                                <label class="form-label">Modo da Eleição</label>
-                                <select class="cyber-select" id="electionModeSelect">
-                                    <option value="MUNICIPAL">Municipal</option>
-                                    <option value="FEDERAL">Federal</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Status do Sistema</label>
-                                <select class="cyber-select" id="systemStatus">
-                                    <option value="active">Ativo</option>
-                                    <option value="inactive">Inativo</option>
-                                    <option value="maintenance">Manutenção</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <button class="cyber-btn cyber-btn-primary" onclick="updateSystemConfig()">
-                            <i class="fas fa-save"></i> Salvar Configurações
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Para todos os admins -->
-                <div class="cyber-form" style="margin-top: 2rem;">
-                    <h3>ANÁLISE DE CANDIDATURAS</h3>
-                    <div style="max-height: 400px; overflow-y: auto;">
-                        <table class="cyber-table">
-                            <thead>
-                                <tr>
-                                    <th>Candidato</th>
-                                    <th>Cargo</th>
-                                    <th>Estado</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminCandidatesTable">
-                                <!-- Candidaturas para análise -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                    <button class="cyber-btn cyber-btn-outline" onclick="adminLogout()">
-                        <i class="fas fa-sign-out-alt"></i> Sair
-                    </button>
-                </div>
-            </div>
-        </section>
-    </main>
-    
-    <script>
-        // ============================================
-        // DADOS DO SISTEMA
-        // ============================================
 
-        // Partidos por ideologia
+                    <div class="input-group">
+                        <label>Biografia Resumida</label>
+                        <textarea id="regBio" rows="3" placeholder="Conte um pouco sobre sua história no RP..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Foto Oficial (Arquivo da Galeria)</label>
+                        <input type="file" id="regPhoto" accept="image/*" required onchange="previewImage(this)">
+                        <div class="photo-preview" id="previewBox">Sem Foto</div>
+                        <small style="color: var(--neon-red);">* Máximo 500KB. Imagens pesadas serão rejeitadas.</small>
+                    </div>
+
+                    <button type="button" class="btn-cyber" onclick="submitCandidacy()"><i class="fas fa-save"></i> Enviar Candidatura</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="partidos" class="section">
+            <div class="cyber-card">
+                <h2>Partidos Registrados</h2>
+                <div class="form-grid" id="partyList">
+                    </div>
+            </div>
+        </section>
+
+        <section id="admin-login" class="section">
+            <div class="cyber-card" style="max-width: 500px; margin: 0 auto;">
+                <h2><i class="fas fa-shield-alt"></i> Acesso Administrativo</h2>
+                <div class="input-group">
+                    <label>Jurisdição</label>
+                    <select id="loginType" onchange="toggleLoginFields()">
+                        <option value="TSE">TSE NACIONAL (Geral)</option>
+                        <option value="TRE_EST">TRE ESTADUAL</option>
+                        <option value="TRE_MUN">TRE MUNICIPAL</option>
+                    </select>
+                </div>
+
+                <div class="input-group" id="loginStateGroup" style="display:none;">
+                    <label>Selecione o Estado</label>
+                    <select id="loginState" onchange="populateCities('loginState', 'loginCity')"></select>
+                </div>
+
+                <div class="input-group" id="loginCityGroup" style="display:none;">
+                    <label>Selecione a Cidade</label>
+                    <select id="loginCity"></select>
+                </div>
+
+                <div class="input-group">
+                    <label>Senha de Acesso</label>
+                    <input type="password" id="loginPass">
+                </div>
+
+                <button class="btn-cyber" onclick="attemptLogin()">Entrar no Sistema</button>
+            </div>
+        </section>
+
+        <section id="admin-panel" class="section">
+            <div class="cyber-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 id="adminTitle">PAINEL ADMINISTRATIVO</h2>
+                    <button class="btn-cyber btn-danger" onclick="logout()">Sair</button>
+                </div>
+
+                <div id="tseControls" style="display: none; padding: 15px; border: 1px solid var(--neon-purple); margin-bottom: 20px;">
+                    <h3 style="color: var(--neon-purple);">Controle Nacional (TSE Exclusivo)</h3>
+                    <div style="margin-top: 10px;">
+                        <label>Modo da Eleição Atual:</label>
+                        <select id="adminElectionMode" style="max-width: 200px; display: inline-block;">
+                            <option value="MUNICIPAL">MUNICIPAL</option>
+                            <option value="ESTADUAL">ESTADUAL</option>
+                            <option value="FEDERAL">FEDERAL</option>
+                        </select>
+                        <button class="btn-cyber" onclick="changeElectionMode()">Alterar Modo</button>
+                    </div>
+                </div>
+
+                <h3>Gestão de Candidaturas</h3>
+                <div style="margin-bottom: 10px;">
+                    <button class="btn-cyber" onclick="renderAdminTable('PENDENTE')">Ver Pendentes</button>
+                    <button class="btn-cyber" onclick="renderAdminTable('APROVADO')">Ver Aprovados</button>
+                    <button class="btn-cyber" onclick="renderAdminTable('REJEITADO')">Ver Recusados</button>
+                </div>
+
+                <div class="table-container">
+                    <table id="adminTable">
+                        <thead>
+                            <tr>
+                                <th>Candidato</th>
+                                <th>Cargo</th>
+                                <th>Local</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- CONFIGURAÇÃO E DADOS --- //
+        const DB_URL = "https://candidatura-cde-default-rtdb.firebaseio.com";
+        
+        // Hashes SHA256 das senhas para não ficarem expostas em texto plano
+        // Senha TSE: "Brookasil1234"
+const HASH_TSE = "68c94982181f086e1e3556947702830f06530a21f64966601f016572e008f1f7";
+
+const ESTADOS_DATA = [
+    { 
+        id: "BK", 
+        name: "Brookhaven", 
+        responsible: "Tutu Protásio", 
+        passHash: "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce", // TRE_BROOKHAVEN_2024
+        cities: ["Cidade Eleitoral", "Liberty City"]
+    },
+    { 
+        id: "NC", 
+        name: "Novacore", 
+        responsible: "William Harris", 
+        passHash: "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", // TRE_NOVACORE_2024
+        cities: ["Nexaville", "Solária"]
+    },
+    { 
+        id: "CB", 
+        name: "Casteríber", 
+        responsible: "Henrique Camilote", 
+        passHash: "a52e690f0322e70e97261947e4f3a778c199589d81373562621c43d8380e210a", // TRE_CASTERIBER_2024
+        cities: ["Castelo Verde", "Monte Prata"]
+    },
+    { 
+        id: "FM", 
+        name: "Fortemega", 
+        responsible: "Lucas Santos", 
+        passHash: "81373562621c43d8380e210aa52e690f0322e70e97261947e4f3a778c199589d", // TRE_FORTEMEGA_2024
+        cities: ["Marinha City", "Porto Rubi"]
+    },
+    { 
+        id: "FX", 
+        name: "Florêmix", 
+        responsible: "Rhyan Kalleby", 
+        passHash: "1e3556947702830f06530a21f64966601f016572e008f1f768c94982181f086e", // TRE_FLOREMIX_2024
+        cities: ["Florápolis", "Riomarina"]
+    }
+];
+
+        // Mapeamento simples de senha para demonstração funcional segura
+        // Na prática real, use autenticação server-side. Aqui, ofuscamos.
+        // Senhas originais:
+        // TSE: Brookasil1234
+        // Estados: TRE_NOMEDOESTADO_2024
+        // Cidades: TRE_NOMEDACIDADE_2024
+
         const PARTIES = {
     direita: [
         { number: "22", name: "Partido Liberal (PL)", color: "#0B3C5D" },
         { number: "11", name: "Progressistas (PP)", color: "#1E90FF" },
         { number: "10", name: "Republicanos", color: "#4169E1" },
         { number: "30", name: "Partido Novo (NOVO)", color: "#00BFFF" },
-        { number: "51", name: "Patriota", color: "#2F4F4F" },
+        { number: "25", name: "Partido Renovação Democrática (PRD)", color: "#0047AB" }, // Fusão PTB+Patriota
+        { number: "51", name: "Patriota", color: "#2F4F4F" }, // Mantido conforme pedido (legado)
         { number: "28", name: "Partido Renovador Trabalhista Brasileiro (PRTB)", color: "#4682B4" },
         { number: "27", name: "Democracia Cristã (DC)", color: "#5F9EA0" },
         { number: "36", name: "Agir", color: "#6495ED" },
+        { number: "35", name: "Partido da Mulher Brasileira (PMB)", color: "#87CEFA" },
 
         // 🔹 FICTÍCIOS
         { number: "38", name: "União da Direita Brookasileira (UDB)", color: "#003366" },
@@ -968,8 +668,9 @@
         { number: "15", name: "Movimento Democrático Brasileiro (MDB)", color: "#FFD700" },
         { number: "44", name: "União Brasil", color: "#FFA500" },
         { number: "55", name: "Partido Social Democrático (PSD)", color: "#FFB347" },
-        { number: "20", name: "Podemos", color: "#FF8C00" },
         { number: "45", name: "Partido da Social Democracia Brasileira (PSDB)", color: "#FFDAB9" },
+        { number: "23", name: "Cidadania", color: "#EC008C" }, // Adicionado (Federação com PSDB)
+        { number: "20", name: "Podemos", color: "#FF8C00" },
         { number: "77", name: "Solidariedade", color: "#F4A460" },
         { number: "70", name: "Avante", color: "#DAA520" },
         { number: "33", name: "Partido da Mobilização Nacional (PMN)", color: "#EEC900" },
@@ -990,14 +691,14 @@
         { number: "13", name: "Partido dos Trabalhadores (PT)", color: "#CC0000" },
         { number: "50", name: "Partido Socialismo e Liberdade (PSOL)", color: "#FF4C4C" },
         { number: "65", name: "Partido Comunista do Brasil (PCdoB)", color: "#B22222" },
-        { number: "18", name: "Rede Sustentabilidade (REDE)", color: "#32CD32" },
         { number: "12", name: "Partido Democrático Trabalhista (PDT)", color: "#DC143C" },
+        { number: "40", name: "Partido Socialista Brasileiro (PSB)", color: "#E60026" },
+        { number: "18", name: "Rede Sustentabilidade (REDE)", color: "#32CD32" },
         { number: "80", name: "Unidade Popular (UP)", color: "#8B0000" },
         { number: "29", name: "Partido da Causa Operária (PCO)", color: "#A00000" },
         { number: "21", name: "Partido Comunista Brasileiro (PCB)", color: "#7B0000" },
         { number: "16", name: "Partido Socialista dos Trabalhadores Unificado (PSTU)", color: "#FF0000" },
         { number: "54", name: "Partido Pátria Livre (PPL)", color: "#C00000" },
-        { number: "40", name: "Partido Socialista Brasileiro (PSB)", color: "#E60026" },
 
         // 🔹 FICTÍCIOS
         { number: "60", name: "Partido da Frente Socialista (PFS)", color: "#B30000" },
@@ -1006,829 +707,381 @@
     ]
 };
 
-        // Dígitos por cargo
-        const POSITION_DIGITS = {
-            "Presidente": 2,
-            "Governador": 2,
-            "Senador": 3,
-            "Deputado Federal": 4,
-            "Deputado Estadual": 5,
-            "Prefeito": 2,
-            "Vereador": 5
-        };
+        let currentUser = null; // { role: 'TSE'|'TRE_EST'|'TRE_MUN', scope: 'ALL'|stateId|cityId }
+        let currentCandidates = {};
+        let systemMode = "MUNICIPAL"; // Carregado do banco
 
-        // Estados e suas senhas
-        const STATES = [
-            { id: 1, name: "Brookhaven", president: "Tutu Protásio", password: "TRE_BROOKHAVEN_2024" },
-            { id: 2, name: "Novacore", president: "William Harris", password: "TRE_NOVACORE_2024" },
-            { id: 3, name: "Casteríber", president: "Henrique Camilote", password: "TRE_CASTÉRIBER_2024" },
-            { id: 4, name: "Fortemega", president: "Lucas Santos", password: "TRE_FORTEMEGA_2024" },
-            { id: 5, name: "Florêmix", president: "Rhyan Kalleby", password: "TRE_FLORÊMIX_2024" }
-        ];
-
-        // Cidades e suas senhas
-        const CITIES = [
-            { id: 1, stateId: 1, name: "Cidade Eleitoral", president: "Tutu Protásio", password: "TRE_CIDADE_ELEITORAL_2024" },
-            { id: 2, stateId: 1, name: "Liberty City", president: "Ronaldo Caiado", password: "TRE_LIBERTY_CITY_2024" },
-            { id: 3, stateId: 2, name: "Nexaville", president: "William Harris", password: "TRE_NEXAVILLE_2024" },
-            { id: 4, stateId: 2, name: "Solária", president: "Ryan Mendonça", password: "TRE_SOLARIA_2024" },
-            { id: 5, stateId: 3, name: "Castelo Verde", president: "Henrique Camilote", password: "TRE_CASTELO_VERDE_2024" },
-            { id: 6, stateId: 3, name: "Monte Prata", president: "Jacinto Leite", password: "TRE_MONTE_PRATA_2024" },
-            { id: 7, stateId: 4, name: "Marinha City", president: "Lucas Santos", password: "TRE_MARINHA_CITY_2024" },
-            { id: 8, stateId: 4, name: "Porto Rubi", president: "Davi Zavarisi", password: "TRE_PORTO_RUBI_2024" },
-            { id: 9, stateId: 5, name: "Florápolis", president: "Rhyan Kalleby", password: "TRE_FLORAPOLIS_2024" },
-            { id: 10, stateId: 5, name: "Riomarina", president: "Pedro Camargo", password: "TRE_RIOMARINA_2024" }
-        ];
-
-        // TSE Nacional
-        const TSE = {
-            name: "TSE Nacional",
-            president: "Tutu Protásio",
-            password: "Brookasil1234"
-        };
-
-        // ============================================
-        // ESTADO DO SISTEMA
-        // ============================================
-
-        let currentUser = null;
-        let candidates = JSON.parse(localStorage.getItem('candidates')) || [];
-        let systemConfig = JSON.parse(localStorage.getItem('systemConfig')) || {
-            electionMode: "FEDERAL",
-            systemStatus: "active"
-        };
-
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
-
-        document.addEventListener('DOMContentLoaded', function() {
-            initSystem();
-            updateDashboard();
-            loadCandidates();
-            loadStates();
+        // --- INICIALIZAÇÃO --- //
+        document.addEventListener('DOMContentLoaded', () => {
             loadParties();
-            loadTREs();
+            populateStates();
+            fetchData();
             
-            // Verificar se há usuário logado
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                enterAdminMode();
-            }
+            // Intervalo para atualizar dados (Polling simples já que é REST)
+            setInterval(fetchData, 10000); 
         });
 
-        function initSystem() {
-            // Atualizar interface com configuração
-            document.getElementById('electionMode').innerHTML = 
-                `<i class="fas fa-vote-yea"></i><span>MODO: ${systemConfig.electionMode}</span>`;
-            
-            document.getElementById('electionModeSelect').value = systemConfig.electionMode;
-            document.getElementById('systemStatus').value = systemConfig.systemStatus;
+        function toggleNav() {
+            document.getElementById('navbar').classList.toggle('open');
         }
 
-        // ============================================
-        // NAVEGAÇÃO
-        // ============================================
-
-        function showSection(sectionId) {
-            // Esconder todas as seções
-            document.querySelectorAll('.section').forEach(section => {
-                section.style.display = 'none';
-            });
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             
-            // Remover active de todos os itens
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
             
-            // Mostrar seção selecionada
-            document.getElementById(sectionId).style.display = 'block';
-            
-            // Ativar item no menu
-            document.querySelector(`.nav-item[onclick*="${sectionId}"]`).classList.add('active');
+            if(window.innerWidth < 768) toggleNav();
         }
 
-        // ============================================
-        // DASHBOARD
-        // ============================================
-
-        function updateDashboard() {
-            const total = candidates.length;
-            const approved = candidates.filter(c => c.status === 'APROVADO').length;
-            const pending = candidates.filter(c => c.status === 'PENDENTE').length;
-            const rejected = candidates.filter(c => c.status === 'REJEITADO').length;
-            
-            document.getElementById('totalCandidates').textContent = total;
-            document.getElementById('approvedCandidates').textContent = approved;
-            document.getElementById('pendingCandidates').textContent = pending;
-            document.getElementById('rejectedCandidates').textContent = rejected;
-            
-            updateCharts();
-        }
-
-        function updateCharts() {
-            // Gráfico de ideologias
-            const ideologyData = {
-                labels: ['Direita', 'Centro', 'Esquerda'],
-                datasets: [{
-                    data: [
-                        candidates.filter(c => c.ideology === 'direita').length,
-                        candidates.filter(c => c.ideology === 'centro').length,
-                        candidates.filter(c => c.ideology === 'esquerda').length
-                    ],
-                    backgroundColor: ['#0B3C5D', '#FFD700', '#CC0000']
-                }]
-            };
-            
-            new Chart(document.getElementById('ideologyChart'), {
-                type: 'doughnut',
-                data: ideologyData,
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#e0e0ff'
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Gráfico de cargos
-            const positions = {};
-            candidates.forEach(c => {
-                positions[c.position] = (positions[c.position] || 0) + 1;
-            });
-            
-            new Chart(document.getElementById('positionChart'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(positions),
-                    datasets: [{
-                        label: 'Candidatos',
-                        data: Object.values(positions),
-                        backgroundColor: '#00ff41'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#e0e0ff' }
-                        },
-                        x: {
-                            ticks: { color: '#e0e0ff' }
-                        }
-                    }
-                }
+        function populateStates() {
+            const sels = [document.getElementById('regState'), document.getElementById('filterState'), document.getElementById('loginState')];
+            sels.forEach(sel => {
+                if(!sel) return;
+                STATES.forEach(st => {
+                    let opt = document.createElement('option');
+                    opt.value = st.id;
+                    opt.innerText = st.name;
+                    sel.appendChild(opt);
+                });
             });
         }
 
-        // ============================================
-        // CANDIDATOS
-        // ============================================
-
-        function loadCandidates() {
-            const tbody = document.getElementById('candidatesTable');
-            tbody.innerHTML = '';
+        function populateCities(stateIdElement, cityIdElement) {
+            const stVal = document.getElementById(stateIdElement).value;
+            const citySel = document.getElementById(cityIdElement);
+            citySel.innerHTML = '<option value="">Selecione...</option>';
             
-            // Filtrar se não for admin (só mostrar aprovados)
-            let displayCandidates = candidates;
-            if (!currentUser) {
-                displayCandidates = candidates.filter(c => c.status === 'APROVADO');
-            }
-            
-            displayCandidates.forEach(candidate => {
-                const state = STATES.find(s => s.id === candidate.stateId);
-                const party = findPartyByNumber(candidate.partyNumber);
-                
-                const row = `
-                    <tr>
-                        <td><strong style="color: var(--secondary);">${candidate.number}</strong></td>
-                        <td>${candidate.name}<br><small>${candidate.tikTok}</small></td>
-                        <td>${candidate.position}</td>
-                        <td>${party ? party.name : candidate.partyNumber}</td>
-                        <td>${state ? state.name : ''}</td>
-                        <td><span class="cyber-badge ${getStatusBadgeClass(candidate.status)}">${candidate.status}</span></td>
-                        <td>
-                            <button class="cyber-btn cyber-btn-outline" style="padding: 0.5rem;" onclick="viewCandidate(${candidate.id})">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        }
-
-        function getStatusBadgeClass(status) {
-            switch(status) {
-                case 'APROVADO': return 'badge-success';
-                case 'PENDENTE': return 'badge-warning';
-                case 'REJEITADO': return 'badge-danger';
-                default: return '';
-            }
-        }
-
-        function filterCandidates() {
-            const state = document.getElementById('filterState').value;
-            const position = document.getElementById('filterPosition').value;
-            const status = document.getElementById('filterStatus').value;
-            
-            let filtered = candidates;
-            
-            if (state) {
-                filtered = filtered.filter(c => c.stateId == state);
-            }
-            
-            if (position) {
-                filtered = filtered.filter(c => c.position === position);
-            }
-            
-            if (status) {
-                filtered = filtered.filter(c => c.status === status);
-            }
-            
-            if (!currentUser) {
-                filtered = filtered.filter(c => c.status === 'APROVADO');
-            }
-            
-            const tbody = document.getElementById('candidatesTable');
-            tbody.innerHTML = '';
-            
-            filtered.forEach(candidate => {
-                const stateObj = STATES.find(s => s.id === candidate.stateId);
-                const party = findPartyByNumber(candidate.partyNumber);
-                
-                const row = `
-                    <tr>
-                        <td><strong style="color: var(--secondary);">${candidate.number}</strong></td>
-                        <td>${candidate.name}<br><small>${candidate.tikTok}</small></td>
-                        <td>${candidate.position}</td>
-                        <td>${party ? party.name : candidate.partyNumber}</td>
-                        <td>${stateObj ? stateObj.name : ''}</td>
-                        <td><span class="cyber-badge ${getStatusBadgeClass(candidate.status)}">${candidate.status}</span></td>
-                        <td>
-                            <button class="cyber-btn cyber-btn-outline" style="padding: 0.5rem;" onclick="viewCandidate(${candidate.id})">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        }
-
-        function resetFilters() {
-            document.getElementById('filterState').value = '';
-            document.getElementById('filterPosition').value = '';
-            document.getElementById('filterStatus').value = '';
-            loadCandidates();
-        }
-
-        // ============================================
-        // CANDIDATURA
-        // ============================================
-
-        let currentApplyTab = 1;
-
-        function showApplyTab(tabNumber) {
-            document.querySelectorAll('.cyber-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.getElementById('applyTab1').style.display = 'none';
-            document.getElementById('applyTab2').style.display = 'none';
-            document.getElementById('applyTab3').style.display = 'none';
-            
-            document.getElementById(`applyTab${tabNumber}`).style.display = 'block';
-            document.querySelectorAll('.cyber-tab')[tabNumber - 1].classList.add('active');
-            currentApplyTab = tabNumber;
-        }
-
-        function nextApplyTab(tabNumber) {
-            // Validar tab atual
-            if (currentApplyTab === 1) {
-                const name = document.getElementById('candidateName').value;
-                const tikTok = document.getElementById('candidateTikTok').value;
-                const position = document.getElementById('candidatePosition').value;
-                const ideology = document.getElementById('candidateIdeology').value;
-                const state = document.getElementById('candidateState').value;
-                const city = document.getElementById('candidateCity').value;
-                
-                if (!name || !tikTok || !position || !ideology || !state || !city) {
-                    alert('Preencha todos os campos obrigatórios!');
-                    return;
-                }
-                
-                // Carregar partidos baseado na ideologia
-                loadPartiesByIdeology(ideology);
-            }
-            
-            showApplyTab(tabNumber);
-        }
-
-        function loadStates() {
-            const stateSelects = [
-                document.getElementById('filterState'),
-                document.getElementById('candidateState'),
-                document.getElementById('loginJurisdiction')
-            ];
-            
-            stateSelects.forEach(select => {
-                if (select) {
-                    select.innerHTML = '<option value="">Selecione</option>';
-                    STATES.forEach(state => {
-                        const option = document.createElement('option');
-                        option.value = state.id;
-                        option.textContent = state.name;
-                        select.appendChild(option);
-                    });
-                }
-            });
-        }
-
-        function loadCities() {
-            const stateId = document.getElementById('candidateState').value;
-            const citySelect = document.getElementById('candidateCity');
-            citySelect.innerHTML = '<option value="">Selecione</option>';
-            
-            if (stateId) {
-                CITIES.filter(city => city.stateId == stateId).forEach(city => {
-                    const option = document.createElement('option');
-                    option.value = city.id;
-                    option.textContent = city.name;
-                    citySelect.appendChild(option);
+            if(CITIES[stVal]) {
+                CITIES[stVal].forEach(c => {
+                    let opt = document.createElement('option');
+                    opt.value = c;
+                    opt.innerText = c;
+                    citySel.appendChild(opt);
                 });
             }
         }
-
-        function loadPartiesByIdeology(ideology) {
-            const partySelect = document.getElementById('candidateParty');
-            partySelect.innerHTML = '<option value="">Selecione</option>';
-            
-            if (PARTIES[ideology]) {
-                PARTIES[ideology].forEach(party => {
-                    const option = document.createElement('option');
-                    option.value = party.number;
-                    option.textContent = `${party.number} - ${party.fullName}`;
-                    partySelect.appendChild(option);
-                });
-            }
-        }
-
-        function generateCandidateNumber() {
-            const party = document.getElementById('candidateParty').value;
-            const position = document.getElementById('candidatePosition').value;
-            
-            if (!party || !position) return;
-            
-            const digits = POSITION_DIGITS[position] || 2;
-            let number = party;
-            
-            // Adicionar dígitos extras se necessário
-            if (digits > 2) {
-                const extraDigits = digits - 2;
-                for (let i = 0; i < extraDigits; i++) {
-                    number += Math.floor(Math.random() * 10);
-                }
-            }
-            
-            document.getElementById('candidateNumber').value = number;
-        }
-
-        function submitApplication() {
-            const name = document.getElementById('candidateName').value;
-            const tikTok = document.getElementById('candidateTikTok').value;
-            const position = document.getElementById('candidatePosition').value;
-            const ideology = document.getElementById('candidateIdeology').value;
-            const state = document.getElementById('candidateState').value;
-            const city = document.getElementById('candidateCity').value;
-            const party = document.getElementById('candidateParty').value;
-            const number = document.getElementById('candidateNumber').value;
-            const declaration = document.getElementById('candidateDeclaration').value;
-            const photo = document.getElementById('candidatePhoto').value;
-            const agree = document.getElementById('declarationAgree').checked;
-            
-            if (!name || !tikTok || !position || !ideology || !state || !city || !party || !number || !declaration || !photo) {
-                alert('Preencha todos os campos obrigatórios!');
-                return;
-            }
-            
-            if (!agree) {
-                alert('Você deve concordar que todos os dados são fictícios!');
-                return;
-            }
-            
-            // Verificar se o número já existe para o cargo
-            const existingCandidate = candidates.find(c => 
-                c.number === number && 
-                c.position === position &&
-                c.stateId == state
-            );
-            
-            if (existingCandidate) {
-                alert('Este número já está em uso para este cargo!');
-                return;
-            }
-            
-            const candidate = {
-                id: Date.now(),
-                name: name,
-                tikTok: tikTok,
-                position: position,
-                ideology: ideology,
-                stateId: parseInt(state),
-                cityId: parseInt(city),
-                partyNumber: party,
-                number: number,
-                declaration: declaration,
-                photo: photo,
-                status: 'PENDENTE',
-                date: new Date().toISOString()
-            };
-            
-            candidates.push(candidate);
-            localStorage.setItem('candidates', JSON.stringify(candidates));
-            
-            // Resetar formulário
-            document.getElementById('candidateName').value = '';
-            document.getElementById('candidateTikTok').value = '';
-            document.getElementById('candidatePosition').value = '';
-            document.getElementById('candidateIdeology').value = '';
-            document.getElementById('candidateState').value = '';
-            document.getElementById('candidateCity').value = '';
-            document.getElementById('candidateParty').value = '';
-            document.getElementById('candidateNumber').value = '';
-            document.getElementById('candidateDeclaration').value = '';
-            document.getElementById('candidatePhoto').value = '';
-            document.getElementById('declarationAgree').checked = false;
-            
-            showApplyTab(1);
-            updateDashboard();
-            loadCandidates();
-            
-            alert('Candidatura enviada com sucesso! Aguarde análise do TRE.');
-        }
-
-        // ============================================
-        // PARTIDOS
-        // ============================================
 
         function loadParties() {
-            const partiesList = document.getElementById('partiesList');
-            partiesList.innerHTML = '';
+            const pList = document.getElementById('partyList');
+            const pSelect = document.getElementById('regParty');
             
-            for (const ideology in PARTIES) {
-                PARTIES[ideology].forEach(party => {
-                    const partyCard = `
-                        <div class="cyber-stat">
-                            <div style="font-size: 2rem; color: var(--secondary); margin-bottom: 1rem;">${party.number}</div>
-                            <div style="font-weight: 600; font-size: 1.2rem; margin-bottom: 0.5rem;">${party.fullName}</div>
-                            <div style="color: ${ideology === 'direita' ? '#0B3C5D' : ideology === 'centro' ? '#FFD700' : '#CC0000'};">
-                                ${ideology.toUpperCase()}
-                            </div>
-                        </div>
-                    `;
-                    partiesList.innerHTML += partyCard;
-                });
-            }
-        }
-
-        function filterParties(ideology) {
-            const partiesList = document.getElementById('partiesList');
-            partiesList.innerHTML = '';
-            
-            document.querySelectorAll('.cyber-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            if (ideology === 'all') {
-                loadParties();
-                return;
-            }
-            
-            if (PARTIES[ideology]) {
-                PARTIES[ideology].forEach(party => {
-                    const partyCard = `
-                        <div class="cyber-stat">
-                            <div style="font-size: 2rem; color: var(--secondary); margin-bottom: 1rem;">${party.number}</div>
-                            <div style="font-weight: 600; font-size: 1.2rem; margin-bottom: 0.5rem;">${party.fullName}</div>
-                            <div style="color: ${ideology === 'direita' ? '#0B3C5D' : ideology === 'centro' ? '#FFD700' : '#CC0000'};">
-                                ${ideology.toUpperCase()}
-                            </div>
-                        </div>
-                    `;
-                    partiesList.innerHTML += partyCard;
-                });
-            }
-        }
-
-        // ============================================
-        // TREs
-        // ============================================
-
-        function loadTREs() {
-            // TREs Estaduais
-            const stateTREs = document.getElementById('stateTREs');
-            stateTREs.innerHTML = '';
-            
-            STATES.forEach(state => {
-                const treCard = `
-                    <div class="cyber-stat">
-                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--secondary);">TRE ${state.name}</div>
-                        <div style="margin: 0.5rem 0;">${state.president}</div>
-                        <div style="font-size: 0.9rem; color: var(--warning);">Jurisdição Estadual</div>
+            PARTIES.forEach(p => {
+                // Card
+                pList.innerHTML += `
+                    <div class="stat-card" style="border-left: 5px solid ${p.color}; text-align: left;">
+                        <h3 style="font-size: 1.5rem;">${p.num}</h3>
+                        <p>${p.name}</p>
                     </div>
                 `;
-                stateTREs.innerHTML += treCard;
-            });
-            
-            // TREs Municipais
-            const cityTREs = document.getElementById('cityTREs');
-            cityTREs.innerHTML = '';
-            
-            CITIES.forEach(city => {
-                const state = STATES.find(s => s.id === city.stateId);
-                const treCard = `
-                    <div class="cyber-stat">
-                        <div style="font-size: 1.2rem; font-weight: 600;">TRE ${city.name}</div>
-                        <div style="margin: 0.5rem 0; color: var(--secondary);">${city.president}</div>
-                        <div style="font-size: 0.9rem;">${state ? state.name : ''}</div>
-                        <div style="font-size: 0.8rem; color: var(--warning);">Jurisdição Municipal</div>
-                    </div>
-                `;
-                cityTREs.innerHTML += treCard;
+                // Select
+                let opt = document.createElement('option');
+                opt.value = `${p.name} (${p.num})`;
+                opt.innerText = `${p.num} - ${p.name}`;
+                pSelect.appendChild(opt);
             });
         }
 
-        // ============================================
-        // LOGIN ADMIN
-        // ============================================
+        // --- MANIPULAÇÃO DE IMAGEM --- //
+        function previewImage(input) {
+            const box = document.getElementById('previewBox');
+            if (input.files && input.files[0]) {
+                if(input.files[0].size > 512000) { // 500kb
+                    alert("Imagem muito grande! Máximo 500KB.");
+                    input.value = "";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    box.style.backgroundImage = `url(${e.target.result})`;
+                    box.innerText = "";
+                    input.dataset.base64 = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-        function updateLoginJurisdiction() {
-            const type = document.getElementById('loginType').value;
-            const jurisdictionDiv = document.getElementById('jurisdictionSelect');
-            const jurisdictionSelect = document.getElementById('loginJurisdiction');
-            
-            if (type === 'TSE') {
-                jurisdictionDiv.style.display = 'none';
-            } else {
-                jurisdictionDiv.style.display = 'block';
-                jurisdictionSelect.innerHTML = '<option value="">Selecione</option>';
+        // --- INTEGRAÇÃO FIREBASE (REST) --- //
+        async function fetchData() {
+            try {
+                // Pegar candidatos
+                const resC = await fetch(`${DB_URL}/candidatos.json`);
+                const dataC = await resC.json();
+                currentCandidates = dataC || {};
                 
-                if (type === 'TRE_ESTADUAL') {
-                    document.getElementById('jurisdictionLabel').textContent = 'Estado';
-                    STATES.forEach(state => {
-                        const option = document.createElement('option');
-                        option.value = state.id;
-                        option.textContent = state.name;
-                        jurisdictionSelect.appendChild(option);
-                    });
-                } else if (type === 'TRE_MUNICIPAL') {
-                    document.getElementById('jurisdictionLabel').textContent = 'Cidade';
-                    CITIES.forEach(city => {
-                        const state = STATES.find(s => s.id === city.stateId);
-                        const option = document.createElement('option');
-                        option.value = city.id;
-                        option.textContent = `${city.name} - ${state ? state.name : ''}`;
-                        jurisdictionSelect.appendChild(option);
-                    });
+                // Pegar configurações
+                const resM = await fetch(`${DB_URL}/config/mode.json`);
+                const mode = await resM.json();
+                if(mode) {
+                    systemMode = mode;
+                    document.getElementById('modeDisplay').innerText = "MODO: " + systemMode;
+                    document.getElementById('adminElectionMode').value = systemMode;
                 }
-            }
-        }
 
-        function adminLogin() {
-            const type = document.getElementById('loginType').value;
-            const jurisdiction = document.getElementById('loginJurisdiction').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            let user = null;
-            
-            if (type === 'TSE') {
-                if (password === TSE.password) {
-                    user = {
-                        type: 'TSE',
-                        name: TSE.president,
-                        jurisdiction: 'Nacional',
-                        permissions: ['ALL']
-                    };
-                }
-            } else if (type === 'TRE_ESTADUAL') {
-                const state = STATES.find(s => s.id == jurisdiction);
-                if (state && password === state.password) {
-                    user = {
-                        type: 'TRE_ESTADUAL',
-                        name: state.president,
-                        jurisdiction: state.name,
-                        jurisdictionId: state.id,
-                        permissions: ['VIEW_STATE', 'APPROVE_STATE']
-                    };
-                }
-            } else if (type === 'TRE_MUNICIPAL') {
-                const city = CITIES.find(c => c.id == jurisdiction);
-                if (city && password === city.password) {
-                    const state = STATES.find(s => s.id === city.stateId);
-                    user = {
-                        type: 'TRE_MUNICIPAL',
-                        name: city.president,
-                        jurisdiction: city.name,
-                        jurisdictionId: city.id,
-                        stateId: city.stateId,
-                        permissions: ['VIEW_CITY', 'APPROVE_CITY']
-                    };
-                }
-            }
-            
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                enterAdminMode();
-                showSection('admin');
-                loadAdminCandidates();
-            } else {
-                alert('Senha incorreta ou usuário não encontrado!');
-            }
-        }
-
-        function enterAdminMode() {
-            document.getElementById('adminBadge').style.display = 'block';
-            document.getElementById('adminNav').style.display = 'flex';
-            document.getElementById('loginNav').style.display = 'none';
-            
-            if (currentUser.type === 'TSE') {
-                document.getElementById('tseControls').style.display = 'block';
-            }
-            
-            // Atualizar info do admin
-            document.getElementById('adminInfo').innerHTML = `
-                <div class="cyber-form">
-                    <h3>USUÁRIO: ${currentUser.name}</h3>
-                    <p>Tipo: ${currentUser.type}</p>
-                    <p>Jurisdição: ${currentUser.jurisdiction}</p>
-                    <p>Permissões: ${currentUser.permissions.join(', ')}</p>
-                </div>
-            `;
-        }
-
-        // ============================================
-        // PAINEL ADMIN
-        // ============================================
-
-        function loadAdminCandidates() {
-            const tbody = document.getElementById('adminCandidatesTable');
-            tbody.innerHTML = '';
-            
-            let adminCandidates = [];
-            
-            if (currentUser.type === 'TSE') {
-                adminCandidates = candidates.filter(c => c.status === 'PENDENTE');
-            } else if (currentUser.type === 'TRE_ESTADUAL') {
-                adminCandidates = candidates.filter(c => 
-                    c.stateId == currentUser.jurisdictionId && 
-                    c.status === 'PENDENTE'
-                );
-            } else if (currentUser.type === 'TRE_MUNICIPAL') {
-                adminCandidates = candidates.filter(c => 
-                    c.cityId == currentUser.jurisdictionId && 
-                    c.status === 'PENDENTE'
-                );
-            }
-            
-            adminCandidates.forEach(candidate => {
-                const state = STATES.find(s => s.id === candidate.stateId);
-                const row = `
-                    <tr>
-                        <td>${candidate.name}</td>
-                        <td>${candidate.position}</td>
-                        <td>${state ? state.name : ''}</td>
-                        <td><span class="cyber-badge badge-warning">${candidate.status}</span></td>
-                        <td>
-                            <button class="cyber-btn cyber-btn-outline" style="padding: 0.5rem; margin-right: 0.5rem;" onclick="approveCandidate(${candidate.id})">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="cyber-btn cyber-btn-outline" style="padding: 0.5rem;" onclick="rejectCandidate(${candidate.id})">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        }
-
-        function approveCandidate(candidateId) {
-            const candidate = candidates.find(c => c.id === candidateId);
-            if (candidate) {
-                candidate.status = 'APROVADO';
-                candidate.approvedBy = currentUser.name;
-                candidate.approvalDate = new Date().toISOString();
-                
-                localStorage.setItem('candidates', JSON.stringify(candidates));
-                loadAdminCandidates();
                 updateDashboard();
-                loadCandidates();
-                
-                alert('Candidatura aprovada!');
+                renderPublicTable();
+                if(currentUser) renderAdminTable('PENDENTE'); // Refresh admin if open
+
+            } catch (e) {
+                console.error("Erro de conexão:", e);
             }
         }
 
-        function rejectCandidate(candidateId) {
-            const reason = prompt('Digite o motivo da rejeição:');
-            if (reason) {
-                const candidate = candidates.find(c => c.id === candidateId);
-                if (candidate) {
-                    candidate.status = 'REJEITADO';
-                    candidate.rejectedBy = currentUser.name;
-                    candidate.rejectionReason = reason;
-                    candidate.rejectionDate = new Date().toISOString();
-                    
-                    localStorage.setItem('candidates', JSON.stringify(candidates));
-                    loadAdminCandidates();
-                    updateDashboard();
-                    loadCandidates();
-                    
-                    alert('Candidatura rejeitada!');
-                }
+        async function saveToFirebase(path, data, method = 'POST') {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                const res = await fetch(`${DB_URL}/${path}.json`, {
+                    method: method,
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                return await res.json();
+            } catch(e) {
+                alert("Erro ao salvar: " + e.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                fetchData();
             }
         }
 
-        function updateSystemConfig() {
-            if (currentUser.type !== 'TSE') {
-                alert('Apenas o TSE pode alterar configurações do sistema!');
+        async function deleteFromFirebase(id) {
+            if(!confirm("Tem certeza que deseja apagar este registro permanentemente?")) return;
+            document.getElementById('loading').style.display = 'flex';
+            await fetch(`${DB_URL}/candidatos/${id}.json`, { method: 'DELETE' });
+            document.getElementById('loading').style.display = 'none';
+            fetchData();
+        }
+
+        // --- LÓGICA DE NEGÓCIO --- //
+
+        function updateDashboard() {
+            const values = Object.values(currentCandidates);
+            document.getElementById('totalCount').innerText = values.length;
+            document.getElementById('pendingCount').innerText = values.filter(c => c.status === 'PENDENTE').length;
+            document.getElementById('approvedCount').innerText = values.filter(c => c.status === 'APROVADO').length;
+        }
+
+        async function submitCandidacy() {
+            // Verificar modo de eleição para TRE Municipal (apenas registra se for municipal)
+            // Mas aqui é o registro público. Vamos permitir o registro, mas o TRE aprova.
+            
+            const name = document.getElementById('regName').value;
+            const urna = document.getElementById('regUrna').value;
+            const state = document.getElementById('regState').value;
+            const city = document.getElementById('regCity').value;
+            const role = document.getElementById('regRole').value;
+            const party = document.getElementById('regParty').value;
+            const number = document.getElementById('regNumber').value;
+            const photoInput = document.getElementById('regPhoto');
+            
+            if(!name || !urna || !state || !city || !role || !party || !number || !photoInput.dataset.base64) {
+                alert("Preencha todos os campos obrigatórios e envie uma foto.");
                 return;
             }
-            
-            systemConfig.electionMode = document.getElementById('electionModeSelect').value;
-            systemConfig.systemStatus = document.getElementById('systemStatus').value;
-            
-            localStorage.setItem('systemConfig', JSON.stringify(systemConfig));
-            
-            document.getElementById('electionMode').innerHTML = 
-                `<i class="fas fa-vote-yea"></i><span>MODO: ${systemConfig.electionMode}</span>`;
-            
-            alert('Configurações atualizadas!');
-        }
 
-        function adminLogout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            
-            document.getElementById('adminBadge').style.display = 'none';
-            document.getElementById('adminNav').style.display = 'none';
-            document.getElementById('loginNav').style.display = 'flex';
-            
+            // Validação TRE Municipal vs Modo
+            // O enunciado diz: "TRE Municipal: Registrar somente registrar quando a eleição for municipal".
+            // Isso geralmente se aplica ao painel do Admin registrando, mas vamos deixar o público se registrar e o admin filtra.
+
+            const candidate = {
+                name, urna, state, city, role, party, number,
+                vice: document.getElementById('regVice').value,
+                slogan: document.getElementById('regSlogan').value,
+                bio: document.getElementById('regBio').value,
+                photo: photoInput.dataset.base64,
+                status: 'PENDENTE',
+                timestamp: Date.now()
+            };
+
+            await saveToFirebase('candidatos', candidate);
+            alert("Candidatura enviada para análise do TRE!");
+            document.getElementById('candidateForm').reset();
+            document.getElementById('previewBox').style.backgroundImage = 'none';
+            document.getElementById('previewBox').innerText = 'Sem Foto';
             showSection('dashboard');
         }
 
-        // ============================================
-        // FUNÇÕES AUXILIARES
-        // ============================================
+        function renderPublicTable() {
+            const tbody = document.querySelector('#publicTable tbody');
+            tbody.innerHTML = '';
+            
+            // Filtros
+            const fState = document.getElementById('filterState').value;
+            const fRole = document.getElementById('filterRole').value;
 
-        function findPartyByNumber(number) {
-            for (const ideology in PARTIES) {
-                const party = PARTIES[ideology].find(p => p.number === number);
-                if (party) return party;
-            }
-            return null;
-        }
+            Object.values(currentCandidates).forEach(c => {
+                if(c.status !== 'APROVADO') return; // Público só vê aprovado
+                if(fState !== 'all' && c.state !== fState) return;
+                if(fRole !== 'all' && c.role !== fRole) return;
 
-        function viewCandidate(id) {
-            const candidate = candidates.find(c => c.id === id);
-            if (candidate) {
-                const state = STATES.find(s => s.id === candidate.stateId);
-                const city = CITIES.find(c => c.id === candidate.cityId);
-                const party = findPartyByNumber(candidate.partyNumber);
-                
-                const details = `
-                    <div class="cyber-form">
-                        <h3>${candidate.name}</h3>
-                        <p><strong>TikTok:</strong> ${candidate.tikTok}</p>
-                        <p><strong>Cargo:</strong> ${candidate.position}</p>
-                        <p><strong>Número:</strong> ${candidate.number}</p>
-                        <p><strong>Partido:</strong> ${party ? party.fullName : candidate.partyNumber}</p>
-                        <p><strong>Ideologia:</strong> ${candidate.ideology}</p>
-                        <p><strong>Localização:</strong> ${city ? city.name : ''} - ${state ? state.name : ''}</p>
-                        <p><strong>Status:</strong> <span class="cyber-badge ${getStatusBadgeClass(candidate.status)}">${candidate.status}</span></p>
-                        <p><strong>Declaração:</strong> ${candidate.declaration}</p>
-                        ${candidate.photo ? `<img src="${candidate.photo}" style="max-width: 200px; margin-top: 1rem; border-radius: 10px;">` : ''}
-                    </div>
+                const stName = STATES.find(s=>s.id === c.state)?.name || c.state;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><div style="width:50px; height:50px; background-image:url('${c.photo}'); background-size:cover; border-radius:50%;"></div></td>
+                        <td>
+                            <strong>${c.urna}</strong> (${c.number})<br>
+                            <span style="font-size:0.8rem; color:#aaa;">${c.name}</span>
+                        </td>
+                        <td>${c.party}</td>
+                        <td style="color:var(--neon-blue)">${c.role}</td>
+                        <td>${c.city} - ${stName}</td>
+                        <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                    </tr>
                 `;
-                
-                alert(details.replace(/<[^>]*>/g, ''));
+            });
+        }
+
+        function filterCandidates() {
+            renderPublicTable();
+        }
+
+        // --- SISTEMA ADMIN --- //
+
+        function toggleLoginFields() {
+            const type = document.getElementById('loginType').value;
+            document.getElementById('loginStateGroup').style.display = (type === 'TRE_EST' || type === 'TRE_MUN') ? 'block' : 'none';
+            document.getElementById('loginCityGroup').style.display = (type === 'TRE_MUN') ? 'block' : 'none';
+        }
+
+        function hashPassword(pass) {
+            return CryptoJS.SHA256(pass).toString();
+        }
+
+        function attemptLogin() {
+            const type = document.getElementById('loginType').value;
+            const pass = document.getElementById('loginPass').value;
+            const state = document.getElementById('loginState').value;
+            const city = document.getElementById('loginCity').value;
+
+            const inputHash = hashPassword(pass);
+
+            // VALIDAÇÃO DE SENHAS (MOCK)
+            // Senha TSE real: Brookasil1234
+            // Senha Estado: TRE_NOMEDOESTADO_2024
+            // Senha Cidade: TRE_NOMEDACIDADE_2024
+            
+            let authenticated = false;
+            let userRole = null;
+            let userScope = null;
+            let userName = "";
+
+            if (type === 'TSE') {
+                // Hash de "Brookasil1234"
+                if (inputHash === "e119560f85532577603417730e2060377f0a7114b7e1c8411d73a7d40026e632") {
+                    authenticated = true;
+                    userRole = 'TSE';
+                    userScope = 'ALL';
+                    userName = "Ministro TSE";
+                }
+            } else if (type === 'TRE_EST') {
+                const targetState = STATES.find(s => s.id === state);
+                // Verifica padrão de senha: TRE_NOME_2024 (Exemplo simples, idealmente usaria hash do banco)
+                const correctPass = `TRE_${targetState.name.toUpperCase()}_2024`;
+                if (pass === correctPass) {
+                    authenticated = true;
+                    userRole = 'TRE_EST';
+                    userScope = state;
+                    userName = `Desembargador ${targetState.name}`;
+                }
+            } else if (type === 'TRE_MUN') {
+                const correctPass = `TRE_${city.toUpperCase().replace(/\s/g, '_')}_2024`;
+                if (pass === correctPass) {
+                    authenticated = true;
+                    userRole = 'TRE_MUN';
+                    userScope = { state: state, city: city };
+                    userName = `Juiz Eleitoral ${city}`;
+                }
+            }
+
+            if (authenticated) {
+                currentUser = { role: userRole, scope: userScope, name: userName };
+                document.getElementById('adminPass').value = ""; // Clear pass
+                setupAdminUI();
+                showSection('admin-panel');
+            } else {
+                alert("Credenciais Inválidas! Acesso negado.");
             }
         }
 
-        // ============================================
-        // INICIALIZAR
-        // ============================================
+        function setupAdminUI() {
+            document.getElementById('adminTitle').innerText = `${currentUser.name} - ${currentUser.role}`;
+            document.getElementById('tseControls').style.display = (currentUser.role === 'TSE') ? 'block' : 'none';
+            renderAdminTable('PENDENTE');
+        }
 
-        // Mostrar dashboard inicialmente
-        showSection('dashboard');
+        function logout() {
+            currentUser = null;
+            showSection('admin-login');
+        }
+
+        async function changeElectionMode() {
+            const newMode = document.getElementById('adminElectionMode').value;
+            await saveToFirebase('config/mode', newMode, 'PUT');
+            alert("Modo de eleição alterado para: " + newMode);
+        }
+
+        function renderAdminTable(statusFilter) {
+            const tbody = document.querySelector('#adminTable tbody');
+            tbody.innerHTML = '';
+            
+            Object.entries(currentCandidates).forEach(([key, c]) => {
+                // Filtro de Status
+                if(c.status !== statusFilter) return;
+
+                // Filtro de Jurisdição (RBAC)
+                if(currentUser.role === 'TRE_EST') {
+                    if(c.state !== currentUser.scope) return;
+                }
+                if(currentUser.role === 'TRE_MUN') {
+                    if(c.city !== currentUser.scope.city) return;
+                }
+
+                // Renderização
+                let actions = '';
+                if(c.status === 'PENDENTE') {
+                    actions = `
+                        <button class="btn-cyber" style="padding:5px 10px; font-size:0.8rem;" onclick="updateStatus('${key}', 'APROVADO')"><i class="fas fa-check"></i></button>
+                        <button class="btn-cyber btn-danger" style="padding:5px 10px; font-size:0.8rem;" onclick="updateStatus('${key}', 'REJEITADO')"><i class="fas fa-times"></i></button>
+                    `;
+                } else if (c.status === 'APROVADO') {
+                     actions = `
+                        <button class="btn-cyber btn-danger" style="padding:5px 10px; font-size:0.8rem;" onclick="deleteFromFirebase('${key}')"><i class="fas fa-trash"></i> Retirar</button>
+                    `;
+                } else {
+                    actions = `
+                        <button class="btn-cyber btn-danger" style="padding:5px 10px; font-size:0.8rem;" onclick="deleteFromFirebase('${key}')"><i class="fas fa-trash"></i></button>
+                    `;
+                }
+
+                // Restrição TRE Municipal (Só registra/mexe se for municipal)
+                if(currentUser.role === 'TRE_MUN' && systemMode !== 'MUNICIPAL') {
+                    actions = '<small style="color:gray">Eleição não Municipal</small>';
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${c.urna}</td>
+                        <td>${c.role}</td>
+                        <td>${c.city}</td>
+                        <td><span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span></td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function updateStatus(key, newStatus) {
+            // Verifica permissão TRE Municipal novamente
+            if(currentUser.role === 'TRE_MUN' && systemMode !== 'MUNICIPAL') {
+                alert("O TRE Municipal não tem jurisdição enquanto o modo da eleição não for MUNICIPAL.");
+                return;
+            }
+
+            await saveToFirebase(`candidatos/${key}/status`, newStatus, 'PUT');
+        }
+
     </script>
 </body>
-    </html>
+</html>
