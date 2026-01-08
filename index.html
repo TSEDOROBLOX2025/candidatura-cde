@@ -1,908 +1,2231 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSE RP BROOKASIL | SISTEMA INTEGRADO</title>
-    
+    <title>TSE RP BROOKASIL - Sistema Eleitoral Oficial</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <style>
-        /* =========================================
-           CSS SUPREMO (AAA) - DEFINIÇÕES GLOBAIS
-           ========================================= */
         :root {
-            /* Paleta Core */
-            --bg-deep: #020204;
-            --bg-panel: rgba(10, 10, 14, 0.7);
-            --gold-tse: #D4AF37;
-            --gold-glow: rgba(212, 175, 55, 0.4);
-            --blue-hud: #00F3FF;
-            --blue-glow: rgba(0, 243, 255, 0.3);
-            --red-alert: #FF3333;
-            --green-success: #00FF9D;
-            --text-main: #F0F0F0;
-            --text-muted: #8899A6;
-
-            /* Efeitos */
-            --glass: blur(12px) saturate(180%);
-            --border-hud: 1px solid rgba(255, 255, 255, 0.08);
-            --border-gold: 1px solid var(--gold-tse);
-            --shadow-float: 0 10px 30px -10px rgba(0,0,0,0.8);
-            
-            /* Fontes */
-            --font-hud: 'Orbitron', sans-serif;
-            --font-body: 'Inter', sans-serif;
-            --font-code: 'JetBrains Mono', monospace;
+            --obsidian: #0a0a0a;
+            --gold: #ffd700;
+            --gold-light: #fff0a3;
+            --gold-dark: #b8860b;
+            --cyber-blue: #00f3ff;
+            --cyber-pink: #ff00ff;
+            --glass-dark: rgba(10, 10, 10, 0.8);
+            --glass-light: rgba(255, 215, 0, 0.1);
+            --danger: #ff3860;
+            --success: #23d160;
+            --warning: #ffdd57;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(circle at 50% 0%, #1a1a2e 0%, transparent 60%),
-                linear-gradient(0deg, rgba(0,0,0,0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.2) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
-            color: var(--text-main);
-            font-family: var(--font-body);
-            height: 100vh;
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--obsidian);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 243, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 243, 255, 0.03) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: -1;
+            animation: scan 10s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        .mouse-light {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+        }
+
+        /* HEADER E NAVEGAÇÃO */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--glass-dark);
+            backdrop-filter: blur(40px);
+            border-bottom: 2px solid var(--gold);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .logo-sub {
+            font-size: 0.8rem;
+            color: var(--cyber-blue);
+            display: block;
+            letter-spacing: 4px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 0.8rem 1.5rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
 
-        /* Scanline Effect */
-        body::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            z-index: 9999;
+        .nav-tab:hover {
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
         }
 
-        /* Scrollbar Custom */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-deep); }
-        ::-webkit-scrollbar-thumb { background: var(--gold-tse); border-radius: 3px; }
+        .nav-tab.active {
+            background: var(--gold);
+            color: var(--obsidian);
+            font-weight: 700;
+        }
 
-        /* =========================================
-           COMPONENTES & UTILITÁRIOS
-           ========================================= */
-        .hidden { display: none !important; }
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .grid { display: grid; }
-        .gap-4 { gap: 1rem; }
-        .w-full { width: 100%; }
-        .h-full { height: 100%; }
-
-        h1, h2, h3 { font-family: var(--font-hud); text-transform: uppercase; letter-spacing: 2px; }
-        
-        .text-gold { color: var(--gold-tse); text-shadow: 0 0 10px var(--gold-glow); }
-        .text-blue { color: var(--blue-hud); text-shadow: 0 0 10px var(--blue-glow); }
-        .text-red { color: var(--red-alert); }
-
-        /* Botões HUD */
-        .btn {
-            background: rgba(255,255,255,0.03);
-            border: var(--border-hud);
-            color: var(--text-main);
-            padding: 0.8rem 1.5rem;
-            font-family: var(--font-hud);
+        .admin-indicator {
+            background: var(--danger);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
             font-size: 0.8rem;
+            margin-left: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* SIDEBAR FLUTUANTE */
+        .sidebar {
+            position: fixed;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--glass-dark);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 1.5rem;
+            width: 80px;
+            transition: width 0.3s ease;
+            z-index: 999;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+        }
+
+        .sidebar:hover {
+            width: 250px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            color: var(--gold);
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .sidebar-item i {
+            font-size: 1.2rem;
+            min-width: 24px;
+        }
+
+        /* CONTEÚDO PRINCIPAL */
+        .main-content {
+            margin-top: 100px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS GLASSMORPHISM */
+        .card {
+            background: var(--glass-dark);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--gold), var(--cyber-blue), var(--cyber-pink), var(--gold));
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        /* DASHBOARD */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--glass-dark), rgba(0, 243, 255, 0.1));
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 10px currentColor;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--cyber-blue);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .chart-container {
+            background: var(--glass-dark);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        /* FILTROS */
+        .filters {
+            background: var(--glass-dark);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            color: var(--cyber-blue);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .filter-select, .filter-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--gold);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--cyber-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+
+        /* TABELAS */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--glass-dark);
+        }
+
+        .data-table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+            padding: 1rem;
+            text-align: left;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        /* BOTÕES */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            position: relative;
+            overflow: hidden;
         }
-        .btn:hover { background: rgba(255,255,255,0.1); border-color: var(--text-main); }
-        .btn-gold { border-color: var(--gold-tse); color: var(--gold-tse); }
-        .btn-gold:hover { background: var(--gold-tse); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
-        
-        /* Inputs HUD */
-        .input-group { position: relative; margin-bottom: 1.2rem; }
-        .input-hud {
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--gold), var(--gold-dark));
+            color: var(--obsidian);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger), #b3002d);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #008e46);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid #333;
-            border-left: 3px solid var(--gold-tse);
-            padding: 1rem;
-            color: var(--text-main);
-            font-family: var(--font-code);
-            transition: 0.3s;
-        }
-        .input-hud:focus { border-color: var(--blue-hud); box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
-        label { display: block; margin-bottom: 0.4rem; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-hud); }
-
-        /* Cards Glass */
-        .glass-panel {
-            background: var(--bg-panel);
-            backdrop-filter: var(--glass);
-            -webkit-backdrop-filter: var(--glass);
-            border: var(--border-hud);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            box-shadow: var(--shadow-float);
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
         }
 
-        /* =========================================
-           LAYOUT PRINCIPAL
-           ========================================= */
-        #app { display: flex; height: 100vh; width: 100vw; }
-
-        /* LOGIN SCREEN */
-        #login-screen {
-            position: fixed; inset: 0; z-index: 50;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(2, 2, 4, 0.95);
-            backdrop-filter: blur(20px);
-        }
-        .login-box {
-            width: 400px; padding: 3rem;
-            border: 1px solid var(--gold-tse);
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.1);
-            text-align: center;
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
         }
 
-        /* SIDEBAR */
-        #sidebar {
-            width: 260px;
-            background: rgba(5, 5, 8, 0.9);
-            border-right: var(--border-hud);
-            display: flex; flex-direction: column;
-            padding: 2rem 1rem;
-            z-index: 10;
-        }
-        .nav-item {
-            padding: 1rem; margin-bottom: 0.5rem;
-            border-left: 2px solid transparent;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-family: var(--font-hud);
-            font-size: 0.9rem;
-            transition: 0.3s;
-        }
-        .nav-item.active, .nav-item:hover {
-            background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent);
-            border-left-color: var(--gold-tse);
-            color: var(--text-main);
-        }
-
-        /* MAIN CONTENT */
-        #main-content {
-            flex: 1; padding: 2rem;
+        .modal-content {
+            background: var(--glass-dark);
+            backdrop-filter: blur(40px);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
             overflow-y: auto;
             position: relative;
         }
-        
-        .header-hud {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 1rem;
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
 
-        /* DASHBOARD GRID */
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem; margin-bottom: 2rem;
+        .modal-close:hover {
+            background: rgba(255, 215, 0, 0.1);
         }
-        .stat-card {
-            padding: 1.5rem; border-radius: 4px; position: relative; overflow: hidden;
-        }
-        .stat-card::before {
-            content: ''; position: absolute; top: 0; right: 0; width: 30px; height: 30px;
-            background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.1) 50%);
-        }
-        .stat-number { font-size: 2.5rem; font-family: var(--font-hud); font-weight: 700; margin-top: 0.5rem; }
 
-        /* TABLE */
-        .table-container { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th { text-align: left; padding: 1rem; color: var(--gold-tse); font-family: var(--font-hud); border-bottom: 1px solid #333; }
-        td { padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: var(--font-code); font-size: 0.9rem; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
+        /* FORMULÁRIOS */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
 
+        .form-label {
+            display: block;
+            color: var(--cyber-blue);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--cyber-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+
+        /* LOGIN */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .login-card {
+            background: var(--glass-dark);
+            backdrop-filter: blur(40px);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
+        }
+
+        .login-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--cyber-blue);
+            margin-bottom: 2rem;
+        }
+
+        /* ABAS FLUTUANTES */
+        .floating-tabs {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 998;
+        }
+
+        .floating-tab {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-dark);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .floating-tab:hover {
+            width: 200px;
+            border-radius: 25px;
+            justify-content: flex-start;
+            padding-left: 1rem;
+            gap: 1rem;
+        }
+
+        .floating-tab:hover::after {
+            content: attr(data-tooltip);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .nav-tabs {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .floating-tabs {
+                display: none;
+            }
+            
+            .main-content {
+                margin-top: 150px;
+                padding: 1rem;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .nav-tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
+        }
+
+        /* ANIMAÇÕES ESPECIAIS */
+        .glow {
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .cyber-border {
+            position: relative;
+            border: 1px solid transparent;
+            background: linear-gradient(var(--glass-dark), var(--glass-dark)) padding-box,
+                      linear-gradient(45deg, var(--gold), var(--cyber-blue), var(--cyber-pink), var(--gold)) border-box;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* STATUS BADGES */
         .status-badge {
-            padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
-        .bg-pending { background: rgba(255, 165, 0, 0.2); color: orange; border: 1px solid orange; }
-        .bg-approved { background: rgba(0, 255, 157, 0.2); color: var(--green-success); border: 1px solid var(--green-success); }
-        .bg-rejected { background: rgba(255, 51, 51, 0.2); color: var(--red-alert); border: 1px solid var(--red-alert); }
 
-        /* LOGS */
-        .log-entry { font-family: var(--font-code); font-size: 0.8rem; padding: 0.5rem; border-left: 1px solid #333; margin-bottom: 0.5rem; }
-        .log-time { color: var(--text-muted); margin-right: 10px; }
+        .status-analise {
+            background: rgba(255, 221, 87, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
 
-        /* LOADING */
-        #loader { 
-            position: fixed; bottom: 20px; right: 20px; 
-            padding: 10px 20px; background: var(--bg-deep); border: 1px solid var(--blue-hud);
-            color: var(--blue-hud); font-family: var(--font-hud); display: none;
+        .status-homologado {
+            background: rgba(35, 209, 96, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-recusado {
+            background: rgba(255, 56, 96, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        /* IDEOLOGIA COLORS */
+        .ideologia-direita {
+            color: #4169e1;
+            border-left: 4px solid #4169e1;
+            padding-left: 1rem;
+        }
+
+        .ideologia-centro {
+            color: #32cd32;
+            border-left: 4px solid #32cd32;
+            padding-left: 1rem;
+        }
+
+        .ideologia-esquerda {
+            color: #dc143c;
+            border-left: 4px solid #dc143c;
+            padding-left: 1rem;
         }
     </style>
 </head>
 <body>
-
-    <div id="loader">PROCESSANDO DADOS...</div>
-
-    <div id="login-screen">
-        <div class="glass-panel login-box">
-            <h1 class="text-gold" style="margin-bottom: 0.5rem;">TSE RP</h1>
-            <h3 class="text-muted" style="margin-bottom: 2rem; font-size: 0.9rem;">SISTEMA DE AUDITORIA BROOKASIL</h3>
-            
-            <div class="input-group">
-                <input type="text" id="login-user" class="input-hud" placeholder="IDENTIFICAÇÃO">
-            </div>
-            <div class="input-group">
-                <input type="password" id="login-pass" class="input-hud" placeholder="CHAVE DE ACESSO">
-            </div>
-            <button onclick="auth.login()" class="btn btn-gold w-full">INICIAR SESSÃO</button>
-            <p id="login-msg" class="text-red" style="margin-top: 1rem; font-family: var(--font-code); font-size: 0.8rem;"></p>
+    <!-- Efeito de scanlines -->
+    <div class="scanlines"></div>
+    
+    <!-- Luz que segue o mouse -->
+    <div class="mouse-light" id="mouseLight"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            TSE RP BROOKASIL
+            <span class="logo-sub">SISTEMA ELEITORAL OFICIAL</span>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-section="dashboard">DASHBOARD</button>
+            <button class="nav-tab" data-section="candidatos">VER CANDIDATOS</button>
+            <button class="nav-tab" data-section="candidatura">SE CANDIDATAR</button>
+            <button class="nav-tab" data-section="login" id="loginTab">LOGIN TSE/TRE</button>
+            <div id="adminIndicator" class="admin-indicator" style="display: none;">MODO ADMIN</div>
+        </div>
+    </header>
+    
+    <!-- Sidebar Flutuante -->
+    <nav class="sidebar">
+        <div class="sidebar-item" data-section="dashboard">
+            <i>📊</i> <span>Dashboard</span>
+        </div>
+        <div class="sidebar-item" data-section="candidatos">
+            <i>👥</i> <span>Candidatos</span>
+        </div>
+        <div class="sidebar-item" data-section="candidatura">
+            <i>✍️</i> <span>Candidatura</span>
+        </div>
+        <div class="sidebar-item" data-section="admin" id="sidebarAdmin">
+            <i>🔐</i> <span>Administração</span>
+        </div>
+        <div class="sidebar-item" data-section="logs">
+            <i>📋</i> <span>Logs do Sistema</span>
+        </div>
+        <div class="sidebar-item" data-section="config">
+            <i>⚙️</i> <span>Configurações</span>
+        </div>
+    </nav>
+    
+    <!-- Abas Flutuantes -->
+    <div class="floating-tabs">
+        <div class="floating-tab float-animation" data-tooltip="Relatório Rápido" onclick="generateQuickReport()">
+            📈
+        </div>
+        <div class="floating-tab float-animation" data-tooltip="Alertas do Sistema" onclick="showSystemAlerts()">
+            🔔
+        </div>
+        <div class="floating-tab float-animation" data-tooltip="Modo da Eleição" onclick="showElectionMode()">
+            🗳️
+        </div>
+        <div class="floating-tab pulse-animation" data-tooltip="Acesso Rápido" onclick="toggleQuickAccess()">
+            ⚡
         </div>
     </div>
-
-    <div id="app" class="hidden">
-        <nav id="sidebar">
-            <div style="margin-bottom: 3rem; padding-left: 1rem;">
-                <h2 class="text-gold">TSE</h2>
-                <div class="text-muted" style="font-size: 0.7rem;" id="user-display">LOGIN: ???</div>
-            </div>
-            
-            <div class="nav-item active" onclick="ui.navigate('dashboard')">DASHBOARD</div>
-            <div class="nav-item" onclick="ui.navigate('cadastro')">NOVO CANDIDATO</div>
-            <div class="nav-item" onclick="ui.navigate('lista')">CANDIDATURAS</div>
-            <div class="nav-item" onclick="ui.navigate('recusados')">RECUSADOS</div>
-            <div class="nav-item" id="nav-logs" onclick="ui.navigate('logs')">LOGS DO SISTEMA</div>
-            <div class="nav-item" onclick="location.reload()" style="margin-top: auto; color: var(--red-alert);">LOGOUT</div>
-        </nav>
-
-        <main id="main-content">
-            
-            <div id="view-dashboard" class="view-section">
-                <div class="header-hud">
-                    <h2 class="text-blue">PAINEL DE CONTROLE // <span class="text-gold" id="dash-region">NACIONAL</span></h2>
-                    <div class="text-code" id="clock">00:00:00</div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="glass-panel stat-card">
-                        <label>TOTAL DE REGISTROS</label>
-                        <div class="stat-number text-blue" id="stat-total">0</div>
-                    </div>
-                    <div class="glass-panel stat-card">
-                        <label>HOMOLOGADOS</label>
-                        <div class="stat-number" style="color: var(--green-success)" id="stat-aprovados">0</div>
-                    </div>
-                    <div class="glass-panel stat-card">
-                        <label>EM ANÁLISE</label>
-                        <div class="stat-number" style="color: orange" id="stat-analise">0</div>
-                    </div>
-                    <div class="glass-panel stat-card">
-                        <label>INDEFERIDOS</label>
-                        <div class="stat-number text-red" id="stat-recusados">0</div>
-                    </div>
-                </div>
-
-                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
-                    <div class="glass-panel" style="padding: 1rem;">
-                        <h3 style="margin-bottom: 1rem; font-size: 0.9rem;">IDEOLOGIA PARTIDÁRIA</h3>
-                        <canvas id="chartIdeologia"></canvas>
-                    </div>
-                    <div class="glass-panel" style="padding: 1rem;">
-                        <h3 style="margin-bottom: 1rem; font-size: 0.9rem;">DISTRIBUIÇÃO POR ESTADO</h3>
-                        <canvas id="chartEstado"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-cadastro" class="view-section hidden">
-                <div class="header-hud"><h2 class="text-gold">REGISTRO DE CANDIDATURA</h2></div>
+    
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <!-- Dashboard Público -->
+        <section id="dashboard" class="section active">
+            <div class="card">
+                <h2 class="card-title">DASHBOARD ELEITORAL - BROOKASIL</h2>
                 
-                <div class="glass-panel" style="padding: 2rem; max-width: 800px;">
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="input-group">
-                            <label>NOME COMPLETO</label>
-                            <input type="text" id="cand-nome" class="input-hud">
-                        </div>
-                        <div class="input-group">
-                            <label>TIKTOK (@USUARIO)</label>
-                            <input type="text" id="cand-tiktok" class="input-hud" placeholder="@">
-                        </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Candidatos Totais</div>
+                        <div class="stat-number" id="totalCandidatos">0</div>
+                        <div class="stat-desc">Sistema Nacional</div>
                     </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="input-group">
-                            <label>ESTADO</label>
-                            <select id="cand-estado" class="input-hud">
-                                </select>
-                        </div>
-                        <div class="input-group">
-                            <label>CIDADE/LOCALIDADE</label>
-                            <select id="cand-cidade" class="input-hud">
-                                <option value="Capital">Capital (Estadual)</option>
-                                <option value="Eleitoral City">Eleitoral City</option>
-                                <option value="Liberty City">Liberty City</option>
-                                <option value="Nexaville">Nexaville</option>
-                                <option value="Castelo Verde">Castelo Verde</option>
-                                <option value="Marinha City">Marinha City</option>
-                                <option value="Florápolis">Florápolis</option>
-                            </select>
-                        </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Homologados</div>
+                        <div class="stat-number" id="homologados">0</div>
+                        <div class="stat-desc">Aprovados pelo TSE/TRE</div>
                     </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="input-group">
-                            <label>PARTIDO</label>
-                            <select id="cand-partido" class="input-hud" onchange="formLogic.updateNumberPrefix()">
-                                </select>
-                        </div>
-                        <div class="input-group">
-                            <label>CARGO</label>
-                            <select id="cand-cargo" class="input-hud" onchange="formLogic.updateNumberPrefix()">
-                                <option value="Governador">Governador</option>
-                                <option value="Prefeito">Prefeito</option>
-                                <option value="Deputado">Deputado</option>
-                                <option value="Vereador">Vereador</option>
-                            </select>
-                        </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Em Análise</div>
+                        <div class="stat-number" id="emAnalise">0</div>
+                        <div class="stat-desc">Aguardando análise</div>
                     </div>
-
-                    <div class="input-group">
-                        <label>NÚMERO DA URNA (AUTO-PREFIXO)</label>
-                        <div class="flex">
-                            <input type="text" id="cand-num-prefix" class="input-hud" style="width: 60px; text-align: center; color: var(--gold-tse);" readonly>
-                            <input type="number" id="cand-num-suffix" class="input-hud" placeholder="Restante dos dígitos">
-                        </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Recusados</div>
+                        <div class="stat-number" id="recusados">0</div>
+                        <div class="stat-desc">Com motivo registrado</div>
                     </div>
-
-                    <div class="input-group">
-                        <label>IDEOLOGIA (AUTOMÁTICA)</label>
-                        <input type="text" id="cand-ideologia" class="input-hud" readonly>
-                    </div>
-
-                    <button onclick="db.createCandidate()" class="btn btn-gold w-full">PROTOCOLAR CANDIDATURA</button>
                 </div>
-            </div>
-
-            <div id="view-lista" class="view-section hidden">
-                <div class="header-hud"><h2 class="text-blue">REGISTRO GERAL</h2></div>
-                <div class="glass-panel" style="padding: 1rem;">
-                    <div class="table-container">
-                        <table id="table-candidatos">
-                            <thead>
-                                <tr>
-                                    <th>NOME</th>
-                                    <th>CARGO</th>
-                                    <th>PARTIDO</th>
-                                    <th>ESTADO</th>
-                                    <th>STATUS</th>
-                                    <th>AÇÃO</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                
+                <div class="card-title">MODO DA ELEIÇÃO ATUAL</div>
+                <div class="cyber-border" style="padding: 1.5rem; margin-bottom: 2rem;">
+                    <div id="modoEleicao" class="stat-number" style="font-size: 2rem;">CARREGANDO...</div>
+                    <div class="stat-label">Apenas TSE Nacional pode alterar</div>
+                </div>
+                
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3 class="card-title">IDEOLOGIAS MAIS ESCOLHIDAS</h3>
+                        <canvas id="ideologiaChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="card-title">DISTRIBUIÇÃO POR CARGO</h3>
+                        <canvas id="cargoChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="card-title">DISTRIBUIÇÃO POR ESTADO</h3>
+                        <canvas id="estadoChart"></canvas>
                     </div>
                 </div>
             </div>
-
-            <div id="view-recusados" class="view-section hidden">
-                <div class="header-hud"><h2 class="text-red">LISTA NEGRA (INDEFERIDOS)</h2></div>
-                <div class="glass-panel" style="padding: 1rem;">
-                    <table id="table-recusados">
+        </section>
+        
+        <!-- Ver Candidatos (Público) -->
+        <section id="candidatos" class="section">
+            <div class="card">
+                <h2 class="card-title">CANDIDATOS HOMOLOGADOS</h2>
+                
+                <div class="filters">
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">ESTADO</label>
+                            <select class="filter-select" id="filterEstado">
+                                <option value="">Todos os Estados</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">CIDADE</label>
+                            <select class="filter-select" id="filterCidade">
+                                <option value="">Todas as Cidades</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">CARGO</label>
+                            <select class="filter-select" id="filterCargo">
+                                <option value="">Todos os Cargos</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">PARTIDO</label>
+                            <select class="filter-select" id="filterPartido">
+                                <option value="">Todos os Partidos</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">IDEOLOGIA</label>
+                            <select class="filter-select" id="filterIdeologia">
+                                <option value="">Todas as Ideologias</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="filtrarCandidatos()">
+                        APLICAR FILTROS
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
                         <thead>
                             <tr>
-                                <th>CANDIDATO</th>
-                                <th>MOTIVO</th>
-                                <th>RESPONSÁVEL</th>
-                                <th>DATA</th>
+                                <th>NOME</th>
+                                <th>CARGO</th>
+                                <th>PARTIDO</th>
+                                <th>ESTADO/CIDADE</th>
+                                <th>IDEOLOGIA</th>
+                                <th>STATUS</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody id="candidatosTable">
+                            <!-- Dados carregados via JavaScript -->
+                        </tbody>
                     </table>
                 </div>
             </div>
-
-             <div id="view-logs" class="view-section hidden">
-                <div class="header-hud"><h2 class="text-muted">AUDITORIA DE SISTEMA</h2></div>
-                <div class="glass-panel" style="padding: 1rem; max-height: 80vh; overflow-y: auto;" id="logs-container">
-                    </div>
-            </div>
-
-        </main>
-    </div>
-
-    <script>
-        // =========================================
-        // 1. CONFIGURAÇÃO & DADOS ESTÁTICOS
-        // =========================================
-        const FIREBASE_URL = "https://candidatura-cde-default-rtdb.firebaseio.com";
+        </section>
         
-        const PARTIES = {
-    direita: [
-        { number: "22", name: "Partido Liberal (PL)", color: "#0B3C5D" },
-        { number: "11", name: "Progressistas (PP)", color: "#1E90FF" },
-        { number: "10", name: "Republicanos", color: "#4169E1" },
-        { number: "30", name: "Partido Novo (NOVO)", color: "#00BFFF" },
-        { number: "51", name: "Patriota", color: "#2F4F4F" },
-        { number: "28", name: "Partido Renovador Trabalhista Brasileiro (PRTB)", color: "#4682B4" },
-        { number: "27", name: "Democracia Cristã (DC)", color: "#5F9EA0" },
-        { number: "36", name: "Agir", color: "#6495ED" },
-
-        // 🔹 FICTÍCIOS
-        { number: "38", name: "União da Direita Brookasileira (UDB)", color: "#003366" },
-        { number: "81", name: "Partido da Ordem e Liberdade (POL)", color: "#1C1C1C" },
-        { number: "84", name: "Aliança Cristã Nacional (ACN)", color: "#2E8B57" },
-        { number: "57", name: "Partido da Reedificação da Ordem Nacional (PRONA)", color: "#000080" },
-        { number: "48", name: "Partido da Esperança (PESP)", color: "#228B22" },
-        { number: "86", name: "Partido Militar Nacionalista (PMNL)", color: "#556B2F" },
-        { number: "75", name: "Partido Republicano Trabalhista Nacional (PRTN)", color: "#191970" }
-    ],
-
-    centro: [
-        { number: "15", name: "Movimento Democrático Brasileiro (MDB)", color: "#FFD700" },
-        { number: "44", name: "União Brasil", color: "#FFA500" },
-        { number: "55", name: "Partido Social Democrático (PSD)", color: "#FFB347" },
-        { number: "20", name: "Podemos", color: "#FF8C00" },
-        { number: "45", name: "Partido da Social Democracia Brasileira (PSDB)", color: "#FFDAB9" },
-        { number: "77", name: "Solidariedade", color: "#F4A460" },
-        { number: "70", name: "Avante", color: "#DAA520" },
-        { number: "33", name: "Partido da Mobilização Nacional (PMN)", color: "#EEC900" },
-        { number: "43", name: "Partido Verde (PV)", color: "#9ACD32" },
-
-        // 🔹 FICTÍCIOS
-        { number: "42", name: "Partido da União Nacional (PUN)", color: "#F5DEB3" },
-        { number: "37", name: "Movimento Popular Democrático (MPD)", color: "#FFD966" },
-        { number: "26", name: "Partido da Mudança (PDM)", color: "#FFC04D" },
-        { number: "63", name: "Movimento Trabalhista Brookasileiro (MTB)", color: "#FFE4B5" },
-        { number: "46", name: "Partido Trabalhista Democrático (PTD)", color: "#FFD39B" },
-        { number: "88", name: "Partido do Sindicato Democrata (PDSD)", color: "#EEDC82" },
-        { number: "14", name: "Partido Missão (MSS)", color: "#FFCC99" },
-        { number: "85", name: "Partido Construção (PC)", color: "#F0E68C" }
-    ],
-
-    esquerda: [
-        { number: "13", name: "Partido dos Trabalhadores (PT)", color: "#CC0000" },
-        { number: "50", name: "Partido Socialismo e Liberdade (PSOL)", color: "#FF4C4C" },
-        { number: "65", name: "Partido Comunista do Brasil (PCdoB)", color: "#B22222" },
-        { number: "18", name: "Rede Sustentabilidade (REDE)", color: "#32CD32" },
-        { number: "12", name: "Partido Democrático Trabalhista (PDT)", color: "#DC143C" },
-        { number: "80", name: "Unidade Popular (UP)", color: "#8B0000" },
-        { number: "29", name: "Partido da Causa Operária (PCO)", color: "#A00000" },
-        { number: "21", name: "Partido Comunista Brasileiro (PCB)", color: "#7B0000" },
-        { number: "16", name: "Partido Socialista dos Trabalhadores Unificado (PSTU)", color: "#FF0000" },
-        { number: "54", name: "Partido Pátria Livre (PPL)", color: "#C00000" },
-        { number: "40", name: "Partido Socialista Brasileiro (PSB)", color: "#E60026" },
-
-        // 🔹 FICTÍCIOS
-        { number: "60", name: "Partido da Frente Socialista (PFS)", color: "#B30000" },
-        { number: "56", name: "Partido Socialista (PS)", color: "#990000" },
-        { number: "31", name: "Partido Social Trabalhista Nacional (PSTN)", color: "#CD2626" }
-    ]
-};
-
-        const USERS = {
-            "TSE Brookasil": { pass: "Brookasil1234", role: "TSE", region: "ALL" },
-            "tutuBH": { pass: "tutuBH", role: "TRE", region: "Brookhaven" },
-            "williamNC": { pass: "williamNC", role: "TRE", region: "Novacore" },
-            "henriqueCB": { pass: "henriqueCB", role: "TRE", region: "Casteríber" },
-            "lucasFM": { pass: "lucasFM", role: "TRE", region: "Fortemega" },
-            "popoFX": { pass: "popoFX", role: "TRE", region: "Florêmix" }
+        <!-- Se Candidatar (Público) -->
+        <section id="candidatura" class="section">
+            <div class="card">
+                <h2 class="card-title">FORMULÁRIO DE CANDIDATURA</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">NOME COMPLETO</label>
+                    <input type="text" class="form-input" id="candidatoNome" placeholder="Digite seu nome completo">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">ESTADO</label>
+                    <select class="form-select" id="candidatoEstado" onchange="carregarCidades()">
+                        <option value="">Selecione um estado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">CIDADE</label>
+                    <select class="form-select" id="candidatoCidade">
+                        <option value="">Selecione uma cidade</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">CARGO</label>
+                    <select class="form-select" id="candidatoCargo">
+                        <option value="">Selecione um cargo</option>
+                        <option value="Prefeito">Prefeito</option>
+                        <option value="Vereador">Vereador</option>
+                        <option value="Governador">Governador</option>
+                        <option value="Presidente">Presidente</option>
+                        <option value="Senador">Senador</option>
+                        <option value="Deputado Federal">Deputado Federal</option>
+                        <option value="Deputado Estadual">Deputado Estadual</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">PARTIDO</label>
+                    <select class="form-select" id="candidatoPartido">
+                        <option value="">Selecione um partido</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">MANIFESTO (opcional)</label>
+                    <textarea class="form-textarea" id="candidatoManifesto" placeholder="Descreva suas propostas e ideais..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="enviarCandidatura()">
+                        ENVIAR CANDIDATURA
+                    </button>
+                    <button class="btn btn-outline" onclick="limparFormulario()">
+                        LIMPAR FORMULÁRIO
+                    </button>
+                </div>
+                
+                <div id="candidaturaMessage" style="margin-top: 1rem;"></div>
+            </div>
+        </section>
+        
+        <!-- Login Administrativo -->
+        <section id="login" class="section">
+            <div class="login-container">
+                <div class="login-card">
+                    <h2 class="login-title">ACESSO ADMINISTRATIVO</h2>
+                    <p class="login-subtitle">TSE Nacional e TREs Estaduais</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">SENHA DE ACESSO</label>
+                        <input type="password" class="form-input" id="adminPassword" placeholder="Digite a senha de acesso">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">TIPO DE ACESSO</label>
+                        <select class="form-select" id="adminType">
+                            <option value="TSE">TSE Nacional - Brookasil</option>
+                            <option value="Brookhaven">TRE - Brookhaven</option>
+                            <option value="Novacore">TRE - Novacore</option>
+                            <option value="Casteriber">TRE - Casteríber</option>
+                            <option value="Fortemega">TRE - Fortemega</option>
+                            <option value="Floremix">TRE - Florêmix</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="realizarLogin()">
+                            ACESSAR SISTEMA
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; font-size: 0.9rem; color: var(--cyber-blue);">
+                        <p><strong>Senhas Oficiais:</strong></p>
+                        <p>• TSE: Brookasil1234</p>
+                        <p>• TRE Brookhaven: tutuBH</p>
+                        <p>• TRE Novacore: williamNC</p>
+                        <p>• TRE Casteríber: henriqueCB</p>
+                        <p>• TRE Fortemega: lucasFM</p>
+                        <p>• TRE Florêmix: popoFX</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Dashboard Administrativo (após login) -->
+        <section id="admin" class="section">
+            <div class="card">
+                <h2 class="card-title">PAINEL ADMINISTRATIVO - <span id="adminTitulo"></span></h2>
+                
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="mostrarAprovarCandidaturas()">
+                        APROVAR CANDIDATURAS
+                    </button>
+                    <button class="btn btn-danger" onclick="mostrarRecusarCandidaturas()">
+                        RECUSAR CANDIDATURAS
+                    </button>
+                    <button class="btn btn-outline" onclick="mostrarRecusados()">
+                        VER RECUSADOS
+                    </button>
+                    <button class="btn btn-outline" onclick="mostrarLogs()">
+                        VER LOGS
+                    </button>
+                    <button class="btn btn-outline" onclick="logout()">
+                        SAIR
+                    </button>
+                </div>
+                
+                <div id="adminContent">
+                    <!-- Conteúdo administrativo será carregado aqui -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Configurações (apenas TSE) -->
+        <section id="config" class="section">
+            <div class="card">
+                <h2 class="card-title">CONFIGURAÇÕES DO SISTEMA</h2>
+                <p style="color: var(--cyber-blue); margin-bottom: 2rem;">
+                    Apenas TSE Nacional pode alterar estas configurações
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label">MODO DA ELEIÇÃO</label>
+                    <select class="form-select" id="configModoEleicao">
+                        <option value="Municipal">Municipal</option>
+                        <option value="Estadual">Estadual</option>
+                        <option value="Federal">Federal</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="alterarModoEleicao()">
+                        ALTERAR MODO
+                    </button>
+                </div>
+                
+                <div id="configMessage" style="margin-top: 1rem;"></div>
+            </div>
+        </section>
+        
+        <!-- Logs do Sistema -->
+        <section id="logs" class="section">
+            <div class="card">
+                <h2 class="card-title">LOGS DO SISTEMA</h2>
+                
+                <div class="filters" style="margin-bottom: 2rem;">
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">TIPO DE AÇÃO</label>
+                            <select class="filter-select" id="filterLogTipo">
+                                <option value="">Todos os Tipos</option>
+                                <option value="candidatura">Nova Candidatura</option>
+                                <option value="aprovar">Aprovação</option>
+                                <option value="recusar">Recusa</option>
+                                <option value="config">Configuração</option>
+                                <option value="login">Login</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">USUÁRIO</label>
+                            <input type="text" class="filter-input" id="filterLogUsuario" placeholder="Filtrar por usuário">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="filtrarLogs()">
+                        FILTRAR LOGS
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>DATA/HORA</th>
+                                <th>USUÁRIO</th>
+                                <th>AÇÃO</th>
+                                <th>DETALHES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTable">
+                            <!-- Logs carregados via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Modal para Aprovar/Recusar Candidaturas -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModal()">×</button>
+            <h2 class="card-title" id="modalTitulo"></h2>
+            <div id="modalContent">
+                <!-- Conteúdo do modal será carregado aqui -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4a9vL9K9K9K9K9K9K9K9K9K9K9K9K9K9K",
+            authDomain: "tse-rp-brookasil.firebaseapp.com",
+            databaseURL: "https://tse-rp-brookasil-default-rtdb.firebaseio.com",
+            projectId: "tse-rp-brookasil",
+            storageBucket: "tse-rp-brookasil.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890"
         };
 
-        const REGIONS = ["Brookhaven", "Novacore", "Casteríber", "Fortemega", "Florêmix"];
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
 
-        let currentUser = null;
-        let candidatesData = {};
-        let logsData = {};
+        // Dados iniciais
+        const estados = [
+            { nome: "Brookhaven", cidades: ["Cidade Eleitoral", "Liberty City"] },
+            { nome: "Novacore", cidades: ["Nexaville", "Solária"] },
+            { nome: "Casteriber", cidades: ["Castelo Verde", "Porto Rubi"] },
+            { nome: "Fortemega", cidades: ["Marinha City", "Porto Rubi"] },
+            { nome: "Florêmix", cidades: ["Florápolis", "Riomarina"] }
+        ];
+
+        const partidos = [
+            // DIREITA
+            { nome: "Partido Liberal", sigla: "PL", numero: 22, ideologia: "Direita", cor: "#1e90ff" },
+            { nome: "Progressistas", sigla: "PP", numero: 11, ideologia: "Direita", cor: "#4169e1" },
+            { nome: "Republicanos", sigla: "Republicanos", numero: 10, ideologia: "Direita", cor: "#0000cd" },
+            { nome: "União da Direita Brookasileira", sigla: "UDB", numero: 38, ideologia: "Direita", cor: "#191970" },
+            { nome: "Partido da Ordem e Liberdade", sigla: "POL", numero: 81, ideologia: "Direita", cor: "#000080" },
+            { nome: "Aliança Cristã Nacional", sigla: "ACN", numero: 84, ideologia: "Direita", cor: "#4b0082" },
+            { nome: "Partido da Reedificação da Ordem Nacional", sigla: "PRONA", numero: 57, ideologia: "Direita", cor: "#8a2be2" },
+            { nome: "Partido Social Liberal", sigla: "PSL", numero: 17, ideologia: "Direita", cor: "#4682b4" },
+            { nome: "Partido da Esperança", sigla: "PESP", numero: 48, ideologia: "Direita", cor: "#5f9ea0" },
+            { nome: "Partido Militar Nacionalista", sigla: "PMNL", numero: 86, ideologia: "Direita", cor: "#2f4f4f" },
+            { nome: "Partido Republicano Trabalhista Nacional", sigla: "PRTN", numero: 75, ideologia: "Direita", cor: "#008b8b" },
+            
+            // CENTRO
+            { nome: "Movimento Democrático Brookasileiro", sigla: "MDB", numero: 15, ideologia: "Centro", cor: "#32cd32" },
+            { nome: "União Brasil", sigla: "UNIÃO", numero: 44, ideologia: "Centro", cor: "#90ee90" },
+            { nome: "Partido Social Democrático", sigla: "PSD", numero: 55, ideologia: "Centro", cor: "#00fa9a" },
+            { nome: "Partido da Social Democracia Brookasileira", sigla: "PSDB", numero: 45, ideologia: "Centro", cor: "#3cb371" },
+            { nome: "Partido da União Nacional", sigla: "PUN", numero: 42, ideologia: "Centro", cor: "#2e8b57" },
+            { nome: "Movimento Popular Democrático", sigla: "MPD", numero: 37, ideologia: "Centro", cor: "#228b22" },
+            { nome: "Partido da Mudança", sigla: "PDM", numero: 26, ideologia: "Centro", cor: "#008000" },
+            { nome: "Movimento Trabalhista Brookasileiro", sigla: "MTB", numero: 63, ideologia: "Centro", cor: "#006400" },
+            { nome: "Partido Trabalhista Democrático", sigla: "PTD", numero: 46, ideologia: "Centro", cor: "#9acd32" },
+            { nome: "Partido do Sindicato Democrata", sigla: "PDSD", numero: 88, ideologia: "Centro", cor: "#6b8e23" },
+            { nome: "Partido Missão", sigla: "MSS", numero: 14, ideologia: "Centro", cor: "#556b2f" },
+            { nome: "Partido Construção", sigla: "PC", numero: 85, ideologia: "Centro", cor: "#adff2f" },
+            
+            // ESQUERDA
+            { nome: "Partido dos Trabalhadores", sigla: "PT", numero: 13, ideologia: "Esquerda", cor: "#dc143c" },
+            { nome: "Partido Socialismo e Liberdade", sigla: "PSOL", numero: 50, ideologia: "Esquerda", cor: "#ff0000" },
+            { nome: "Partido Comunista do Brookasil", sigla: "PCdoB", numero: 65, ideologia: "Esquerda", cor: "#b22222" },
+            { nome: "Partido Democrático Trabalhista", sigla: "PDT", numero: 12, ideologia: "Esquerda", cor: "#cd5c5c" },
+            { nome: "Partido da Frente Socialista", sigla: "PFS", numero: 60, ideologia: "Esquerda", cor: "#8b0000" },
+            { nome: "Partido Socialista", sigla: "PS", numero: 56, ideologia: "Esquerda", cor: "#ff4500" },
+            { nome: "Partido Social Trabalhista Nacional", sigla: "PSTN", numero: 31, ideologia: "Esquerda", cor: "#ff6347" }
+        ];
+
+        // Estado da aplicação
+        let usuarioLogado = null;
+        let candidatos = [];
+        let logs = [];
+        let modoEleicao = "Municipal";
         let charts = {};
 
-        // Configuração Firebase (Simples HTTP para evitar problemas de versão CDN complexos em 1 arquivo)
-        // Nota: Em um ambiente real usariamos o SDK completo com Auth, mas aqui usaremos REST wrapper simples
-        // para garantir funcionamento imediato com o link fornecido.
-        
-        const api = {
-            async get(path) {
-                ui.loading(true);
-                try {
-                    const res = await fetch(`${FIREBASE_URL}/${path}.json`);
-                    return await res.json();
-                } catch(e) { console.error(e); } 
-                finally { ui.loading(false); }
-            },
-            async post(path, data) {
-                ui.loading(true);
-                try {
-                    await fetch(`${FIREBASE_URL}/${path}.json`, {
-                        method: 'POST', body: JSON.stringify(data)
-                    });
-                } finally { ui.loading(false); }
-            },
-            async update(path, data) {
-                ui.loading(true);
-                try {
-                    await fetch(`${FIREBASE_URL}/${path}.json`, {
-                        method: 'PATCH', body: JSON.stringify(data)
-                    });
-                } finally { ui.loading(false); }
-            }
-        };
-
-        // =========================================
-        // 2. LÓGICA DE AUTENTICAÇÃO
-        // =========================================
-        const auth = {
-            login: () => {
-                const u = document.getElementById('login-user').value;
-                const p = document.getElementById('login-pass').value;
-                const msg = document.getElementById('login-msg');
-
-                if (USERS[u] && USERS[u].pass === p) {
-                    currentUser = { name: u, ...USERS[u] };
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('app').classList.remove('hidden');
-                    document.getElementById('user-display').innerText = `USUÁRIO: ${u} [${currentUser.role}]`;
-                    document.getElementById('dash-region').innerText = currentUser.region === 'ALL' ? 'NACIONAL' : currentUser.region.toUpperCase();
-                    
-                    if(currentUser.role !== 'TSE') {
-                        document.getElementById('nav-logs').classList.add('hidden');
-                    }
-                    
-                    app.init();
-                } else {
-                    msg.innerText = "ACESSO NEGADO: CREDENCIAIS INVÁLIDAS";
-                    
-                    // Efeito de erro visual
-                    document.querySelector('.login-box').style.borderColor = "red";
-                    setTimeout(() => document.querySelector('.login-box').style.borderColor = "var(--gold-tse)", 500);
-                }
-            }
-        };
-
-        // =========================================
-        // 3. UI MANAGER
-        // =========================================
-        const ui = {
-            navigate: (viewId) => {
-                document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-                document.getElementById(`view-${viewId}`).classList.remove('hidden');
-                
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                // Simples highlight logic
-                event.target.classList.add('active');
-
-                if(viewId === 'dashboard') db.fetchData();
-                if(viewId === 'lista') renderer.renderList();
-                if(viewId === 'recusados') renderer.renderRejected();
-                if(viewId === 'logs') renderer.renderLogs();
-            },
-            loading: (show) => {
-                document.getElementById('loader').style.display = show ? 'block' : 'none';
-            },
-            fillSelects: () => {
-                const selRegion = document.getElementById('cand-estado');
-                REGIONS.forEach(r => {
-                    const opt = document.createElement('option');
-                    opt.value = r; opt.innerText = r;
-                    selRegion.appendChild(opt);
-                });
-
-                const selParty = document.getElementById('cand-partido');
-                PARTIES.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.sigla; opt.innerText = `${p.sigla} - ${p.num}`;
-                    selParty.appendChild(opt);
-                });
-                
-                // Trigger inicial
-                formLogic.updateNumberPrefix();
-            }
-        };
-
-        // =========================================
-        // 4. LÓGICA DE NEGÓCIO (FORM & VALIDAÇÃO)
-        // =========================================
-        const formLogic = {
-            updateNumberPrefix: () => {
-                const sigla = document.getElementById('cand-partido').value;
-                const cargo = document.getElementById('cand-cargo').value;
-                const party = PARTIES.find(p => p.sigla === sigla);
-                
-                if (!party) return;
-
-                // Definir Ideologia
-                document.getElementById('cand-ideologia').value = party.ideo;
-
-                // Regra da Urna
-                const prefixInput = document.getElementById('cand-num-prefix');
-                prefixInput.value = party.num;
-
-                // Limite de digitos baseados no cargo
-                const suffixInput = document.getElementById('cand-num-suffix');
-                suffixInput.value = "";
-                
-                // 2 digitos (Partido) já vão fixos.
-                // Prefeito: 2 digitos totais? Não, geralmente Prefeito é 2 dígitos. Mas a regra diz: 2 do partido + usuario nao altera.
-                // Vamos assumir padrão TSE Brasil:
-                // Prefeito = 2 dígitos (Só o partido). Então sufixo disabled.
-                // Vereador = 5 dígitos (2 partido + 3 sufixo).
-                // Deputado = 4 ou 5 dígitos.
-                // Governador = 2 dígitos.
-                
-                if (cargo === 'Prefeito' || cargo === 'Governador') {
-                    suffixInput.setAttribute('disabled', true);
-                    suffixInput.placeholder = "N/A";
-                } else {
-                    suffixInput.removeAttribute('disabled');
-                    suffixInput.placeholder = "XXX";
-                }
-            }
-        };
-
-        // =========================================
-        // 5. DATABASE & ACTIONS
-        // =========================================
-        const db = {
-            fetchData: async () => {
-                const data = await api.get('candidatos');
-                candidatesData = data || {};
-                const logs = await api.get('logs');
-                logsData = logs || {};
-                renderer.updateDashboard();
-            },
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarDados();
+            inicializarEventos();
+            carregarDadosFirebase();
             
-            createCandidate: async () => {
-                const nome = document.getElementById('cand-nome').value;
-                const tiktok = document.getElementById('cand-tiktok').value;
-                const estado = document.getElementById('cand-estado').value;
-                const cidade = document.getElementById('cand-cidade').value;
-                const partidoSigla = document.getElementById('cand-partido').value;
-                const cargo = document.getElementById('cand-cargo').value;
-                const numPrefix = document.getElementById('cand-num-prefix').value;
-                const numSuffix = document.getElementById('cand-num-suffix').value;
-                const ideologia = document.getElementById('cand-ideologia').value;
-
-                // Validações Rígidas
-                if(!nome || !tiktok) return alert("ERRO: Preencha todos os campos.");
-                
-                // Formatar Numero Final
-                let numeroUrna = numPrefix;
-                if(!document.getElementById('cand-num-suffix').disabled) {
-                    if(numSuffix.length < 2) return alert("ERRO: Número inválido (curto demais).");
-                    numeroUrna += numSuffix;
-                }
-
-                // Checar Permissão de Estado
-                if(currentUser.role === 'TRE' && currentUser.region !== estado) {
-                    return alert(`ERRO: Seu TRE (${currentUser.region}) não pode registrar em ${estado}.`);
-                }
-
-                // Checar Duplicidade (TikTok e Numero)
-                const all = Object.values(candidatesData);
-                if(all.find(c => c.tiktok === tiktok)) return alert("ERRO: TikTok já registrado.");
-                if(all.find(c => c.numero === numeroUrna && c.estado === estado && c.cargo === cargo)) return alert("ERRO: Número já em uso neste cargo/estado.");
-
-                const novoCandidato = {
-                    nome, tiktok, estado, cidade, partido: partidoSigla, 
-                    cargo, numero: numeroUrna, ideologia,
-                    status: 'ANALISE',
-                    data: new Date().toLocaleString()
-                };
-
-                await api.post('candidatos', novoCandidato);
-                await db.logAction(`Candidato ${nome} (${cargo}) registrado por ${currentUser.name}`);
-                alert("SUCESSO: Candidatura Protocolada.");
-                
-                // Reset e Atualiza
-                document.getElementById('cand-nome').value = "";
-                document.getElementById('cand-num-suffix').value = "";
-                db.fetchData();
-            },
-
-            approve: async (id, nome) => {
-                const cand = candidatesData[id];
-                if(currentUser.role === 'TRE' && cand.estado !== currentUser.region) return alert("SEM PERMISSÃO: Outro Estado.");
-                
-                await api.update(`candidatos/${id}`, { status: 'APROVADO' });
-                await db.logAction(`Candidatura ${nome} APROVADA por ${currentUser.name}`);
-                db.fetchData();
-                ui.navigate('lista');
-            },
-
-            reject: async (id, nome) => {
-                const cand = candidatesData[id];
-                if(currentUser.role === 'TRE' && cand.estado !== currentUser.region) return alert("SEM PERMISSÃO: Outro Estado.");
-
-                const motivo = prompt("MOTIVO DA RECUSA (OBRIGATÓRIO):");
-                if(!motivo) return alert("Cancelado: Motivo obrigatório.");
-
-                // Atualiza status e adiciona metadados de recusa
-                await api.update(`candidatos/${id}`, { 
-                    status: 'RECUSADO',
-                    motivoRecusa: motivo,
-                    autorRecusa: currentUser.name
-                });
-                await db.logAction(`Candidatura ${nome} RECUSADA por ${currentUser.name}. Motivo: ${motivo}`);
-                db.fetchData();
-                ui.navigate('lista');
-            },
-
-            logAction: async (msg) => {
-                await api.post('logs', {
-                    msg,
-                    user: currentUser.name,
-                    time: new Date().toLocaleString()
-                });
+            // Luz que segue o mouse
+            document.addEventListener('mousemove', function(e) {
+                const light = document.getElementById('mouseLight');
+                light.style.left = e.clientX + 'px';
+                light.style.top = e.clientY + 'px';
+            });
+            
+            // Verificar se há usuário logado
+            const savedUser = localStorage.getItem('tse_user');
+            if (savedUser) {
+                usuarioLogado = JSON.parse(savedUser);
+                entrarModoAdmin();
             }
-        };
+        });
 
-        // =========================================
-        // 6. RENDERIZADOR
-        // =========================================
-        const renderer = {
-            updateDashboard: () => {
-                const list = Object.values(candidatesData);
+        function inicializarDados() {
+            // Popular selects de estados
+            const selectEstado = document.getElementById('filterEstado');
+            const selectCandidatoEstado = document.getElementById('candidatoEstado');
+            
+            estados.forEach(estado => {
+                const option1 = document.createElement('option');
+                option1.value = estado.nome;
+                option1.textContent = estado.nome;
+                selectEstado.appendChild(option1);
                 
-                // Filtros de Região (TRE vê só o seu)
-                const filtered = currentUser.role === 'TSE' ? list : list.filter(c => c.estado === currentUser.region);
-
-                // Counters
-                document.getElementById('stat-total').innerText = filtered.length;
-                document.getElementById('stat-aprovados').innerText = filtered.filter(c => c.status === 'APROVADO').length;
-                document.getElementById('stat-analise').innerText = filtered.filter(c => c.status === 'ANALISE').length;
-                document.getElementById('stat-recusados').innerText = filtered.filter(c => c.status === 'RECUSADO').length;
-
-                // Charts Logic
-                renderer.renderCharts(filtered);
-            },
-
-            renderCharts: (data) => {
-                // Ideologia
-                const ideologias = {};
-                data.forEach(c => { ideologias[c.ideologia] = (ideologias[c.ideologia] || 0) + 1 });
+                const option2 = document.createElement('option');
+                option2.value = estado.nome;
+                option2.textContent = estado.nome;
+                selectCandidatoEstado.appendChild(option2);
+            });
+            
+            // Popular selects de partidos
+            const selectPartido = document.getElementById('filterPartido');
+            const selectCandidatoPartido = document.getElementById('candidatoPartido');
+            
+            partidos.forEach(partido => {
+                const option1 = document.createElement('option');
+                option1.value = partido.sigla;
+                option1.textContent = `${partido.sigla} - ${partido.nome}`;
+                selectPartido.appendChild(option1);
                 
-                // Estados
-                const estados = {};
-                data.forEach(c => { estados[c.estado] = (estados[c.estado] || 0) + 1 });
+                const option2 = document.createElement('option');
+                option2.value = partido.sigla;
+                option2.textContent = `${partido.sigla} - ${partido.nome}`;
+                selectCandidatoPartido.appendChild(option2);
+            });
+            
+            // Popular select de ideologias
+            const selectIdeologia = document.getElementById('filterIdeologia');
+            const ideologias = [...new Set(partidos.map(p => p.ideologia))];
+            ideologias.forEach(ideologia => {
+                const option = document.createElement('option');
+                option.value = ideologia;
+                option.textContent = ideologia;
+                selectIdeologia.appendChild(option);
+            });
+        }
 
-                // Destruir anteriores se existirem
-                if(charts.ideologia) charts.ideologia.destroy();
-                if(charts.estado) charts.estado.destroy();
-
-                const commonOptions = {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: 'white' } } }
-                };
-
-                // Chart 1
-                const ctx1 = document.getElementById('chartIdeologia').getContext('2d');
-                charts.ideologia = new Chart(ctx1, {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(ideologias),
-                        datasets: [{
-                            data: Object.values(ideologias),
-                            backgroundColor: ['#D4AF37', '#00F3FF', '#FF3333', '#00FF9D', '#FFFFFF'],
-                            borderColor: '#020204'
-                        }]
-                    },
-                    options: commonOptions
-                });
-
-                // Chart 2
-                const ctx2 = document.getElementById('chartEstado').getContext('2d');
-                charts.estado = new Chart(ctx2, {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(estados),
-                        datasets: [{
-                            label: 'Candidatos',
-                            data: Object.values(estados),
-                            backgroundColor: '#00F3FF'
-                        }]
-                    },
-                    options: { ...commonOptions, scales: { y: { ticks: { color: 'white' }, grid: { color: '#333'} }, x: { ticks: { color: 'white' } } } }
-                });
-            },
-
-            renderList: async () => {
-                // Força refresh antes de listar
-                await db.fetchData();
-                const tbody = document.querySelector('#table-candidatos tbody');
-                tbody.innerHTML = "";
-
-                Object.entries(candidatesData).forEach(([id, c]) => {
-                    // Filtro de Visão
-                    if(currentUser.role === 'TRE' && c.estado !== currentUser.region) return;
-
-                    const tr = document.createElement('tr');
+        function inicializarEventos() {
+            // Navegação por tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const sectionId = this.dataset.section;
+                    mostrarSecao(sectionId);
                     
-                    let statusClass = 'bg-pending';
-                    if(c.status === 'APROVADO') statusClass = 'bg-approved';
-                    if(c.status === 'RECUSADO') statusClass = 'bg-rejected';
-
-                    // Botões de Ação (Apenas se em analise)
-                    let actions = "-";
-                    if(c.status === 'ANALISE') {
-                        actions = `
-                            <button class="btn btn-gold" style="padding: 2px 8px; font-size: 0.6rem;" onclick="db.approve('${id}', '${c.nome}')">✔</button>
-                            <button class="btn" style="padding: 2px 8px; font-size: 0.6rem; color: red; border-color: red;" onclick="db.reject('${id}', '${c.nome}')">✖</button>
-                        `;
+                    // Atualizar tabs ativas
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Navegação por sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const sectionId = this.dataset.section;
+                    if (sectionId === 'admin' && !usuarioLogado) {
+                        mostrarSecao('login');
+                        return;
                     }
-
-                    tr.innerHTML = `
-                        <td><strong style="color:white">${c.nome}</strong><br><span class="text-muted" style="font-size:0.7rem">${c.tiktok}</span></td>
-                        <td>${c.cargo} (${c.numero})</td>
-                        <td><span style="color:${PARTIES.find(p=>p.sigla===c.partido)?.color}">${c.partido}</span></td>
-                        <td>${c.estado}</td>
-                        <td><span class="status-badge ${statusClass}">${c.status}</span></td>
-                        <td>${actions}</td>
-                    `;
-                    tbody.appendChild(tr);
+                    mostrarSecao(sectionId);
                 });
-            },
+            });
+        }
 
-            renderRejected: async () => {
-                await db.fetchData();
-                const tbody = document.querySelector('#table-recusados tbody');
-                tbody.innerHTML = "";
-
-                Object.values(candidatesData).forEach(c => {
-                    if(c.status !== 'RECUSADO') return;
-                    // TRE filter
-                    if(currentUser.role === 'TRE' && c.estado !== currentUser.region) return;
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${c.nome} (${c.partido})</td>
-                        <td class="text-red">${c.motivoRecusa || 'N/A'}</td>
-                        <td class="text-gold">${c.autorRecusa || 'Sistema'}</td>
-                        <td class="text-muted">${c.data || '-'}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            },
-
-            renderLogs: async () => {
-                 // Apenas TSE vê logs
-                 if(currentUser.role !== 'TSE') return;
-                 
-                 const container = document.getElementById('logs-container');
-                 container.innerHTML = "";
-                 
-                 // Ordenar logs (mais recente primeiro se possível, mas obj firebase é chato)
-                 // Convertendo para array
-                 const logsArr = logsData ? Object.values(logsData) : [];
-                 logsArr.reverse().forEach(log => {
-                     const div = document.createElement('div');
-                     div.className = 'log-entry';
-                     div.innerHTML = `<span class="log-time">[${log.time}]</span> <span class="text-gold">${log.user}</span>: ${log.msg}`;
-                     container.appendChild(div);
-                 });
-            }
-        };
-
-        // =========================================
-        // 7. INICIALIZAÇÃO
-        // =========================================
-        const app = {
-            init: () => {
-                ui.fillSelects();
-                db.fetchData();
+        function mostrarSecao(sectionId) {
+            // Esconder todas as seções
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Mostrar seção selecionada
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('active');
                 
-                // Relógio
-                setInterval(() => {
-                    document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-                }, 1000);
+                // Atualizar tab ativa
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    if (tab.dataset.section === sectionId) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // Carregar dados específicos da seção
+                switch(sectionId) {
+                    case 'dashboard':
+                        atualizarDashboard();
+                        break;
+                    case 'candidatos':
+                        carregarCandidatosPublicos();
+                        break;
+                    case 'admin':
+                        if (usuarioLogado) {
+                            mostrarDashboardAdmin();
+                        }
+                        break;
+                    case 'logs':
+                        carregarLogs();
+                        break;
+                }
             }
-        };
+        }
 
+        // Funções Firebase
+        function carregarDadosFirebase() {
+            // Carregar candidatos
+            database.ref('candidatos').on('value', snapshot => {
+                candidatos = [];
+                snapshot.forEach(childSnapshot => {
+                    const candidato = childSnapshot.val();
+                    candidato.id = childSnapshot.key;
+                    candidatos.push(candidato);
+                });
+                atualizarDashboard();
+                if (document.getElementById('candidatos').classList.contains('active')) {
+                    carregarCandidatosPublicos();
+                }
+            });
+            
+            // Carregar logs
+            database.ref('logs').on('value', snapshot => {
+                logs = [];
+                snapshot.forEach(childSnapshot => {
+                    const log = childSnapshot.val();
+                    log.id = childSnapshot.key;
+                    logs.push(log);
+                });
+                if (document.getElementById('logs').classList.contains('active')) {
+                    carregarLogs();
+                }
+            });
+            
+            // Carregar configurações
+            database.ref('configuracoes').on('value', snapshot => {
+                const config = snapshot.val();
+                if (config && config.modoEleicao) {
+                    modoEleicao = config.modoEleicao;
+                    document.getElementById('modoEleicao').textContent = modoEleicao.toUpperCase();
+                    document.getElementById('configModoEleicao').value = modoEleicao;
+                }
+            });
+            
+            // Inicializar estados no Firebase se não existirem
+            database.ref('estados').once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    const estadosRef = database.ref('estados');
+                    estados.forEach(estado => {
+                        estadosRef.push(estado);
+                    });
+                }
+            });
+        }
+
+        // Dashboard
+        function atualizarDashboard() {
+            const total = candidatos.length;
+            const homologados = candidatos.filter(c => c.status === 'Homologado').length;
+            const emAnalise = candidatos.filter(c => c.status === 'Em análise').length;
+            const recusados = candidatos.filter(c => c.status === 'Recusado').length;
+            
+            document.getElementById('totalCandidatos').textContent = total;
+            document.getElementById('homologados').textContent = homologados;
+            document.getElementById('emAnalise').textContent = emAnalise;
+            document.getElementById('recusados').textContent = recusados;
+            
+            atualizarGraficos();
+        }
+
+        function atualizarGraficos() {
+            // Gráfico de ideologias
+            const ideologiaData = {};
+            candidatos.forEach(c => {
+                const partido = partidos.find(p => p.sigla === c.partido);
+                if (partido) {
+                    ideologiaData[partido.ideologia] = (ideologiaData[partido.ideologia] || 0) + 1;
+                }
+            });
+            
+            const ideologiaCtx = document.getElementById('ideologiaChart').getContext('2d');
+            if (charts.ideologia) charts.ideologia.destroy();
+            
+            charts.ideologia = new Chart(ideologiaCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(ideologiaData),
+                    datasets: [{
+                        data: Object.values(ideologiaData),
+                        backgroundColor: ['#4169e1', '#32cd32', '#dc143c'],
+                        borderColor: ['#fff', '#fff', '#fff'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffd700',
+                                font: {
+                                    family: 'Orbitron'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de cargos
+            const cargoData = {};
+            candidatos.forEach(c => {
+                cargoData[c.cargo] = (cargoData[c.cargo] || 0) + 1;
+            });
+            
+            const cargoCtx = document.getElementById('cargoChart').getContext('2d');
+            if (charts.cargo) charts.cargo.destroy();
+            
+            charts.cargo = new Chart(cargoCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(cargoData),
+                    datasets: [{
+                        label: 'Candidatos',
+                        data: Object.values(cargoData),
+                        backgroundColor: '#ffd700',
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffd700',
+                                font: {
+                                    family: 'Orbitron'
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#ffd700'
+                            },
+                            grid: {
+                                color: 'rgba(255, 215, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#ffd700'
+                            },
+                            grid: {
+                                color: 'rgba(255, 215, 0, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de estados
+            const estadoData = {};
+            candidatos.forEach(c => {
+                estadoData[c.estado] = (estadoData[c.estado] || 0) + 1;
+            });
+            
+            const estadoCtx = document.getElementById('estadoChart').getContext('2d');
+            if (charts.estado) charts.estado.destroy();
+            
+            charts.estado = new Chart(estadoCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: Object.keys(estadoData),
+                    datasets: [{
+                        data: Object.values(estadoData),
+                        backgroundColor: [
+                            '#ffd700',
+                            '#00f3ff',
+                            '#ff00ff',
+                            '#23d160',
+                            '#ff3860'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffd700',
+                                font: {
+                                    family: 'Orbitron'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Candidatos Públicos
+        function carregarCandidatosPublicos() {
+            const candidatosHomologados = candidatos.filter(c => c.status === 'Homologado');
+            const tbody = document.getElementById('candidatosTable');
+            tbody.innerHTML = '';
+            
+            candidatosHomologados.forEach(candidato => {
+                const partido = partidos.find(p => p.sigla === candidato.partido);
+                const ideologia = partido ? partido.ideologia : 'N/A';
+                const ideologiaClass = ideologia === 'Direita' ? 'ideologia-direita' : 
+                                     ideologia === 'Centro' ? 'ideologia-centro' : 
+                                     'ideologia-esquerda';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${candidato.nome}</td>
+                    <td>${candidato.cargo}</td>
+                    <td>${candidato.partido}</td>
+                    <td>${candidato.estado} / ${candidato.cidade}</td>
+                    <td class="${ideologiaClass}">${ideologia}</td>
+                    <td><span class="status-badge status-homologado">HOMOLOGADO</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filtrarCandidatos() {
+            const estado = document.getElementById('filterEstado').value;
+            const cidade = document.getElementById('filterCidade').value;
+            const cargo = document.getElementById('filterCargo').value;
+            const partido = document.getElementById('filterPartido').value;
+            const ideologia = document.getElementById('filterIdeologia').value;
+            
+            const candidatosFiltrados = candidatos.filter(c => {
+                if (c.status !== 'Homologado') return false;
+                if (estado && c.estado !== estado) return false;
+                if (cidade && c.cidade !== cidade) return false;
+                if (cargo && c.cargo !== cargo) return false;
+                if (partido && c.partido !== partido) return false;
+                if (ideologia) {
+                    const p = partidos.find(part => part.sigla === c.partido);
+                    if (!p || p.ideologia !== ideologia) return false;
+                }
+                return true;
+            });
+            
+            const tbody = document.getElementById('candidatosTable');
+            tbody.innerHTML = '';
+            
+            candidatosFiltrados.forEach(candidato => {
+                const partido = partidos.find(p => p.sigla === candidato.partido);
+                const ideologia = partido ? partido.ideologia : 'N/A';
+                const ideologiaClass = ideologia === 'Direita' ? 'ideologia-direita' : 
+                                     ideologia === 'Centro' ? 'ideologia-centro' : 
+                                     'ideologia-esquerda';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${candidato.nome}</td>
+                    <td>${candidato.cargo}</td>
+                    <td>${candidato.partido}</td>
+                    <td>${candidato.estado} / ${candidato.cidade}</td>
+                    <td class="${ideologiaClass}">${ideologia}</td>
+                    <td><span class="status-badge status-homologado">HOMOLOGADO</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Candidatura
+        function carregarCidades() {
+            const estadoSelecionado = document.getElementById('candidatoEstado').value;
+            const selectCidade = document.getElementById('candidatoCidade');
+            selectCidade.innerHTML = '<option value="">Selecione uma cidade</option>';
+            
+            if (estadoSelecionado) {
+                const estado = estados.find(e => e.nome === estadoSelecionado);
+                if (estado) {
+                    estado.cidades.forEach(cidade => {
+                        const option = document.createElement('option');
+                        option.value = cidade;
+                        option.textContent = cidade;
+                        selectCidade.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        function enviarCandidatura() {
+            const nome = document.getElementById('candidatoNome').value;
+            const estado = document.getElementById('candidatoEstado').value;
+            const cidade = document.getElementById('candidatoCidade').value;
+            const cargo = document.getElementById('candidatoCargo').value;
+            const partido = document.getElementById('candidatoPartido').value;
+            const manifesto = document.getElementById('candidatoManifesto').value;
+            
+            if (!nome || !estado || !cidade || !cargo || !partido) {
+                mostrarMensagem('candidaturaMessage', 'Preencha todos os campos obrigatórios!', 'danger');
+                return;
+            }
+            
+            // Verificar se partido existe
+            const partidoInfo = partidos.find(p => p.sigla === partido);
+            if (!partidoInfo) {
+                mostrarMensagem('candidaturaMessage', 'Partido inválido!', 'danger');
+                return;
+            }
+            
+            const candidatura = {
+                nome,
+                estado,
+                cidade,
+                cargo,
+                partido,
+                manifesto: manifesto || '',
+                ideologia: partidoInfo.ideologia,
+                status: 'Em análise',
+                dataCadastro: new Date().toISOString()
+            };
+            
+            // Salvar no Firebase
+            database.ref('candidatos').push(candidatura)
+                .then(() => {
+                    // Registrar log
+                    registrarLog('candidatura', `Nova candidatura: ${nome} (${partido}) para ${cargo} em ${cidade}/${estado}`);
+                    
+                    mostrarMensagem('candidaturaMessage', 'Candidatura enviada com sucesso! Aguarde análise do TSE/TRE.', 'success');
+                    limparFormulario();
+                    
+                    // Atualizar dashboard
+                    setTimeout(() => {
+                        mostrarSecao('dashboard');
+                    }, 2000);
+                })
+                .catch(error => {
+                    mostrarMensagem('candidaturaMessage', 'Erro ao enviar candidatura: ' + error.message, 'danger');
+                });
+        }
+
+        function limparFormulario() {
+            document.getElementById('candidatoNome').value = '';
+            document.getElementById('candidatoEstado').value = '';
+            document.getElementById('candidatoCidade').innerHTML = '<option value="">Selecione uma cidade</option>';
+            document.getElementById('candidatoCargo').value = '';
+            document.getElementById('candidatoPartido').value = '';
+            document.getElementById('candidatoManifesto').value = '';
+        }
+
+        // Login Administrativo
+        function realizarLogin() {
+            const password = document.getElementById('adminPassword').value;
+            const adminType = document.getElementById('adminType').value;
+            
+            // Senhas oficiais
+            const senhas = {
+                'TSE': 'Brookasil1234',
+                'Brookhaven': 'tutuBH',
+                'Novacore': 'williamNC',
+                'Casteriber': 'henriqueCB',
+                'Fortemega': 'lucasFM',
+                'Floremix': 'popoFX'
+            };
+            
+            if (password === senhas[adminType]) {
+                usuarioLogado = {
+                    tipo: adminType === 'TSE' ? 'TSE' : 'TRE',
+                    estado: adminType === 'TSE' ? 'Nacional' : adminType,
+                    nome: adminType
+                };
+                
+                // Salvar no localStorage
+                localStorage.setItem('tse_user', JSON.stringify(usuarioLogado));
+                
+                // Registrar log
+                registrarLog('login', `Login administrativo: ${adminType}`);
+                
+                entrarModoAdmin();
+                mostrarSecao('admin');
+                
+                // Atualizar interface
+                document.getElementById('loginTab').textContent = 'PAINEL ADMIN';
+                document.getElementById('adminIndicator').style.display = 'block';
+            } else {
+                alert('Senha incorreta! Verifique as credenciais.');
+            }
+        }
+
+        function entrarModoAdmin() {
+            document.getElementById('loginTab').textContent = 'PAINEL ADMIN';
+            document.getElementById('adminIndicator').style.display = 'block';
+            document.getElementById('sidebarAdmin').style.display = 'flex';
+        }
+
+        function logout() {
+            usuarioLogado = null;
+            localStorage.removeItem('tse_user');
+            
+            // Registrar log
+            registrarLog('login', 'Logout do sistema');
+            
+            // Atualizar interface
+            document.getElementById('loginTab').textContent = 'LOGIN TSE/TRE';
+            document.getElementById('adminIndicator').style.display = 'none';
+            
+            mostrarSecao('dashboard');
+        }
+
+        // Funções Administrativas
+        function mostrarDashboardAdmin() {
+            const adminContent = document.getElementById('adminContent');
+            const adminTitulo = document.getElementById('adminTitulo');
+            
+            if (usuarioLogado.tipo === 'TSE') {
+                adminTitulo.textContent = 'TSE NACIONAL - CONTROLE TOTAL';
+            } else {
+                adminTitulo.textContent = `TRE ${usuarioLogado.estado} - ADMINISTRAÇÃO ESTADUAL`;
+            }
+            
+            adminContent.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Candidaturas Pendentes</div>
+                        <div class="stat-number">${candidatos.filter(c => c.status === 'Em análise' && (usuarioLogado.tipo === 'TSE' || c.estado === usuarioLogado.estado)).length}</div>
+                        <div class="stat-desc">Aguardando sua análise</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Homologados por você</div>
+                        <div class="stat-number">${candidatos.filter(c => c.status === 'Homologado' && c.aprovadoPor === usuarioLogado.nome).length}</div>
+                        <div class="stat-desc">Aprovações realizadas</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Recusados por você</div>
+                        <div class="stat-number">${candidatos.filter(c => c.status === 'Recusado' && c.recusadoPor === usuarioLogado.nome).length}</div>
+                        <div class="stat-desc">Recusas realizadas</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Modo da Eleição</div>
+                        <div class="stat-number" style="font-size: 1.5rem;">${modoEleicao.toUpperCase()}</div>
+                        <div class="stat-desc">${usuarioLogado.tipo === 'TSE' ? 'Você pode alterar' : 'Apenas TSE altera'}</div>
+                    </div>
+                </div>
+                
+                <div class="card-title" style="margin-top: 2rem;">AÇÕES RÁPIDAS</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div class="cyber-border" style="padding: 1rem;">
+                        <h3 style="color: var(--cyber-blue); margin-bottom: 0.5rem;">APROVAR CANDIDATURAS</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem;">Analise e aprove candidaturas pendentes do ${usuarioLogado.tipo === 'TSE' ? 'sistema nacional' : 'seu estado'}</p>
+                        <button class="btn btn-success" onclick="mostrarAprovarCandidaturas()">VER PENDENTES</button>
+                    </div>
+                    
+                    <div class="cyber-border" style="padding: 1rem;">
+                        <h3 style="color: var(--cyber-blue); margin-bottom: 0.5rem;">RECUSAR CANDIDATURAS</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem;">Recuse candidaturas com justificativa obrigatória</p>
+                        <button class="btn btn-danger" onclick="mostrarRecusarCandidaturas()">RECUSAR CANDIDATURAS</button>
+                    </div>
+                    
+                    ${usuarioLogado.tipo === 'TSE' ? `
+                    <div class="cyber-border" style="padding: 1rem;">
+                        <h3 style="color: var(--cyber-blue); margin-bottom: 0.5rem;">CONFIGURAR ELEIÇÃO</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem;">Altere o modo da eleição (Municipal, Estadual, Federal)</p>
+                        <button class="btn btn-primary" onclick="mostrarSecao('config')">CONFIGURAR</button>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function mostrarAprovarCandidaturas() {
+            const candidaturasPendentes = candidatos.filter(c => 
+                c.status === 'Em análise' && 
+                (usuarioLogado.tipo === 'TSE' || c.estado === usuarioLogado.estado)
+            );
+            
+            const modalTitulo = document.getElementById('modalTitulo');
+            const modalContent = document.getElementById('modalContent');
+            const modal = document.getElementById('adminModal');
+            
+            modalTitulo.textContent = 'APROVAR CANDIDATURAS PENDENTES';
+            
+            if (candidaturasPendentes.length === 0) {
+                modalContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <p style="color: var(--cyber-blue); font-size: 1.2rem;">Nenhuma candidatura pendente!</p>
+                        <p>Todas as candidaturas já foram analisadas.</p>
+                    </div>
+                `;
+            } else {
+                let html = '<div style="max-height: 400px; overflow-y: auto;">';
+                
+                candidaturasPendentes.forEach(candidato => {
+                    const partidoInfo = partidos.find(p => p.sigla === candidato.partido);
+                    html += `
+                        <div class="cyber-border" style="padding: 1rem; margin-bottom: 1rem;">
+                            <h3 style="color: var(--gold); margin-bottom: 0.5rem;">${candidato.nome}</h3>
+                            <p><strong>Cargo:</strong> ${candidato.cargo}</p>
+                            <p><strong>Local:</strong> ${candidato.cidade} / ${candidato.estado}</p>
+                            <p><strong>Partido:</strong> ${candidato.partido} (${partidoInfo ? partidoInfo.ideologia : 'N/A'})</p>
+                            ${candidato.manifesto ? `<p><strong>Manifesto:</strong> ${candidato.manifesto}</p>` : ''}
+                            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                <button class="btn btn-success" onclick="aprovarCandidatura('${candidato.id}')">APROVAR</button>
+                                <button class="btn btn-danger" onclick="mostrarFormRecusar('${candidato.id}')">RECUSAR</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                modalContent.innerHTML = html;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function mostrarRecusarCandidaturas() {
+            const candidaturasPendentes = candidatos.filter(c => 
+                c.status === 'Em análise' && 
+                (usuarioLogado.tipo === 'TSE' || c.estado === usuarioLogado.estado)
+            );
+            
+            const modalTitulo = document.getElementById('modalTitulo');
+            const modalContent = document.getElementById('modalContent');
+            const modal = document.getElementById('adminModal');
+            
+            modalTitulo.textContent = 'RECUSAR CANDIDATURAS';
+            
+            if (candidaturasPendentes.length === 0) {
+                modalContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <p style="color: var(--cyber-blue); font-size: 1.2rem;">Nenhuma candidatura pendente!</p>
+                        <p>Todas as candidaturas já foram analisadas.</p>
+                    </div>
+                `;
+            } else {
+                let html = `
+                    <p style="margin-bottom: 1rem; color: var(--warning);">
+                        ATENÇÃO: Toda recusa deve ter um motivo justificado e registrado.
+                    </p>
+                    <div style="max-height: 300px; overflow-y: auto; margin-bottom: 1rem;">
+                `;
+                
+                candidaturasPendentes.forEach(candidato => {
+                    const partidoInfo = partidos.find(p => p.sigla === candidato.partido);
+                    html += `
+                        <div class="cyber-border" style="padding: 1rem; margin-bottom: 1rem;">
+                            <h3 style="color: var(--gold); margin-bottom: 0.5rem;">${candidato.nome}</h3>
+                            <p><strong>Cargo:</strong> ${candidato.cargo} | <strong>Local:</strong> ${candidato.cidade}/${candidato.estado}</p>
+                            <p><strong>Partido:</strong> ${candidato.partido}</p>
+                            <div class="form-group">
+                                <label class="form-label">Motivo da Recusa</label>
+                                <input type="text" class="form-input" id="motivo-${candidato.id}" placeholder="Digite o motivo da recusa" required>
+                            </div>
+                            <button class="btn btn-danger" onclick="recusarCandidatura('${candidato.id}')">CONFIRMAR RECUSA</button>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                modalContent.innerHTML = html;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function mostrarRecusados() {
+            const candidaturasRecusadas = candidatos.filter(c => 
+                c.status === 'Recusado' && 
+                (usuarioLogado.tipo === 'TSE' || c.estado === usuarioLogado.estado)
+            );
+            
+            const modalTitulo = document.getElementById('modalTitulo');
+            const modalContent = document.getElementById('modalContent');
+            const modal = document.getElementById('adminModal');
+            
+            modalTitulo.textContent = 'CANDIDATURAS RECUSADAS';
+            
+            if (candidaturasRecusadas.length === 0) {
+                modalContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <p style="color: var(--cyber-blue); font-size: 1.2rem;">Nenhuma candidatura recusada!</p>
+                    </div>
+                `;
+            } else {
+                let html = '<div style="max-height: 400px; overflow-y: auto;">';
+                
+                candidaturasRecusadas.forEach(candidato => {
+                    html += `
+                        <div class="cyber-border" style="padding: 1rem; margin-bottom: 1rem;">
+                            <h3 style="color: var(--danger); margin-bottom: 0.5rem;">${candidato.nome}</h3>
+                            <p><strong>Cargo:</strong> ${candidato.cargo}</p>
+                            <p><strong>Local:</strong> ${candidato.cidade} / ${candidato.estado}</p>
+                            <p><strong>Partido:</strong> ${candidato.partido}</p>
+                            <p><strong>Recusado por:</strong> ${candidato.recusadoPor || 'N/A'}</p>
+                            <p><strong>Motivo:</strong> ${candidato.motivoRecusa || 'N/A'}</p>
+                            <p><strong>Data:</strong> ${new Date(candidato.dataRecusa).toLocaleString() || 'N/A'}</p>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                modalContent.innerHTML = html;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function aprovarCandidatura(candidatoId) {
+            const candidato = candidatos.find(c => c.id === candidatoId);
+            if (!candidato) return;
+            
+            // Atualizar no Firebase
+            database.ref('candidatos/' + candidatoId).update({
+                status: 'Homologado',
+                aprovadoPor: usuarioLogado.nome,
+                dataAprovacao: new Date().toISOString()
+            })
+            .then(() => {
+                // Registrar log
+                registrarLog('aprovar', `Candidatura aprovada: ${candidato.nome} (${candidato.partido}) para ${candidato.cargo}`);
+                
+                alert('Candidatura aprovada com sucesso!');
+                fecharModal();
+                mostrarDashboardAdmin();
+            })
+            .catch(error => {
+                alert('Erro ao aprovar candidatura: ' + error.message);
+            });
+        }
+
+        function mostrarFormRecusar(candidatoId) {
+            const modalContent = document.getElementById('modalContent');
+            const candidato = candidatos.find(c => c.id === candidatoId);
+            
+            modalContent.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">CANDIDATO</label>
+                    <input type="text" class="form-input" value="${candidato.nome}" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">CARGO</label>
+                    <input type="text" class="form-input" value="${candidato.cargo}" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">PARTIDO</label>
+                    <input type="text" class="form-input" value="${candidato.partido}" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">MOTIVO DA RECUSA *</label>
+                    <textarea class="form-textarea" id="motivoRecusa" placeholder="Digite o motivo detalhado da recusa..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn btn-danger" onclick="recusarCandidatura('${candidatoId}')">CONFIRMAR RECUSA</button>
+                    <button class="btn btn-outline" onclick="mostrarAprovarCandidaturas()">VOLTAR</button>
+                </div>
+            `;
+        }
+
+        function recusarCandidatura(candidatoId) {
+            const motivo = document.getElementById('motivoRecusa') || 
+                          document.getElementById(`motivo-${candidatoId}`);
+            
+            if (!motivo || !motivo.value.trim()) {
+                alert('Digite o motivo da recusa!');
+                return;
+            }
+            
+            const candidato = candidatos.find(c => c.id === candidatoId);
+            if (!candidato) return;
+            
+            // Atualizar no Firebase
+            database.ref('candidatos/' + candidatoId).update({
+                status: 'Recusado',
+                motivoRecusa: motivo.value,
+                recusadoPor: usuarioLogado.nome,
+                dataRecusa: new Date().toISOString()
+            })
+            .then(() => {
+                // Registrar log
+                registrarLog('recusar', `Candidatura recusada: ${candidato.nome} (${candidato.partido}) - Motivo: ${motivo.value}`);
+                
+                alert('Candidatura recusada com sucesso!');
+                fecharModal();
+                mostrarDashboardAdmin();
+            })
+            .catch(error => {
+                alert('Erro ao recusar candidatura: ' + error.message);
+            });
+        }
+
+        // Configurações (apenas TSE)
+        function alterarModoEleicao() {
+            if (usuarioLogado?.tipo !== 'TSE') {
+                mostrarMensagem('configMessage', 'Apenas o TSE Nacional pode alterar o modo da eleição!', 'danger');
+                return;
+            }
+            
+            const novoModo = document.getElementById('configModoEleicao').value;
+            
+            // Atualizar no Firebase
+            database.ref('configuracoes').update({
+                modoEleicao: novoModo
+            })
+            .then(() => {
+                modoEleicao = novoModo;
+                document.getElementById('modoEleicao').textContent = novoModo.toUpperCase();
+                
+                // Registrar log
+                registrarLog('config', `Modo da eleição alterado para: ${novoModo}`);
+                
+                mostrarMensagem('configMessage', 'Modo da eleição atualizado com sucesso!', 'success');
+            })
+            .catch(error => {
+                mostrarMensagem('configMessage', 'Erro ao atualizar modo da eleição: ' + error.message, 'danger');
+            });
+        }
+
+        // Logs do Sistema
+        function carregarLogs() {
+            const tbody = document.getElementById('logsTable');
+            tbody.innerHTML = '';
+            
+            // Ordenar logs por data (mais recente primeiro)
+            const logsOrdenados = [...logs].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+            
+            logsOrdenados.forEach(log => {
+                const data = new Date(log.timestamp);
+                const dataFormatada = data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR');
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${dataFormatada}</td>
+                    <td>${log.usuario || 'Sistema'}</td>
+                    <td>${log.acao}</td>
+                    <td>${log.detalhes || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filtrarLogs() {
+            const tipo = document.getElementById('filterLogTipo').value;
+            const usuario = document.getElementById('filterLogUsuario').value.toLowerCase();
+            
+            const logsFiltrados = logs.filter(log => {
+                if (tipo && !log.acao.toLowerCase().includes(tipo.toLowerCase())) return false;
+                if (usuario && !(log.usuario || '').toLowerCase().includes(usuario)) return false;
+                return true;
+            });
+            
+            const tbody = document.getElementById('logsTable');
+            tbody.innerHTML = '';
+            
+            logsFiltrados.forEach(log => {
+                const data = new Date(log.timestamp);
+                const dataFormatada = data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR');
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${dataFormatada}</td>
+                    <td>${log.usuario || 'Sistema'}</td>
+                    <td>${log.acao}</td>
+                    <td>${log.detalhes || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Funções auxiliares
+        function registrarLog(acao, detalhes) {
+            const log = {
+                usuario: usuarioLogado ? usuarioLogado.nome : 'Público',
+                acao: acao,
+                detalhes: detalhes,
+                timestamp: new Date().toISOString()
+            };
+            
+            database.ref('logs').push(log);
+        }
+
+        function mostrarMensagem(elementId, mensagem, tipo) {
+            const element = document.getElementById(elementId);
+            const color = tipo === 'success' ? '#23d160' : 
+                         tipo === 'warning' ? '#ffdd57' : '#ff3860';
+            
+            element.innerHTML = `
+                <div style="background: rgba(${tipo === 'success' ? '35, 209, 96' : tipo === 'warning' ? '255, 221, 87' : '255, 56, 96'}, 0.2); 
+                            border: 1px solid ${color}; 
+                            padding: 1rem; 
+                            border-radius: 8px;
+                            color: ${color};">
+                    ${mensagem}
+                </div>
+            `;
+            
+            if (tipo === 'success') {
+                setTimeout(() => {
+                    element.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        // Funções das abas flutuantes
+        function generateQuickReport() {
+            const total = candidatos.length;
+            const homologados = candidatos.filter(c => c.status === 'Homologado').length;
+            const emAnalise = candidatos.filter(c => c.status === 'Em análise').length;
+            const recusados = candidatos.filter(c => c.status === 'Recusado').length;
+            
+            alert(`RELATÓRIO RÁPIDO:\n\n` +
+                  `Total de Candidatos: ${total}\n` +
+                  `Homologados: ${homologados}\n` +
+                  `Em Análise: ${emAnalise}\n` +
+                  `Recusados: ${recusados}\n` +
+                  `Modo da Eleição: ${modoEleicao}\n\n` +
+                  `Data: ${new Date().toLocaleDateString('pt-BR')}`);
+        }
+
+        function showSystemAlerts() {
+            const pendentes = candidatos.filter(c => c.status === 'Em análise').length;
+            const alertas = [];
+            
+            if (pendentes > 10) {
+                alertas.push(`${pendentes} candidaturas pendentes de análise`);
+            }
+            
+            if (!usuarioLogado) {
+                alertas.push('Você está no modo público');
+            } else {
+                alertas.push(`Logado como: ${usuarioLogado.nome}`);
+            }
+            
+            if (alertas.length === 0) {
+                alert('✅ Nenhum alerta no momento!');
+            } else {
+                alert('🔔 ALERTAS DO SISTEMA:\n\n' + alertas.join('\n'));
+            }
+        }
+
+        function showElectionMode() {
+            alert(`🗳️ MODO DA ELEIÇÃO ATUAL:\n\n` +
+                  `🔸 ${modoEleicao.toUpperCase()}\n\n` +
+                  `${modoEleicao === 'Municipal' ? 'Eleição para Prefeito e Vereadores' : 
+                    modoEleicao === 'Estadual' ? 'Eleição para Governador, Deputados Estaduais e Senadores' : 
+                    'Eleição para Presidente, Governadores, Deputados Federais e Senadores'}\n\n` +
+                  `Apenas TSE Nacional pode alterar este modo.`);
+        }
+
+        function toggleQuickAccess() {
+            if (usuarioLogado) {
+                mostrarSecao('admin');
+            } else {
+                mostrarSecao('login');
+            }
+        }
+                    
+                    // Inicializar configurações
+                    database.ref('configuracoes').set({
+                        modoEleicao: "Municipal"
+                    });
+                }
+            });
+        }
+
+        // Inicializar dados de exemplo
+        setTimeout(inicializarDadosExemplo, 1000);
     </script>
 </body>
 </html>
