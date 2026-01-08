@@ -2031,7 +2031,9 @@
                 estados = [
                     { id: 1, nome: "Brookhaven", presidente: "Tutu Protásio" },
                     { id: 2, nome: "Novacore", presidente: "William Harris" },
-                    { id: 3, nome: "Casteríber", presidente: "Henrique Camilote" }
+                    { id: 3, nome: "Casteríber", presidente: "Henrique Camilote" },
+                    { id: 4, nome: "Fortemega", presidente: "Lucas Santos" },
+                    { id: 5, nome: "Florêmix", presidente: "Rhyan Khalleby" }
                 ];
                 salvarEstados();
             }
@@ -2043,13 +2045,15 @@
                 cidades = [
                     { id: 1, nome: "Cidade Eleitoral", estadoId: 1, presidente: "Tutu Protásio" },
                     { id: 2, nome: "Liberty City", estadoId: 1, presidente: "Ronaldo Caiado" },
-                    { id: 3, nome: "Central Park", estadoId: 1, presidente: "Maria Silva" },
-                    { id: 4, nome: "Nexaville", estadoId: 2, presidente: "William Harris" },
-                    { id: 5, nome: "Solária", estadoId: 2, presidente: "Ryan Mendonça" },
-                    { id: 6, nome: "Tech Valley", estadoId: 2, presidente: "Ana Costa" },
-                    { id: 7, nome: "Castelo Verde", estadoId: 3, presidente: "Henrique Camilote" },
-                    { id: 8, nome: "Monte Prata", estadoId: 3, presidente: "Jacinto Leite" },
-                    { id: 9, nome: "Vale Dourado", estadoId: 3, presidente: "Carla Santos" }
+                    { id: 3, nome: "Nexaville", estadoId: 2, presidente: "William Harris" },
+                    { id: 4, nome: "Solária", estadoId: 2, presidente: "Ryan Mendonça" },
+                    { id: 5, nome: "Castelo Verde", estadoId: 3, presidente: "Henrique Camilote" },
+                    { id: 6, nome: "Monte Prata", estadoId: 3, presidente: "Jacinto Leite" },
+                    { id: 7, nome: "Marinha City", estadoId: 4, presidente: "Lucas Santos" },
+                    { id: 8, nome: "Porto Rubi", estadoId: 4, presidente: "Davi Zavarisi" },
+                    { id: 9, nome: "Florápolis", estadoId: 5, presidente: "Rhyan Kalleby" },
+                    { id: 10, nome: "Riomarina", estadoId: 5, presidente: "Pedro Camargo" }
+
                 ];
                 salvarCidades();
             }
@@ -3319,7 +3323,7 @@
             
             if (tipoAcesso === 'TSE') {
                 // Chave do TSE: "BrookasilTSE2024"
-                if (hashedKey === hashKey("BrookasilTSE2024")) {
+                if (hashedKey === hashKey("Brookasil1234")) {
                     usuario = {
                         tipo: 'TSE',
                         nome: 'Tutu Protásio',
